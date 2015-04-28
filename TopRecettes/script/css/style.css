@@ -3,7 +3,7 @@
 html {
     height: 100%;
     margin: 0;
-    //margin-top: 50px; //Afficher les var dump
+    margin-top: 50px; //Afficher les var dump
     padding: 0;
     
 }
@@ -51,7 +51,7 @@ footer {
 .thumbnail {
     padding: 0;
     float: left;
-    display: inline-block;
+    display: inline;
     box-shadow: 10px 10px 30px #303030;
     background-color: lightgray;
 }

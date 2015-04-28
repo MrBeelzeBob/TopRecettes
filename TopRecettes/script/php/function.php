@@ -13,31 +13,24 @@ function var_dump_pre($var) {
 }
 
 /**
-* Debug function
-* Affichage pour debuggage du contenu passé en parametre
-* @param mixed $sObj element à afficher optionnel
-* @return null
-*/
-function debug($sObj = NULL) 
-{
+ * Debug function
+ * Affichage pour debuggage du contenu passé en parametre
+ * @param mixed $sObj element à afficher optionnel
+ * @return null
+ */
+function debug($sObj = NULL) {
     echo '<pre>';
 
-    if (is_null($sObj)) 
-    {
+    if (is_null($sObj)) {
         echo '|Object is NULL|' . "\n";
-    } 
-    else if(is_array($sObj) || is_object($sObj)) 
-    {
+    } else if (is_array($sObj) || is_object($sObj)) {
         var_dump($sObj);
-    } 
-    else 
-    {
+    } else {
         echo '|' . $sObj . '|' . "\n";
     }
 
     echo '</pre>';
 }
-
 
 /**
  * 
@@ -86,24 +79,23 @@ function login($UserEmail, $UserPassword) {
  */
 function register($UserPseudo, $UserEmail, $UserPassword) {
 
-    //Vérifie si le pseuod ou le mail existe déjà
+//Vérifie si le pseuod ou le mail existe déjà
     $exist = CheckExist_Pseudo_Email($UserPseudo, $UserEmail);
 
     if (!$exist) {
         $pdo = connectDB();
 
-        //insert les données dans la base
+//insert les données dans la base
         $query = 'INSERT INTO tUser (UserPseudo, UserEmail, UserPassword) VALUES (:UserPseudo, :UserEmail, :UserPassword);';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":UserPseudo" => $UserPseudo,
             ":UserEmail" => $UserEmail,
             ":UserPassword" => $UserPassword));
         $statement = $statement->fetch();
-        
+
         return true;
     } else {
         return false;
-        
     }
 }
 
@@ -118,18 +110,18 @@ function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
 
     $pdo = connectDB();
 
-    //vérifie si l'email ou le pseudo sont déja utilisé
+//vérifie si l'email ou le pseudo sont déja utilisé
     $query = 'SELECT UserPseudo FROM tUser WHERE UserPseudo = :UserPseudo OR UserEmail = :UserEmail ;';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":UserPseudo" => $UserPseudo,
         ":UserEmail" => $UserEmail));
     $statement = $statement->fetch();
 
-    //vérifie si une valeur est récupérée
+//vérifie si une valeur est récupérée
     if ($statement) {
         return true; //existe
     }
-    if ($statement == false){
+    if ($statement == false) {
         return false; //existe pas
     }
 }
@@ -141,17 +133,71 @@ function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
  */
 function CheckAdmin($idUser) {
     $pdo = connectDB();
-    
-    //recupere une valeur pour vérifier si l'utilisateur est admin
+
+//recupere une valeur pour vérifier si l'utilisateur est admin
     $query = 'SELECT UserAdmin FROM tUser WHERE idUser = :idUser;';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idUser" => $idUser));
     $statement = $statement->fetch();
-    
+
     if ($statement['UserAdmin']) {
         return true;
     }
     return false;
+}
+
+/**
+ * 
+ * @param type $trie
+ * @param type $search
+ * @return type
+ */
+function get_recipes($sort, $search) {
+    $pdo = connectDB();
+
+    $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, tuser.UserPseudo '
+            . 'FROM trecipe '
+            . 'NATURAL JOIN tuser ';
+    
+    if (!empty($search)) {
+        $query .= 'WHERE trecipe.RecipeTitle REGEXP :search ';
+    }
+    
+    switch ($sort) {
+        case 1: $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
+        case 2: $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
+        case 3: $query .= ' ';
+        case 4: $query .= ' ';
+    }
+
+    $statement = $pdo->prepare($query);
+    
+    if (!empty($search)) {
+        $statement->execute(array(":search" => $search));
+    } else {
+        $statement->execute();
+    }
+
+
+    $statement = $statement->fetchall();
+
+    return $statement;
+}
+
+function get_recipe($idRecipe) {
+    $pdo = connectDB();
+
+    $query = 'SELECT recipe.idRecipe, recipe.RecipeTitle, recipe.RecipeContenu, recipe.RecipeOrigin, recipe.RecipeImage '
+            . 'FROM trecipe '
+            . 'LEFT JOIN contains ON contains.idRecipe = trecipe.idRecipe '
+            . 'LEFT JOIN';
+
+    $query = 'SELECT jeux.idJeu, jeux.nomJeu ,jeux.ImageCouverture, GROUP_CONCAT(categories_jeux.nomCategorie) AS Categories '
+            . 'FROM jeux '
+            . 'LEFT JOIN appartenir_jeu ON appartenir_jeu.idJeu = jeux.idJeu '
+            . 'LEFT JOIN categories_jeux ON categories_jeux.idCategorie = appartenir_jeu.idCategorie '
+            . 'WHERE jeux.nomJeu REGEXP :recherche '
+            . 'GROUP BY jeux.nomJeu';
 }
 
 /**

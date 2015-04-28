@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Dim 26 Avril 2015 à 17:49
+-- Généré le :  Mar 28 Avril 2015 à 08:29
 -- Version du serveur :  5.6.15-log
 -- Version de PHP :  5.4.24
 
@@ -21,6 +21,63 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `toprecettes` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `toprecettes`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `comments`
+--
+
+CREATE TABLE IF NOT EXISTS `comments` (
+  `idComment` int(11) NOT NULL AUTO_INCREMENT,
+  `CommentText` text NOT NULL,
+  `CommentNote` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
+  `idRecipe` int(11) NOT NULL,
+  PRIMARY KEY (`idComment`),
+  KEY `idUser` (`idUser`,`idRecipe`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `contains`
+--
+
+CREATE TABLE IF NOT EXISTS `contains` (
+  `idContains` int(11) NOT NULL AUTO_INCREMENT,
+  `ContainsQuantity` double NOT NULL,
+  `ContainsUnit` varchar(10) NOT NULL,
+  `idRecipe` int(11) NOT NULL,
+  `idIngredient` int(11) NOT NULL,
+  PRIMARY KEY (`idContains`),
+  KEY `idRecipe` (`idRecipe`,`idIngredient`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `isin`
+--
+
+CREATE TABLE IF NOT EXISTS `isin` (
+  `idRecipe` int(11) NOT NULL,
+  `idCategory` int(11) NOT NULL,
+  KEY `idRecipe` (`idRecipe`,`idCategory`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tcategory`
+--
+
+CREATE TABLE IF NOT EXISTS `tcategory` (
+  `idCategory` int(11) NOT NULL AUTO_INCREMENT,
+  `CategoryName` varchar(30) NOT NULL,
+  PRIMARY KEY (`idCategory`),
+  UNIQUE KEY `CategoryName` (`CategoryName`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -385,6 +442,18 @@ INSERT INTO `tuser` (`idUser`, `UserPseudo`, `UserPassword`, `UserEmail`, `UserA
 (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', 1),
 (2, 'User', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', 0),
 (3, 'demo', 'fe01ce2a7fbac8fafaed7c982a04e229', 'demo@gmail.com', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `writes`
+--
+
+CREATE TABLE IF NOT EXISTS `writes` (
+  `idUser` int(11) NOT NULL,
+  `idRecipe` int(11) NOT NULL,
+  KEY `idUser` (`idUser`,`idRecipe`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
