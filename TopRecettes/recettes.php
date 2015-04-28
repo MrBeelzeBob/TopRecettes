@@ -5,35 +5,46 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once('./script/php/function.php');
 
-$search = NULL;
-$sort = NULL;
+$recherche = NULL;
+$tri = NULL;
+$connected = FALSE;
+$idUser = NULL;
 
 $title = 'Recettes';
 
-//test les parametre dans l'url 
-if ((isset($_GET['sort'])) or (isset($_GET['search']))) {
-    if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
-        $recipes = get_recipes($_GET['sort'], $_GET['search']);
-
-        $search = $_GET['search'];
-        $sort = $_GET['sort'];
-    } else {
-        $recipes = get_recipes($_GET['sort'], NULL);
-    }
-} else {
-    $recipes = get_recipes(NULL, NULL);
+//test si un utilisateur est connecté
+if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
+    $connected = true;
+    $idUser = $_SESSION['idUser'];
 }
 
-switch ($sort) {
+//test les parametre dans l'url 
+if ((isset($_GET['tri'])) or (isset($_GET['recherche']))) {
+    
+    if ((isset($_GET['recherche'])) AND (!empty($_GET['recherche']))) {
+        
+        $recipes = get_recipes($_GET['tri'], $_GET['recherche'], $idUser);
+        $search = $_GET['recherche'];
+        $tri = $_GET['tri'];
+    } else {
+        $recipes = get_recipes($_GET['tri'], NULL, $idUser);
+    }
+} else {
+    $recipes = get_recipes(NULL, NULL, $idUser);
+}
+
+//Modifie le titre selon le tri efféctué
+switch ($tri) {
     case 1: $title = 'Recettes - Plus récentes';
     case 2: $title = 'Recettes - Plus anciennes';
     case 3: $title = 'Recettes - Mieux notées';
     case 4: $title = 'Recettes - Moins bien notées';
+    case 5: $title = 'Recettes - Mes recettes';
 }
 
 var_dump_pre($recipes);
-var_dump_pre($search);
-var_dump_pre($sort);
+var_dump_pre($recherche);
+var_dump_pre($tri);
 ?>
 
 <!doctype html>
@@ -68,43 +79,47 @@ var_dump_pre($sort);
                                     <div class="form-group">
                                         <label class="control-label" for="sort">Trier les recettes</label>
                                         <div class="input-group">
-                                            <select name="sort" id="sort" class="form-control" autofocus="<?= $sort; ?>">
+                                            <select name="tri" id="tri" class="form-control" autofocus="<?= $sort; ?>">
                                                 <option value="">Pas de tri</option>
                                                 <option value="1">Plus récentes</option>
                                                 <option value="2">Plus anciennes</option>
                                                 <option value="3">Meilleures notes</option>
-                                                <option value="4">Moins bonne notes </option>
+                                                <option value="4">Moins bonne notes</option>
+                                                <?php if($connected) { ?>
+                                                    <option value="5">Mes recettes</option>
+                                                <?php } ?>
+                                                
                                             </select>
                                             <span class="input-group-btn">
                                                 <button type="submit" class="btn btn-default">
                                                     <img class="glyph" src="glyphicons_free/glyphicons/glyphicons-28-search.png">
                                                 </button>
                                             </span>
+
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- input de recherche -->
+                                <!-- input de recherche  ol-md-4 col-md-offset- col-sm-6 col-xs-6 -->
 
                                 <div class="col-md-4 col-md-offset-1 col-sm-6 col-xs-6">
                                     <div class="form-group">
                                         <label class="control-label" for="search">Recherche</label>
                                         <div class="input-group">
-                                            <input type="text" name="search" id="search" value="<?= $search; ?>" class="form-control" name="" placeholder="Rechercher">
+                                            <input type="text" name="recherche" id="recherche" value="<?= $recherche; ?>" class="form-control" name="" placeholder="Rechercher...">
                                             <span class="input-group-btn">
                                                 <button type="submit" class="btn btn-default">
                                                     <img class="glyph" src="glyphicons_free/glyphicons/glyphicons-28-search.png">
                                                 </button>
+                                                <a class="btn btn-warning" href="recettes.php">Annuler</a>
                                             </span>
+
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </form>
                     </div>
-
-
                     <!-- Affiche la liste des recettes -->
                     <?php if (empty($recipes)) { //Affiche un message d'erreur?>
                         <p style="text-align : center;">Ancune recette n'a été trouvée.</p>

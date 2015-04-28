@@ -70,12 +70,12 @@ if (isset($_POST['Login'])) {
                         </div>
 
                         <div class="form-group">
-                            <input type="password" id="LoginPassword" name="LoginPassword" class="form-control input-lg" placeholder="Password" >
+                            <input type="password" id="LoginPassword" name="LoginPassword" class="form-control input-lg" placeholder="Mot de passe" >
                         </div>
 
                         <div class="form-group">
                             <button class="btn btn-primary btn-lg btn-block" type="submit" name="Login" id="Login" >Connexion</button>
-                            <p>Pas encore inscris clique <a href="register.php">ici</a><p>
+                            <p>Pas encore inscris clique <a href="inscription.php">ici</a><p>
                         </div>
                     </form>
 

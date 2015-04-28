@@ -152,33 +152,30 @@ function CheckAdmin($idUser) {
  * @param type $search
  * @return type
  */
-function get_recipes($sort, $search) {
+function get_recipes($tri, $recherche, $idUser) {
     $pdo = connectDB();
 
     $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, tuser.UserPseudo '
             . 'FROM trecipe '
             . 'NATURAL JOIN tuser ';
-    
+
     if (!empty($search)) {
-        $query .= 'WHERE trecipe.RecipeTitle REGEXP :search ';
+        $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $recherche;
     }
-    
-    switch ($sort) {
+
+    switch ($tri) {
         case 1: $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
         case 2: $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
         case 3: $query .= ' ';
         case 4: $query .= ' ';
+        case 5:
+            if (!empty($idUser)) { //vérifie si l'iduser n'est pas vide
+                $query .= 'WHERE trecipe.idUser = ' . $idUser;
+            }
     }
 
     $statement = $pdo->prepare($query);
-    
-    if (!empty($search)) {
-        $statement->execute(array(":search" => $search));
-    } else {
-        $statement->execute();
-    }
-
-
+    $statement->execute();
     $statement = $statement->fetchall();
 
     return $statement;

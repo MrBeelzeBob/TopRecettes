@@ -64,12 +64,12 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                         <li class="divider"></li>
                     </ul>
                 </li>
-                <li><a href="logout.php" title="Déconexion" ><img height="15px" alt="Déconnexion" src="glyphicons_free/glyphicons/glyphicons-64-power.png"> </a> </li>
+                <li><a href="deconnexion.php" title="Déconexion" ><img height="15px" alt="Déconnexion" src="glyphicons_free/glyphicons/glyphicons-64-power.png"> </a> </li>
             <?php } ?>
             <?php if (!$connected) { ?>
 
-                <li><a href="login.php">Connexion</a></li>
-                <li><a href="register.php">Inscription</a></li>
+                <li><a href="connexion.php">Connexion</a></li>
+                <li><a href="inscription.php">Inscription</a></li>
             <?php } ?>
         </ul>
     </div>

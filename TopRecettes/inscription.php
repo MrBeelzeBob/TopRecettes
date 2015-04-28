@@ -103,7 +103,7 @@ if (isset($_POST['Register'])) {
 
                             <div class="form-group">
                                 <button class="btn btn-primary btn-lg btn-block" type="submit" name="Register" id="Register" >Inscription</button>
-                                <p>Déjà inscris clique <a href="login.php">ici</a><p>
+                                <p>Déjà inscris clique <a href="connexion.php">ici</a><p>
                             </div>
                     </form>
                 </div>
