@@ -3,12 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/index.php</file>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/register.php</file>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/recettes.php</file>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/script/css/style.css</file>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/liens_menu.php</file>
-            <file>file:/D:/CFPT/EasyPHP/data/localweb/myportablefiles/TPI/TopRecettes/login.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/deconnexion.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/connexion.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/liens_menu.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/inscription.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/recettes.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/script/css/style.css</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/script/php/function.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/script/php/connectDB.php</file>
+            <file>file:/C:/Users/dricc/Desktop/EasyPHP/data/localweb/myportablefiles/TopRecettes/TopRecettes/index.php</file>
         </group>
     </open-files>
 </project-private>

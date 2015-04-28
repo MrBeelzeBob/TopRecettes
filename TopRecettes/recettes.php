@@ -28,6 +28,7 @@ if ((isset($_GET['tri'])) or (isset($_GET['recherche']))) {
         $tri = $_GET['tri'];
     } else {
         $recipes = get_recipes($_GET['tri'], NULL, $idUser);
+        $tri = $_GET['tri'];
     }
 } else {
     $recipes = get_recipes(NULL, NULL, $idUser);
@@ -129,13 +130,11 @@ var_dump_pre($tri);
                             <div class="thumbnail">
                                 <a href="recette.php?id=<?= $recipe['idRecipe']; ?>" class="post-image-link">
                                     <p><img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
-
                                 </a>
-                                <div class="caption">
+                                <div class="caption-full">
                                     <h3><?= $recipe['RecipeTitle']; ?></h3>
                                     <p>Auteur : <?= $recipe['UserPseudo']; ?></p>
                                     <p>Date d'ajout : <?= $recipe['RecipeDate']; ?></p>
-                                    <a href="recette.php?id=<?= $recipe['idRecipe']; ?>" class="btn btn-default">Voir</a>
                                 </div>
                             </div>
                         </div>

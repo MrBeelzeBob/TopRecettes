@@ -57,7 +57,8 @@ footer {
 }
 
 .thumbnail .caption-full {
-    padding: 9px;
+    padding-left: 5px;
+    padding-right: 5px;
     color: #333;
 }
 
