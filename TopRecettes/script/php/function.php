@@ -52,7 +52,6 @@ function MessageErreur($Message) {
  * @return boolean
  */
 function login($UserEmail, $UserPassword) {
-
     $pdo = connectDB();
 
     $query = "SELECT idUser, UserPseudo, UserAdmin FROM tUser WHERE UserEmail = :UserEmail AND UserPassword = :UserPassword ;";
@@ -107,22 +106,26 @@ function register($UserPseudo, $UserEmail, $UserPassword) {
  * @return boolean
  */
 function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
-
-    $pdo = connectDB();
+    try {
+        $pdo = connectDB();
 
 //vérifie si l'email ou le pseudo sont déja utilisé
-    $query = 'SELECT UserPseudo FROM tUser WHERE UserPseudo = :UserPseudo OR UserEmail = :UserEmail ;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":UserPseudo" => $UserPseudo,
-        ":UserEmail" => $UserEmail));
-    $statement = $statement->fetch();
+        $query = 'SELECT UserPseudo FROM tUser WHERE UserPseudo = :UserPseudo OR UserEmail = :UserEmail ;';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":UserPseudo" => $UserPseudo,
+            ":UserEmail" => $UserEmail));
+        $statement = $statement->fetch();
 
 //vérifie si une valeur est récupérée
-    if ($statement) {
-        return true; //existe
-    }
-    if ($statement == false) {
-        return false; //existe pas
+        if ($statement) {
+            return true; //existe
+        }
+        if ($statement == false) {
+            return false; //existe pas
+        }
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
     }
 }
 
@@ -132,18 +135,22 @@ function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
  * @return boolean
  */
 function CheckAdmin($idUser) {
-    $pdo = connectDB();
+    try {
+        $pdo = connectDB();
+        //recupere une valeur pour vérifier si l'utilisateur est admin
+        $query = 'SELECT UserAdmin FROM tUser WHERE idUser = :idUser;';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idUser" => $idUser));
+        $statement = $statement->fetch();
 
-//recupere une valeur pour vérifier si l'utilisateur est admin
-    $query = 'SELECT UserAdmin FROM tUser WHERE idUser = :idUser;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser));
-    $statement = $statement->fetch();
-
-    if ($statement['UserAdmin']) {
-        return true;
+        if ($statement['UserAdmin']) {
+            return true;
+        }
+        return false;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
     }
-    return false;
 }
 
 /**
@@ -153,48 +160,107 @@ function CheckAdmin($idUser) {
  * @return type
  */
 function get_recipes($tri, $recherche, $idUser) {
-    $pdo = connectDB();
+    try {
+        $pdo = connectDB();
 
-    $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, tuser.UserPseudo '
-            . 'FROM trecipe '
-            . 'NATURAL JOIN tuser ';
+        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, tuser.UserPseudo '
+                . 'FROM trecipe '
+                . 'NATURAL JOIN tuser ';
 
-    if (!empty($search)) {
-        $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $recherche;
+        if (!empty($search)) {
+            $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $recherche;
+        }
+
+        switch ($tri) {
+            case 1: $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
+            case 2: $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
+            case 3: $query .= ' ';
+            case 4: $query .= ' ';
+            case 5:
+                if (!empty($idUser)) { //vérifie si l'iduser n'est pas vide
+                    $query .= 'WHERE trecipe.idUser = ' . $idUser;
+                }
+        }
+
+        $statement = $pdo->prepare($query);
+        $statement->execute();
+        $statement = $statement->fetchall();
+
+        return $statement;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
     }
-
-    switch ($tri) {
-        case 1: $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
-        case 2: $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
-        case 3: $query .= ' ';
-        case 4: $query .= ' ';
-        case 5:
-            if (!empty($idUser)) { //vérifie si l'iduser n'est pas vide
-                $query .= 'WHERE trecipe.idUser = ' . $idUser;
-            }
-    }
-
-    $statement = $pdo->prepare($query);
-    $statement->execute();
-    $statement = $statement->fetchall();
-
-    return $statement;
 }
 
+/**
+ * 
+ * @param type $idRecipe
+ */
 function get_recipe($idRecipe) {
-    $pdo = connectDB();
+    try {
+        $pdo = connectDB();
 
-    $query = 'SELECT recipe.idRecipe, recipe.RecipeTitle, recipe.RecipeContenu, recipe.RecipeOrigin, recipe.RecipeImage '
-            . 'FROM trecipe '
-            . 'LEFT JOIN contains ON contains.idRecipe = trecipe.idRecipe '
-            . 'LEFT JOIN';
+        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeContenu, trecipe.RecipeOrigin, '
+                . 'trecipe.RecipeImage, GROUP_CONCAT(tcategory.CategoryName) AS Categories '
+                . 'FROM trecipe '
+                . 'NATURAL JOIN tcategory '
+                . 'WHERE trecipe.idRecipe =  :idRecipe';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idRecipe" => $idRecipe));
+        $statement = $statement->fetch();
+        return $statement;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
+    }
+}
 
-    $query = 'SELECT jeux.idJeu, jeux.nomJeu ,jeux.ImageCouverture, GROUP_CONCAT(categories_jeux.nomCategorie) AS Categories '
-            . 'FROM jeux '
-            . 'LEFT JOIN appartenir_jeu ON appartenir_jeu.idJeu = jeux.idJeu '
-            . 'LEFT JOIN categories_jeux ON categories_jeux.idCategorie = appartenir_jeu.idCategorie '
-            . 'WHERE jeux.nomJeu REGEXP :recherche '
-            . 'GROUP BY jeux.nomJeu';
+/**
+ * 
+ * @param type $idRecipe
+ * @return type
+ */
+function get_ingredients_recipe($idRecipe) {
+    try {
+        $pdo = connectDB();
+
+        $query = 'SELECT contains.ContainsQuantity, contains.ContainsUnit, tingredient.IngredientName '
+                . 'FROM contains '
+                . 'LEFT JOIN tingredient ON tingredient.idIngredient = contains.idIngredient '
+                . 'WHERE contains.idRecipe = :idRecipe';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idRecipe" => $idRecipe));
+        $statement = $statement->fetchAll();
+        return $statement;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
+    }
+}
+
+/**
+ * 
+ * @param type $idRecipe
+ * @return type
+ */
+function get_comments_recipe($idRecipe) {
+    try {
+        $pdo = connectDB();
+
+        $query = 'SELECT comments.idComment, comments.CommentText, tuser.UserPseudo '
+                . 'FROM comments '
+                . 'NATURAL JOIN tuser '
+                . 'WHERE idRecipe = :idRecipe';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idRecipe" => $idRecipe));
+        $statement = $statement->fetchAll();
+
+        return $statement;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
+    }
 }
 
 /**
