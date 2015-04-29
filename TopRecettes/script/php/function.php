@@ -137,7 +137,7 @@ function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
 function CheckAdmin($idUser) {
     try {
         $pdo = connectDB();
-        //recupere une valeur pour vérifier si l'utilisateur est admin
+//recupere une valeur pour vérifier si l'utilisateur est admin
         $query = 'SELECT UserAdmin FROM tUser WHERE idUser = :idUser;';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":idUser" => $idUser));
@@ -264,21 +264,42 @@ function get_comments_recipe($idRecipe) {
     }
 }
 
-function add_comment($idUser, $idRecipe, $Comment) {
+function add_comment($idUser, $idRecipe, $comment) {
     try {
         $pdo = connectDB();
 
         $date = date('Y-m-d H:i:s', time());
-        
-        $query = 'INSERT INTO comments (CommentText, CommentDate, idUser, idRecipe`) VALUES (:CommentText, :CommentDate, :idUser, :idRecipe)';
+
+        $query = 'INSERT INTO comments (CommentText, CommentDate, idUser, idRecipe) VALUES (:CommentText, :CommentDate, :idUser, :idRecipe)';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":idUser" => $idUser,
             ":idRecipe" => $idRecipe,
-            ":CommentText" => $Comment,
+            ":CommentText" => $comment,
             ":CommentDate" => $date));
         $statement = $statement->fetch();
-        
+
         return;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
+    }
+}
+
+/**
+ * 
+ * @param type $idUser
+ * @return type
+ */
+function get_user($idUser) {
+    try {
+        $pdo = connectDB();
+
+        $query = 'SELECT UserEmail, UserPseudo, UserAdmin FROM tuser WHERE idUser = :idUser';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idUser" => $idUser));
+        $statement = $statement->fetch();
+
+        return $statement;
     } catch (Exception $ex) {
         echo 'Une erreur est survenue' . $ex->getMessage();
         return;

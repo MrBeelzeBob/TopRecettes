@@ -1,3 +1,4 @@
+<!doctype html>
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -17,28 +18,31 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
 if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
     $idRecipe = $_GET['id'];
+
+    //Ajoute un nouveau commentaire si envoyé
+    if ($connected) {
+        if (isset($_POST['SubmitComment'])) {
+            if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) {
+                add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment']);
+                header('location: #comments');
+            }
+        }
+    }
+
     //récupere les infos principal de la recette
     $recipe = get_recipe($idRecipe);
+
     //test si le jeu existe
     if ($recipe == FALSE) {
-        //header('location: ./Liste.php?type=consoles');
-        //exit();
-        echo 'vide';
+        header('location: ./recettes.php');
+        exit();
     }
     //récupere les ingrédients qui composent cette recette
     $ingredients = get_ingredients_recipe($idRecipe);
     // récupre les commentaire posté sur cette recette
     $comments = get_comments_recipe($idRecipe);
 
-
-    if ($connected) {
-        if (isset($_POST['SubmitComment'])) {
-            if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) {
-                add_comment($_SESSION['idUser'],$idRecipe, $_POST['UserComment']);
-                
-            }
-        }
-    }
+    var_dump_pre($recipe);
 } else {
 
     //header('location: ./Liste.php?type=consoles');
@@ -46,8 +50,6 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     echo 'erreur id';
 }
 ?>
-
-<!doctype html>
 <html lang="fr">
     <head>
 
@@ -61,7 +63,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-<?php include "liens_menu.php"; ?>    
+            <?php include "liens_menu.php"; ?>    
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Consulter une recette</small></h1>
@@ -88,26 +90,30 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <td>Unité</td>
                             </tr>
                         </thead>
-<?php foreach ($ingredients as $ingredient) { ?>
+                        <?php foreach ($ingredients as $ingredient) { ?>
                             <tr>
                                 <td><?= $ingredient['IngredientName'] ?></td>
                                 <td><?= $ingredient['ContainsQuantity'] ?></td> 
                                 <td><?= $ingredient['ContainsUnit'] ?></td>
                             </tr>
-<?php } ?>
+                        <?php } ?>
                     </table>
                 </div>
 
-                <div class="col-md-8>">
-
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="page-header">
+                        <h2 class="text-center">Réalisation de la recette</h2>
+                    </div>
+                    <p><?= $recipe['RecipeContenu']; ?></p>
                 </div>
-
+            </div>
+            <div class="container contenu">
                 <!-- Commentaires -->
                 <div id="comments" class="comments col-md-10 col-md-offset-1">
                     <div class="page-header">
                         <h2 class="text-center">Commentaires</h2>
                     </div>
-<?php if ($connected) { ?>
+                    <?php if ($connected) { ?>
                         <!-- formulaire d'ajout de commentaire -->
 
                         <form class="form col-md-12 center-block" action="#" method="post">
@@ -118,32 +124,33 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <button class="btn btn-primary btn-block" type="submit" name="SubmitComment" id="SubmitComment" >Commenter</button>
                             </div>
                         </form>
-<?php } ?>
+                    <?php } ?>
 
                     <?php if (empty($comments)) { ?>
                         <div class="col-md-12 breadcrumb">
                             <p class="text-center"> Ancun commentaire</p>
                         </div>
-<?php } ?>
+                    <?php } ?>
                     <?php foreach ($comments as $comment) { ?>
                         <div class="col-md-12 breadcrumb">
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <p>Posté par 
                                     <b><?= $comment['UserPseudo'] ?></b>
                                 </p>
-                            </div>
-                            <div class="col-md-3">
                                 <p>Ajouté le 
-    <?= $comment['CommentDate'] ?>
+                                    <?= $comment['CommentDate'] ?>
                                 </p>
+                                <?php if ($isAdmin) { ?>
+                                    <a href="" >Supprimer</a>
+                                <?php } ?>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-8">
                                 <p>
-    <?= $comment['CommentText'] ?>
+                                    <?= $comment['CommentText'] ?>
                                 </p>
                             </div>
                         </div>
-<?php } ?>
+                    <?php } ?>
 
 
                 </div>

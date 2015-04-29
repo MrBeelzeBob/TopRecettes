@@ -1,3 +1,4 @@
+<!doctype html>
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -54,7 +55,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                         <?= $UserPseudo; ?> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#"><img height="15px" src="glyphicons_free/glyphicons/glyphicons-137-cogwheel.png"> Mon compte</a></li>
+                        <li><a href="gerercompte.php"><img height="15px" src="glyphicons_free/glyphicons/glyphicons-137-cogwheel.png"> Mon compte</a></li>
                         <?php if ($isAdmin) { ?>
                             <li class="divider"></li>
                             <li class="dropdown-header">Administrer</li>

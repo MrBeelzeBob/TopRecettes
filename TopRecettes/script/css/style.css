@@ -30,6 +30,7 @@ footer {
 .contenu {
     box-shadow: 10px 10px 30px #AF5816;
     border-radius: 5px;
+    margin-bottom: 30px
 }
 
 .glyph {
@@ -75,5 +76,8 @@ textarea {
     font-size: 15px;
 }
 
+#form_edit_pwd {
+    display: none;
+}
 
 
