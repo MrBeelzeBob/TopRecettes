@@ -7,6 +7,7 @@ require_once('script/php/function.php');
 $connected = False;
 $UserPseudo = 'Profil';
 
+//test si l'utilisateur est connecté
 if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
 
     $UserPseudo = $_SESSION['UserPseudo'];

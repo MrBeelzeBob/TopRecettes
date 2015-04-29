@@ -248,15 +248,37 @@ function get_comments_recipe($idRecipe) {
     try {
         $pdo = connectDB();
 
-        $query = 'SELECT comments.idComment, comments.CommentText, tuser.UserPseudo '
+        $query = 'SELECT comments.idComment, comments.CommentText, comments.CommentDate, tuser.UserPseudo '
                 . 'FROM comments '
                 . 'NATURAL JOIN tuser '
-                . 'WHERE idRecipe = :idRecipe';
+                . 'WHERE comments.idRecipe = :idRecipe '
+                . 'ORDER BY comments.CommentDate DESC';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":idRecipe" => $idRecipe));
         $statement = $statement->fetchAll();
 
         return $statement;
+    } catch (Exception $ex) {
+        echo 'Une erreur est survenue' . $ex->getMessage();
+        return;
+    }
+}
+
+function add_comment($idUser, $idRecipe, $Comment) {
+    try {
+        $pdo = connectDB();
+
+        $date = date('Y-m-d H:i:s', time());
+        
+        $query = 'INSERT INTO comments (CommentText, CommentDate, idUser, idRecipe`) VALUES (:CommentText, :CommentDate, :idUser, :idRecipe)';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idUser" => $idUser,
+            ":idRecipe" => $idRecipe,
+            ":CommentText" => $Comment,
+            ":CommentDate" => $date));
+        $statement = $statement->fetch();
+        
+        return;
     } catch (Exception $ex) {
         echo 'Une erreur est survenue' . $ex->getMessage();
         return;
