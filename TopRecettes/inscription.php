@@ -38,6 +38,7 @@ if (isset($_POST['Register'])) {
                             //Connecte le nouveau utilisateur
                             login($UserEmail, $UserPassword);
                             header('Location: ./');
+                            exit();
                         }
                     } else {
                         throw new Exception('Le Pseudo ou l\'Email existe est déjà utilisé.');

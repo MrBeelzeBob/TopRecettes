@@ -1,4 +1,3 @@
-<!doctype html>
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -50,6 +49,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     echo 'erreur id';
 }
 ?>
+<!doctype html>
 <html lang="fr">
     <head>
 

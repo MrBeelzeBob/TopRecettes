@@ -22,6 +22,7 @@ if (isset($_POST['Login'])) {
             $log = login($UserEmail, $UserPassword);
             if ($log) {
                 header('Location: ./');
+                exit();
             } else {
                 throw new Exception('L\'email ou le mot de passe ne conrrespond pas.');
             }

@@ -1,4 +1,4 @@
-<!doctype html>
+
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -16,16 +16,18 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
     $connected = TRUE;
 }
 ?>
+<!doctype html>
 
 <div class="container">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" >
             <span class="sr-only">Toggle navigation</span>
-            <img  src="glyphicons_free/glyphicons/glyphicons-115-list.png">
+            <span class="glyphicon glyphicon-list"></span>
         </button>
         <!-- Lien acceuil -->
         <a class="navbar-brand" href="./" title="Acceuil">
-            <img height="25" style="display: inline;" src="glyphicons_free/glyphicons/glyphicons-21-home.png"> TopRecettes
+            
+            <span class="glyphicon glyphicon-home"></span> TopRecettes
         </a>
     </div>
 
@@ -51,22 +53,38 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                 <!-- menu déroulant -->
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> 
-                        <img class="glyph" src="glyphicons_free/glyphicons/glyphicons-4-user.png">
+                         <span class="glyphicon glyphicon-user"></span>
                         <?= $UserPseudo; ?> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="gerercompte.php"><img height="15px" src="glyphicons_free/glyphicons/glyphicons-137-cogwheel.png"> Mon compte</a></li>
+                        <li>
+                            <a href="gerercompte.php">
+                                <span class="glyphicon glyphicon-cog"></span> Mon compte
+                            </a>
+                        </li>
                         <?php if ($isAdmin) { ?>
                             <li class="divider"></li>
                             <li class="dropdown-header">Administrer</li>
-                            <li><a href="#"><img height="15px" src="glyphicons_free/glyphicons/glyphicons-138-cogwheels.png"> Gestion des utilisateurs</a></li>
-                            <li><a href="#"><img height="15px" src="glyphicons_free/glyphicons/glyphicons-138-cogwheels.png"> Gestion des recettes</a></li>
+                            <li>
+                                <a href="gererutilisateur.php">
+                                    <span class="glyphicon glyphicon-cog"></span> Gestion des utilisateurs
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-cog"></span> Gestion des recettes
+                                </a>
+                            </li>
                         <?php } ?>
 
                         <li class="divider"></li>
                     </ul>
                 </li>
-                <li><a href="deconnexion.php" title="Déconexion" ><img height="15px" alt="Déconnexion" src="glyphicons_free/glyphicons/glyphicons-64-power.png"> </a> </li>
+                <li>
+                    <a href="deconnexion.php" title="Déconexion">
+                        <span class="glyphicon glyphicon-off"></span>
+                    </a>
+                </li>
             <?php } ?>
             <?php if (!$connected) { ?>
 
