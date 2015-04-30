@@ -37,13 +37,20 @@ function debug($sObj = NULL) {
  * @param type $Message
  * @return string
  */
-function MessageErreur($Message) {
-    $text = '  <div class="col-sm-6 col-sm-offset-3 alert alert-dismissible alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <p style="text-align: center;">' . $Message . '</p>
-                </div>';
-    return $text;
+function ShowError($Message) {
+    echo ' <div class="col-sm-6 col-sm-offset-3 alert alert-dismissible alert-danger"> ';
+    echo '<button type="button" class="close" data-dismiss="alert">×</button>';
+    echo '<p style="text-align: center;">' . $Message . '</p>';
+    echo '</div>';
 }
+
+function ShowSuccess($Message) {
+    echo ' <div class="col-sm-6 col-sm-offset-3 alert alert-dismissible alert-success"> ';
+    echo '<button type="button" class="close" data-dismiss="alert">×</button>';
+    echo '<p style="text-align: center;">' . $Message . '</p>';
+    echo '</div>';
+}
+
 
 /**
  * 
@@ -78,24 +85,17 @@ function login($UserEmail, $UserPassword) {
  */
 function register($UserPseudo, $UserEmail, $UserPassword) {
 
-//Vérifie si le pseuod ou le mail existe déjà
-    $exist = CheckExist_Pseudo_Email($UserPseudo, $UserEmail);
-
-    if (!$exist) {
-        $pdo = connectDB();
+    $pdo = connectDB();
 
 //insert les données dans la base
-        $query = 'INSERT INTO tUser (UserPseudo, UserEmail, UserPassword) VALUES (:UserPseudo, :UserEmail, :UserPassword);';
-        $statement = $pdo->prepare($query);
-        $statement->execute(array(":UserPseudo" => $UserPseudo,
-            ":UserEmail" => $UserEmail,
-            ":UserPassword" => $UserPassword));
-        $statement = $statement->fetch();
+    $query = 'INSERT INTO tUser (UserPseudo, UserEmail, UserPassword) VALUES (:UserPseudo, :UserEmail, :UserPassword);';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":UserPseudo" => $UserPseudo,
+        ":UserEmail" => $UserEmail,
+        ":UserPassword" => $UserPassword));
+    $statement = $statement->fetch();
 
-        return true;
-    } else {
-        return false;
-    }
+    return true;
 }
 
 /**
@@ -124,16 +124,11 @@ function CheckExist_Pseudo_Email($UserPseudo, $UserEmail) {
             return false; //existe pas
         }
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $idUser
- * @return boolean
- */
 function CheckAdmin($idUser) {
     try {
         $pdo = connectDB();
@@ -148,18 +143,12 @@ function CheckAdmin($idUser) {
         }
         return false;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $trie
- * @param type $search
- * @return type
- */
-function get_recipes($tri, $recherche, $idUser) {
+function get_recipes($sort, $search, $idUser) {
     try {
         $pdo = connectDB();
 
@@ -168,10 +157,10 @@ function get_recipes($tri, $recherche, $idUser) {
                 . 'NATURAL JOIN tuser ';
 
         if (!empty($search)) {
-            $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $recherche;
+            $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $search;
         }
 
-        switch ($tri) {
+        switch ($sort) {
             case 1: $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
             case 2: $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
             case 3: $query .= ' ';
@@ -188,15 +177,11 @@ function get_recipes($tri, $recherche, $idUser) {
 
         return $statement;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $idRecipe
- */
 function get_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -211,16 +196,11 @@ function get_recipe($idRecipe) {
         $statement = $statement->fetch();
         return $statement;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $idRecipe
- * @return type
- */
 function get_ingredients_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -234,16 +214,11 @@ function get_ingredients_recipe($idRecipe) {
         $statement = $statement->fetchAll();
         return $statement;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $idRecipe
- * @return type
- */
 function get_comments_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -259,7 +234,7 @@ function get_comments_recipe($idRecipe) {
 
         return $statement;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
@@ -280,16 +255,11 @@ function add_comment($idUser, $idRecipe, $comment) {
 
         return;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
     }
 }
 
-/**
- * 
- * @param type $idUser
- * @return type
- */
 function get_user($idUser) {
     try {
         $pdo = connectDB();
@@ -301,8 +271,46 @@ function get_user($idUser) {
 
         return $statement;
     } catch (Exception $ex) {
-        echo 'Une erreur est survenue' . $ex->getMessage();
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return;
+    }
+}
+
+function check_password($idUser, $password) {
+    try {
+        $pdo = connectDB();
+
+        $query = 'SELECT UserPassword FROM tuser WHERE idUser = :idUser';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idUser" => $idUser));
+        $statement = $statement->fetch();
+
+        if ($statement['UserPassword'] == $password) {
+            return true;
+        }
+
+        return false;
+    } catch (Exception $ex) {
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
+        return;
+    }
+}
+
+function edit_password($idUser, $NewPassword) {
+    try {
+
+        $pdo = connectDB();
+
+        $query = 'UPDATE tuser SET UserPassword = :UserPassword WHERE idUser = :idUser;';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idUser" => $idUser,
+            ":UserPassword" => $NewPassword));
+        $statement = $statement->fetch();
+
+        return true;
+    } catch (Exception $ex) {
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
+        return false;
     }
 }
 

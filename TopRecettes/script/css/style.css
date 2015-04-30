@@ -81,3 +81,12 @@ textarea {
 }
 
 
+.has-success [placeholder] {
+   background-color: green;
+}
+
+.has-error [placeholder] {
+    background-color: red;
+}
+
+ 

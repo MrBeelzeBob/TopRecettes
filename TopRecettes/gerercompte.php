@@ -6,35 +6,60 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once('./script/php/function.php');
 
-//test si l'utilisateur est connecté
+
 //test si l'utilisateur est connecté
 if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
 
-    if (isset($_POST['EditUser'])) {
-        if ((isset($_POST['ActualPassword'])) AND ( isset($_POST['EditNewPwd'])) AND ( isset($_POST['EditNewPwdConfirm']))) {
-            echo 'caca';
-        }
-    }
     //test si admin
-    if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
+    if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
         if ($isAdmin) {
-            $user = get_user($_GET['id']);
+            $idUser = $_GET['id'];
+            $user = get_user($idUser);
         }
     }
 
-    //test si user
+    //test si l'utilisateur est connecté
     if ($connected) {
-        $user = get_user($_SESSION['idUser']);
+        $idUser = $_SESSION['idUser'];
+        $user = get_user($idUser);
+    }
+
+    //test si une modification de l'utilisateur est reçu
+    if (isset($_POST['EditUser'])) {
+        if ((isset($_POST['CurrentPassword'])) AND ( isset($_POST['EditNewPwd'])) AND ( isset($_POST['EditNewPwdConfirm']))) {
+            try {
+                //verifie que le nouveau mdp et la confirmation du nouveau mdp sont pareil
+                $pwd = md5($_POST['EditNewPwd']);
+                $confirmPwd = md5($_POST['EditNewPwdConfirm']);
+                if ($pwd == $confirmPwd) {
+                    //Véréfie le mot de passe actuel
+                    $PasswordCorrect = check_password($idUser, md5($_POST['CurrentPassword']));
+                    if ($PasswordCorrect) {
+                        $PasswordChanged = edit_password($idUser, $pwd);
+                        if ($PasswordChanged) {
+                            ShowSuccess('Le mot de passe a été correctement modifié');
+                        }
+                    } else {
+                        throw new Exception('Le mot de passe est incorrect.');
+                    }
+                } else {
+                    throw new Exception('Les nouveaux mot de passe ne correspondent pas.');
+                }
+            } catch (Exception $ex) {
+                ShowError('Une erreur est survenue' . $ex->getMessage());
+            }
+        }
     }
 } else {
     header('Location: ./');
 }
 
-var_dump_pre($user);
-var_dump_pre($isAdmin);
-var_dump_pre($connected);
+/* var_dump_pre($user);
+  var_dump_pre($isAdmin);
+  var_dump_pre($connected);
+  var_dump_pre($idUser); */
 ?>
 
 
@@ -42,27 +67,24 @@ var_dump_pre($connected);
     <head>
 
         <meta charset="utf-8">
-        <title>Mon Compte </title>      
+        <title>Gestion de compte </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
-
         <link href="script/css/style.css" rel="stylesheet">
-
     </head>
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-<?php include "liens_menu.php"; ?>    
+            <?php include "liens_menu.php"; ?>    
         </nav>
         <header class="container page-header">
-            <h1>TopRecettes <small>Mon Compte</small></h1>
+            <h1>TopRecettes <small>Gestion de compte</small></h1>
         </header>
 
         <section>
             <div class="container contenu">
-
                 <div class="col-sm-6 col-sm-offset-3">
                     <div class="page-header">
-                        <h2>Mes informations</h2>
+                        <h2>Informations de l'utilisateur</h2>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
@@ -118,14 +140,14 @@ var_dump_pre($connected);
                         <!-- Formulaire de modification de mot de passe -->
                         <form class="form col-md-12 center-block" action="#" method="post">
                             <div class="form-group">
-                                <input type="password" name="ActualPassword" id="ActualPassword" class="form-control" placeholder="Mot de passe actuel" required="">
+                                <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Mot de passe actuel" required="">
                             </div>
 
-                            <div class="form-group">
+                            <div id="inputPwd" class="form-group">
                                 <input type="password" name="EditNewPwd" id="EditNewPwd" class="form-control" placeholder="Nouveau mot de passe" required="">
                             </div>
 
-                            <div class="form-group">
+                            <div id="inputPwdConfirm" class="form-group">
                                 <input type="password" name="EditNewPwdConfirm" id="EditNewPwdConfirm" class="form-control" placeholder="Confirmation du nouveau mot de passe" required="">
                             </div>
 
@@ -133,9 +155,12 @@ var_dump_pre($connected);
                                 <button class="btn btn-primary btn-block" type="reset" onclick="Hide_form_edit_pwd();">Annuler</button>
                             </div>
                             <div class="form-group col-md-6">
-                                <button class="btn btn-primary btn-block" type="submit" name="EditUser" id="EditUser" >Modifier</button>
+                                <button class="btn btn-primary btn-block" type="submit" name="EditUser" id="btn-submit" >Modifier</button>
                             </div>
+
+
                         </form>
+                        <div id="message"></div>
                     </div>
                 </span>
             </div>
@@ -147,9 +172,22 @@ var_dump_pre($connected);
             </p>
         </footer>
 
-        <script src="script/js/custom.js"></script>
+
         <script src="script/js/jquery.js"></script>
         <script src="script/js/bootstrap.min.js"></script>
+        <script src="script/js/custom.js"></script>
+        <script>
+                                    $(document).ready(function () {
+                                        $("#EditNewPwd").keyup(function () {
+                                            checkPasswordMatch($("#EditNewPwd").val(), $("#EditNewPwdConfirm").val());
+                                        }
+                                        );
+                                        $("#EditNewPwdConfirm").keyup(function () {
+                                            checkPasswordMatch($("#EditNewPwd").val(), $("#EditNewPwdConfirm").val());
+                                        }
+                                        );
+                                    });
+        </script>
 
     </body>
 </html>
