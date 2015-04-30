@@ -9,9 +9,9 @@ $connected = False;
 $UserPseudo = 'Profil';
 
 //test si l'utilisateur est connecté
-if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
+if (isset($_SESSION['idUser'])) {
 
-    $UserPseudo = $_SESSION['UserPseudo'];
+    $UserPseudo = get_user_pseudo($_SESSION['idUser'])['UserPseudo'];
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
 }
@@ -26,7 +26,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
         </button>
         <!-- Lien acceuil -->
         <a class="navbar-brand" href="./" title="Acceuil">
-            
+
             <span class="glyphicon glyphicon-home"></span> TopRecettes
         </a>
     </div>
@@ -53,7 +53,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                 <!-- menu déroulant -->
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> 
-                         <span class="glyphicon glyphicon-user"></span>
+                        <span class="glyphicon glyphicon-user"></span>
                         <?= $UserPseudo; ?> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">

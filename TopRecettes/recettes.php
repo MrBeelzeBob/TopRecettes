@@ -20,9 +20,9 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
 
 //test les parametre dans l'url 
 if ((isset($_GET['tri'])) or (isset($_GET['recherche']))) {
-    
+
     if ((isset($_GET['recherche'])) AND (!empty($_GET['recherche']))) {
-        
+
         $recipes = get_recipes($_GET['tri'], $_GET['recherche'], $idUser);
         $search = $_GET['recherche'];
         $tri = $_GET['tri'];
@@ -86,10 +86,10 @@ var_dump_pre($tri);
                                                 <option value="2">Plus anciennes</option>
                                                 <option value="3">Meilleures notes</option>
                                                 <option value="4">Moins bonne notes</option>
-                                                <?php if($connected) { ?>
+                                                <?php if ($connected) { ?>
                                                     <option value="5">Mes recettes</option>
                                                 <?php } ?>
-                                                
+
                                             </select>
                                             <span class="input-group-btn">
                                                 <button type="submit" class="btn btn-default">
@@ -133,7 +133,16 @@ var_dump_pre($tri);
                                 </a>
                                 <div class="caption-full">
                                     <h3><?= $recipe['RecipeTitle']; ?></h3>
-                                    <p>Auteur : <?= $recipe['UserPseudo']; ?></p>
+                                    <p>Auteur : 
+                                        <?php
+                                        if (!$recipe['idUser']) {
+                                            echo 'Utilisateur supprimé';
+                                        } else {
+                                            $pseudo = get_user_pseudo($recipe['idUser']);
+                                            echo $pseudo['UserPseudo'];
+                                        }
+                                        ?>
+                                    </p>
                                     <p>Date d'ajout : <?= $recipe['RecipeDate']; ?></p>
                                 </div>
                             </div>

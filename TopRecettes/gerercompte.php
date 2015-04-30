@@ -4,12 +4,14 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once('./script/php/function.php');
+require_once ('./script/php/outilsFormulaire.php');
 $Admin_Modif = false;
 
 //test si l'utilisateur est connecté
 if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
+    $TypeUser = array("0" => "Utilisateur", "1" => "Administrateur");
 
     if ((isset($_GET['id'])) AND (!empty($_GET['id']))) { //check si id en parametre
         try {
@@ -19,20 +21,25 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                 $Admin_Modif = TRUE; //Autorise la modif d'utilisateur
                 if ($user) {
                     if (isset($_POST['DeleteUser'])) {
-                        if ()
-                        $idUser_ToDelete = $_POST['idUser_toDlete'];
+                        if (isset($_POST['idUser_toDlete'])) {
+                            $idUser_ToDelete = $_POST['idUser_toDlete'];
+                            delete_user($idUser_ToDelete);
+                            delete_link_user_recipes($idUser);
+                            delete_link_user_comments($idUser);
+                        } else {
+                            throw new Exception('L\'identifiant de l\'utilisateur est manquant');
+                        }
                     }
 
                     if (isset($_POST['AdminEditUser'])) { //Formulaire de modification de l'utilisateur (pseudo, email , nouveau mot de pass)
                         //check pseudo et email
-                        if ((isset($_POST['AdminEditPseudo'])) AND (isset($_POST['AdminEditEmail'])) 
-                                AND (!empty($_POST['AdminEditPseudo'])) AND (!empty($_POST['AdminEditEmail']))) {
+                        if ((isset($_POST['AdminEditPseudo'])) AND (isset($_POST['AdminEditEmail'])) AND (!empty($_POST['AdminEditPseudo'])) AND (!empty($_POST['AdminEditEmail']))) {
                             $NewPseudo = $_POST['AdminEditPseudo'];
                             $NewEmail = $_POST['AdminEditEmail'];
                             if ($NewPseudo != $user['UserPseudo']) { //test si le pseudo est modifié
                                 $existPseudo = CheckExist_Pseudo($NewPseudo);
                                 if (!$existPseudo) {//test si le pseudo est existe deja
-                                    edit_user($NewPseudo, NULL, $idUser); //modifie le pseudo
+                                    //edit_user($NewPseudo, NULL, $idUser); //modifie le pseudo
                                     ShowSuccess('Le pseudo a été correctement modifié.');
                                 } else {
                                     throw new Exception('Le pseudo est déjà utilisé. Aucune modification n\'a été éffectuée');
@@ -41,11 +48,15 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                             if ($NewEmail != $user['UserEmail']) {//test si l'email est modifié
                                 $existEmail = CheckExist_Email($NewEmail);
                                 if (!$existEmail) { //test si lemail est existe deja
-                                    edit_user(NULL, $NewEmail, $idUser); //modifie l' email
+                                    //edit_user(NULL, $NewEmail, $idUser); //modifie l' email
                                     ShowSuccess('L\'email a été correctement modifié.');
                                 } else {
                                     throw new Exception('L\'email est déjà utilisé. Aucune modification n\'a été éffectuée');
                                 }
+                            }
+                            if ((isset($_POST['AdminEditTypeUser'])) AND  (!empty($_POST['AdminEditTypeUser']))){
+                                echo 'ma bite';
+                                
                             }
                         } else {
                             throw new Exception('Merci de remplir le formulaire correctement. Ne modifier pas ce que vous ne voulez pas modifier.');
@@ -65,7 +76,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                         }//end check password
                     } //end check modif de l'utilisateur 
                 } else {
-                    throw new Exception('Cette utilisateur n\'éxiste pas');
+                    throw new Exception('Cet utilisateur n\'éxiste pas');
                 }
                 $user = get_user($idUser); //recupere les information de l'utilisateur dont l'id est en parametre
             } else {
@@ -94,7 +105,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                     //Véréfie le mot de passe actuel
                     $PasswordCorrect = check_password($idUser, md5($_POST['CurrentPassword']));
                     if ($PasswordCorrect) {
-                        $PasswordChanged = edit_password($idUser, $pwd);
+                        $PasswordChanged = edit_user_password($idUser, $pwd);
                         if ($PasswordChanged) {
                             ShowSuccess('Le mot de passe a été correctement modifié.');
                         }
@@ -138,8 +149,8 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
         <section>
             <div class="container contenu">
                 <ul class="nav nav-tabs">
-
-                    <?php if ($Admin_Modif) { ?>
+                    <!-- Affichage des onglet -->
+                    <?php if ($Admin_Modif) { //Modification d'un user par l'admin ?>
                         <li class="active"><a href="#infos" data-toggle="tab" aria-expanded="false">Informations de l'utilisateur</a></li>
                         <li class=""><a href="#FormEditUser" data-toggle="tab" aria-expanded="false">Modifier l'utilisateur</a></li>
                     <?php } else { ?>
@@ -269,11 +280,17 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                                         <input type="password" name="AdminEditNewPwdConfirm" id="EditNewPwdConfirm" class="form-control" placeholder="Confirmation du nouveau mot de passe" >
                                     </div>
 
+                                    <div class="form-group">
+                                        <?php
+                                        echo Select('AdminEditTypeUser', $TypeUser, $user['UserAdmin']);
+                                        ?>
+                                    </div>
+
                                     <div class="form-group col-md-6">
                                         <button class="btn btn-primary btn-block" type="reset" >Annuler</button>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <button class="btn btn-primary btn-block" type="submit" name="AdminEditUser" id="btn-submit" >Modifier</button>
+                                        <button class="btn btn-primary btn-block" type="submit" name="AdminEditUser" id="btn-submit">Modifier</button>
                                     </div>
                                 </form>
                             </div>

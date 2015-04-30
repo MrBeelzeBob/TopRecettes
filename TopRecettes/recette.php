@@ -41,7 +41,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     // récupre les commentaire posté sur cette recette
     $comments = get_comments_recipe($idRecipe);
 
-    var_dump_pre($recipe);
+   // var_dump_pre($comments);
 } else {
 
     //header('location: ./Liste.php?type=consoles');
@@ -135,7 +135,15 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                         <div class="col-md-12 breadcrumb">
                             <div class="col-md-4">
                                 <p>Posté par 
-                                    <b><?= $comment['UserPseudo'] ?></b>
+                                    <b>
+                                        <?php
+                                        if (!$comment['idUser']) {
+                                            echo 'Utilisateur supprimé';
+                                        } else {
+                                            $pseudo = get_user_pseudo($comment['idUser']);
+                                            echo $pseudo['UserPseudo'];
+                                        }
+                                        ?></b>
                                 </p>
                                 <p>Ajouté le 
                                     <?= $comment['CommentDate'] ?>
