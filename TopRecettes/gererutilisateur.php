@@ -81,9 +81,6 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                                 ?>
                             </td>
                             <td>
-                                <a href="#" title="Sipprimer"> 
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                </a>
                                 <a href="gerercompte.php?id=<?= $user['idUser'] ?>" title="Modifier"> 
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a>

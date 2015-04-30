@@ -15,37 +15,59 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
         try {
             if ($isAdmin) { //test si admin
                 $idUser = $_GET['id'];
-                $user = get_user($idUser);
+                $user = get_user($idUser); //recupere les information de l'utilisateur dont l'id est en parametre
                 $Admin_Modif = TRUE; //Autorise la modif d'utilisateur
+                if ($user) {
+                    if (isset($_POST['DeleteUser'])) {
+                        if ()
+                        $idUser_ToDelete = $_POST['idUser_toDlete'];
+                    }
 
-                if (isset($_POST['AdminEditUser'])) { //Formulaire modif utilisateur
-                    //check pseudo et email
-                    if ((!empty($_POST['AdminEditPseudo'])) AND (!empty($_POST['AdminEditEmail']))) {
-                        $exist = CheckExist_Pseudo_Email($_POST['AdminEditPseudo'], $_POST['AdminEditEmail']);
-                        if (!$exist) {
-                            if ((!empty($_POST['AdminEditNewPwd'])) AND (!empty($_POST['AdminEditNewPwdConfirm']))) { //check modif password
-                                $pwd = md5($_POST['AdminEditNewPwd']);
-                                $confirmPwd = md5($_POST['AdminEditNewPwdConfirm']);
-                                if ($pwd == $confirmPwd) { //check password identique
-                                    edit_user(md5($_POST['AdminEditPseudo']), md5($_POST['AdminEditEmail']), $idUser);  //modifie l'utilisateur
-                                    $PasswordChanged = edit_password($idUser, $pwd);
-                                    if ($PasswordChanged) {
-                                        ShowSuccess('Le mot de passe a été correctement modifié');
-                                    }
-                                    ShowSuccess('L\'utilisateur a été correctement modifié');
+                    if (isset($_POST['AdminEditUser'])) { //Formulaire de modification de l'utilisateur (pseudo, email , nouveau mot de pass)
+                        //check pseudo et email
+                        if ((isset($_POST['AdminEditPseudo'])) AND (isset($_POST['AdminEditEmail'])) 
+                                AND (!empty($_POST['AdminEditPseudo'])) AND (!empty($_POST['AdminEditEmail']))) {
+                            $NewPseudo = $_POST['AdminEditPseudo'];
+                            $NewEmail = $_POST['AdminEditEmail'];
+                            if ($NewPseudo != $user['UserPseudo']) { //test si le pseudo est modifié
+                                $existPseudo = CheckExist_Pseudo($NewPseudo);
+                                if (!$existPseudo) {//test si le pseudo est existe deja
+                                    edit_user($NewPseudo, NULL, $idUser); //modifie le pseudo
+                                    ShowSuccess('Le pseudo a été correctement modifié.');
                                 } else {
-                                    throw new Exception('Mot de passe mal confirmé');
+                                    throw new Exception('Le pseudo est déjà utilisé. Aucune modification n\'a été éffectuée');
                                 }
-                            } else {
-                                //edit_user($_POST['AdminEditPseudo'], $_POST['AdminEditEmail']);  //modifie uniquement l'utilisateur
+                            }
+                            if ($NewEmail != $user['UserEmail']) {//test si l'email est modifié
+                                $existEmail = CheckExist_Email($NewEmail);
+                                if (!$existEmail) { //test si lemail est existe deja
+                                    edit_user(NULL, $NewEmail, $idUser); //modifie l' email
+                                    ShowSuccess('L\'email a été correctement modifié.');
+                                } else {
+                                    throw new Exception('L\'email est déjà utilisé. Aucune modification n\'a été éffectuée');
+                                }
                             }
                         } else {
-                            throw new Exception('Le Pseudo ou l\'Email existe est déjà utilisé.');
+                            throw new Exception('Merci de remplir le formulaire correctement. Ne modifier pas ce que vous ne voulez pas modifier.');
                         }
-                    } else {
-                        throw new Exception('Merci de remplir le formulaire correctement');
-                    }
+                        // test si demande de changer le mot de pass
+                        if ((!empty($_POST['AdminEditNewPwd'])) AND (!empty($_POST['AdminEditNewPwdConfirm']))) { //check l'admin a modifier lepassword (pas obligatoire)
+                            $pwd = md5($_POST['AdminEditNewPwd']);
+                            $confirmPwd = md5($_POST['AdminEditNewPwdConfirm']);
+                            if ($pwd == $confirmPwd) { //check si les password sont identique
+                                $PasswordChanged = edit_user_password($idUser, $pwd); //change le mot de asse
+                                if ($PasswordChanged) {
+                                    ShowSuccess('Le mot de passe à été  modifié');
+                                }
+                            } else {
+                                throw new Exception('Mot de passe mal confirmé');
+                            }
+                        }//end check password
+                    } //end check modif de l'utilisateur 
+                } else {
+                    throw new Exception('Cette utilisateur n\'éxiste pas');
                 }
+                $user = get_user($idUser); //recupere les information de l'utilisateur dont l'id est en parametre
             } else {
                 throw new Exception('Vous devez être administrateur pour modifier cette utilisateur');
             }
@@ -55,45 +77,44 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
     }
 
     //test si l'utilisateur est connecté
-    if ((!$Admin_Modif) AND($connected)) {
+    if ((!$Admin_Modif) AND ($connected)) {
         $idUser = $_SESSION['idUser'];
         $user = get_user($idUser);
     }
 
     //test si modification de mot de passe
     if (isset($_POST['EditUser'])) {
-        if ((isset($_POST['CurrentPassword'])) AND ( isset($_POST['EditNewPwd'])) AND ( isset($_POST['EditNewPwdConfirm']))) {
-            //verifie que le nouveau mdp et la confirmation du nouveau mdp sont pareil
-            $pwd = md5($_POST['EditNewPwd']);
-            $confirmPwd = md5($_POST['EditNewPwdConfirm']);
-            if ($pwd == $confirmPwd) {
-                //Véréfie le mot de passe actuel
-                $PasswordCorrect = check_password($idUser, md5($_POST['CurrentPassword']));
-                if ($PasswordCorrect) {
-                    $PasswordChanged = edit_password($idUser, $pwd);
-                    if ($PasswordChanged) {
-                        ShowSuccess('Le mot de passe a été correctement modifié');
+
+        try {
+            if ((isset($_POST['CurrentPassword'])) AND ( isset($_POST['EditNewPwd'])) AND ( isset($_POST['EditNewPwdConfirm']))) {
+                //verifie que le nouveau mdp et la confirmation du nouveau mdp sont pareil
+                $pwd = md5($_POST['EditNewPwd']);
+                $confirmPwd = md5($_POST['EditNewPwdConfirm']);
+                if ($pwd == $confirmPwd) {
+                    //Véréfie le mot de passe actuel
+                    $PasswordCorrect = check_password($idUser, md5($_POST['CurrentPassword']));
+                    if ($PasswordCorrect) {
+                        $PasswordChanged = edit_password($idUser, $pwd);
+                        if ($PasswordChanged) {
+                            ShowSuccess('Le mot de passe a été correctement modifié.');
+                        }
+                    } else {
+                        throw new Exception('Le mot de passe est incorrect.');
                     }
                 } else {
-                    throw new Exception('Le mot de passe est incorrect.');
+                    throw new Exception('Mot de passe mal confirmé.');
                 }
             } else {
-                throw new Exception('Mot de passe mal confirmé.');
+                throw new Exception('Merci de remplir le formulaire correctement.');
             }
-        } else {
-            throw new Exception('Merci de remplir le formulaire correctement');
+        } catch (Exception $ex) {
+            
         }
     }
 } else {
     header('Location: ./');
     exit();
 }
-
-
-/* var_dump_pre($user);
-  var_dump_pre($isAdmin);
-  var_dump_pre($connected);
-  var_dump_pre($idUser); */
 ?>
 
 <!doctype html>
@@ -117,11 +138,13 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
         <section>
             <div class="container contenu">
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#infos" data-toggle="tab" aria-expanded="false">Information de l'utilisateur</a></li>
+
                     <?php if ($Admin_Modif) { ?>
+                        <li class="active"><a href="#infos" data-toggle="tab" aria-expanded="false">Informations de l'utilisateur</a></li>
                         <li class=""><a href="#FormEditUser" data-toggle="tab" aria-expanded="false">Modifier l'utilisateur</a></li>
                     <?php } else { ?>
-                        <li class=""><a href="#FormEditPwd" data-toggle="tab" aria-expanded="false">Modifier le mot de passe</a></li>
+                        <li class="active"><a href="#infos" data-toggle="tab" aria-expanded="false">Mes Informations</a></li>
+                        <li class=""><a href="#FormEditPwd" data-toggle="tab" aria-expanded="false">Modifier mon mot de passe</a></li>
                     <?php } ?>
                 </ul>
 
@@ -131,7 +154,13 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                     <div class="tab-pane fade active in" id="infos">
                         <div class="col-sm-6 col-sm-offset-3">
                             <div class="page-header">
-                                <h2>Informations de l'utilisateur</h2>
+                                <h2>
+                                    <?php if ($Admin_Modif) { ?>
+                                        Informations de l'utilisateur
+                                    <?php } else { ?>
+                                        Mes Informations
+                                    <?php } ?>
+                                </h2>
                             </div>
                             <div class="row">
                                 <div class="col-sm-4">
@@ -167,6 +196,17 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                                 </div>
                             </div>
                             <br>
+                            <?php if ($Admin_Modif) { ?>
+                                <form class="form col-sm-12 center-block" action="#" method="post">
+                                    <div class="form-group col-xs-3">
+                                        <input type="hidden" name="idUser_toDlete" value="<?= $idUser ?>">
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <button class="btn btn-primary btn-block" type="submit" name="DeleteUser" >Supprimer</button>
+                                    </div>
+                                </form>    
+                            <?php } ?>
+
                         </div>
                     </div>
                     <!-- Onglet de modification du mot de passe -->
@@ -174,7 +214,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
                         <div class="tab-pane fade" id="FormEditPwd">
                             <div class="col-sm-6 col-sm-offset-3">
                                 <div class="page-header">
-                                    <h2>Modifier le mot de passe</h2>
+                                    <h2>Modifier mon mot de passe</h2>
                                 </div>
 
                                 <!-- Formulaire de modification de mot de passe -->
@@ -256,7 +296,16 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
         <script src="script/js/bootstrap.min.js"></script>
         <script src="script/js/custom.js"></script>
         <script>
-
+            $(document).ready(function() {
+                $("#EditNewPwd").keyup(function() {
+                    checkPasswordMatch($("#EditNewPwd").val(), $("#RegisterConfirm").val());
+                }
+                );
+                $("#EditNewPwdConfirm").keyup(function() {
+                    checkPasswordMatch($("#EditNewPwd").val(), $("#EditNewPwdConfirm").val());
+                }
+                );
+            });
         </script>
 
     </body>

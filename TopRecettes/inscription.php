@@ -14,8 +14,7 @@ if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
 $erreur = false;
 
 if (isset($_POST['Register'])) {
-    if ((isset($_POST['RegisterEmail'])) AND ( isset($_POST['RegisterPseudo']))
-            AND ( isset($_POST['RegisterPassword'])) AND ( isset($_POST['RegisterConfirm']))) {
+    if ((isset($_POST['RegisterEmail'])) AND ( isset($_POST['RegisterPseudo'])) AND ( isset($_POST['RegisterPassword'])) AND ( isset($_POST['RegisterConfirm']))) {
         //
 
         $UserPseudo = $_POST['RegisterPseudo'];
@@ -31,17 +30,22 @@ if (isset($_POST['Register'])) {
                 if ($UserPassword == $UserConfirm) {
 
                     //Vérifie si le pseuod ou le mail est deja utilisé
-                    $exist = CheckExist_Pseudo_Email($UserPseudo, $UserEmail);
-                    if (!$exist) {
-                        $log = register($UserPseudo, $UserEmail, $UserPassword);
-                        if ($log) {
-                            //Connecte le nouveau utilisateur
-                            login($UserEmail, $UserPassword);
-                            header('Location: ./');
-                            exit();
+                    $existPseudo = CheckExist_Pseudo($UserPseudo);
+                    if (!$existPseudo) {
+                        $existEmail = CheckExist_Email($UserEmail);
+                        if (!$existEmail) {
+                            $log = register($UserPseudo, $UserEmail, $UserPassword);
+                            if ($log) {
+                                //Connecte le nouveau utilisateur
+                                login($UserEmail, $UserPassword);
+                                header('Location: ./');
+                                exit();
+                            }
+                        } else {
+                            throw new Exception('L\'email est déjà utilisé.');
                         }
                     } else {
-                        throw new Exception('Le Pseudo ou l\'Email existe est déjà utilisé.');
+                        throw new Exception('Le Pseudo est déjà utilisé.');
                     }
                 } else {
                     throw new Exception('Mot de passe mal confirmé');
@@ -118,12 +122,12 @@ if (isset($_POST['Register'])) {
         <script src="script/js/bootstrap.min.js"></script>
         <script src="script/js/custom.js"></script>
         <script>
-            $(document).ready(function () {
-                $("#RegisterPassword").keyup(function () {
+            $(document).ready(function() {
+                $("#RegisterPassword").keyup(function() {
                     checkPasswordMatch($("#RegisterPassword").val(), $("#RegisterConfirm").val());
                 }
                 );
-                $("#RegisterConfirm").keyup(function () {
+                $("#RegisterConfirm").keyup(function() {
                     checkPasswordMatch($("#RegisterPassword").val(), $("#RegisterConfirm").val());
                 }
                 );
