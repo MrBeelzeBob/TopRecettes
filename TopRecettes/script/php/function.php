@@ -134,6 +134,11 @@ function CheckExist_Email($UserEmail) {
     }
 }
 
+/**
+ * 
+ * @param type $idUser
+ * @return boolean
+ */
 function CheckAdmin($idUser) {
     try {
         $pdo = connectDB();
@@ -152,6 +157,13 @@ function CheckAdmin($idUser) {
     }
 }
 
+/**
+ * 
+ * @param type $sort
+ * @param type $search
+ * @param type $idUser
+ * @return type
+ */
 function get_recipes($sort, $search, $idUser) {
     try {
         $pdo = connectDB();
@@ -183,6 +195,11 @@ function get_recipes($sort, $search, $idUser) {
     }
 }
 
+/**
+ * 
+ * @param type $idRecipe
+ * @return type
+ */
 function get_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -201,26 +218,38 @@ function get_recipe($idRecipe) {
     }
 }
 
+/**
+ * 
+ * @return type
+ */
 function get_ingredients() {
     $pdo = connectDB();
     $query = 'SELECT * FROM tingredient';
     $statement = $pdo->prepare($query);
-    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement->execute();
     $statement = $statement->fetchAll();
     return $statement;
 }
 
-
+/**
+ * 
+ * @return type
+ */
 function ingredients_associate(){
     //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_ingredients();
-    $table_associate = array('' => 'non defini');
+    //$table_associate = array('' => 'non defini');
     foreach ($table as $ingredient) {
         $table_associate[$ingredient['idIngredient']] = $ingredient['IngredientName'];
     }
     return $table_associate;
 }
 
+/**
+ * 
+ * @param type $idRecipe
+ * @return type
+ */
 function get_ingredients_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -238,6 +267,11 @@ function get_ingredients_recipe($idRecipe) {
     }
 }
 
+/**
+ * 
+ * @param type $idRecipe
+ * @return type
+ */
 function get_comments_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -255,6 +289,32 @@ function get_comments_recipe($idRecipe) {
     }
 }
 
+function get_recipe_types() {
+    $pdo = connectDB();
+    $query = 'SELECT * FROM tcategory';
+    $statement = $pdo->prepare($query);
+    $statement->execute();
+    $statement = $statement->fetchAll();
+    return $statement;
+}
+
+function recipe_types_associate(){
+    //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
+    $table = get_recipe_types();
+    $table_associate = array('' => 'Type de plat');
+    foreach ($table as $type) {
+        $table_associate[$type['idCategory']] = $type['CategoryName'];
+    }
+    return $table_associate;
+}
+
+/**
+ * 
+ * @param type $idUser
+ * @param type $idRecipe
+ * @param type $comment
+ * @return type
+ */
 function add_comment($idUser, $idRecipe, $comment) {
     try {
         $pdo = connectDB();
@@ -273,6 +333,10 @@ function add_comment($idUser, $idRecipe, $comment) {
     }
 }
 
+/**
+ * 
+ * @return type
+ */
 function get_users() {
     try {
         $pdo = connectDB();
@@ -288,6 +352,11 @@ function get_users() {
     }
 }
 
+/**
+ * 
+ * @param type $idUser
+ * @return type
+ */
 function get_user($idUser) {
     try {
         $pdo = connectDB();
@@ -318,6 +387,12 @@ function get_user_pseudo($idUser) {
     return $statement;
 }
 
+/**
+ * 
+ * @param type $idUser
+ * @param type $password
+ * @return boolean
+ */
 function check_password($idUser, $password) {
     try {
         $pdo = connectDB();
@@ -334,7 +409,13 @@ function check_password($idUser, $password) {
         return;
     }
 }
-
+/**
+ * 
+ * @param type $NewPseudo
+ * @param type $NewEmail
+ * @param type $idUser
+ * @return boolean
+ */
 function edit_user($NewPseudo, $NewEmail, $idUser) {
     try {
         $pdo = connectDB();

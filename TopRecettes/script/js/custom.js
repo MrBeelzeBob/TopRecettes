@@ -1,20 +1,15 @@
 
 
-//Affiche le formulaire pour modifier le mot passe d'utilisateur
-function Show_form_edit_pwd() {
-    javascript:document.getElementById('form_edit_pwd').style.display = 'block';
-
-}
-
-//Masque le formulaire pour modifier le mot passe d'utilisateur
-function Hide_form_edit_pwd() {
-    javascript:document.getElementById('form_edit_pwd').style.display = 'none';
-
+function create_select_ingredient(NbIngredients) {
+    var input = document.getElementsByTagName("input");   // Get the first <h1> element in the document
+    var list = document.createAttribute("list");       // Create a "class" attribute
+    list.value = "EditListIngredient";                           // Set the value of the class attribute
+    input.setAttributeNode(list);                          // Add the class attribute to <h1>
 }
 
 function checkPasswordMatch(password, confirmPassword) {
     /*var password = $("#EditNewPwd").val();
-    var confirmPassword = $("#EditNewPwdConfirm").val();*/
+     var confirmPassword = $("#EditNewPwdConfirm").val();*/
 
     if (password !== confirmPassword) {
         $("#inputPwd").addClass('has-error').removeClass('has-success');

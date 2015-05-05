@@ -42,13 +42,16 @@ if (isset($_SESSION['idUser'])) {
                     <li><a href="http://getbootstrap.com/components"/>Demo</a></li>
                 </ul>
             </li>
+            <?php if ($connected) { ?>
+                <li><a href="editerrecette.php">Ajouter une recette</a></li>
+            <?php } ?>
 
-           <!-- <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Mot de passe actuel" required="">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>-->
+            <!-- <form class="navbar-form navbar-left" role="search">
+                 <div class="form-group">
+                     <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Mot de passe actuel" required="">
+                 </div>
+                 <button type="submit" class="btn btn-default">Submit</button>
+             </form>-->
         </ul>
 
 

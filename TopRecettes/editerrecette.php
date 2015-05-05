@@ -6,26 +6,26 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once('script/php/function.php');
 
 //test si un utilisateur est connecté
-if (isset($_SESSION['idUser'])) {
-    
-}else {
+if (!isset($_SESSION['idUser'])) {
     header('Location: ./');
     exit();
-}
+} //définit l'etape d'etition de la recette
 
-$erreur = false;
+
 
 $ingredients = ingredients_associate();
-$datalist = DataList($name, $ingredients, NULL);
+$RecipeTypes = recipe_types_associate();
 
-if (isset($_POST['Register'])) {
-    if ((isset($_POST['RegisterEmail'])) AND ( isset($_POST['RegisterPseudo'])) AND ( isset($_POST['RegisterPassword'])) AND ( isset($_POST['RegisterConfirm']))) {
 
-        try {
+if (isset($_POST['EditRecipe'])) {
+    try {
+        if ((isset($_POST['EditTitle'])) AND ( isset($_POST['EditType'])) AND ( isset($_POST['EditNbIngredient'])) AND (!empty($_POST['EditTitle'])) AND (!empty($_POST['EditType'])) AND (!empty($_POST['EditNbIngredient']))) {
             
-        } catch (Exception $ex) {
-            ShowError('Une erreur est survenue : ' . $ex->getMessage());
+        } else {
+            throw new Exception('Merci de remplir le formulaire correctement.');
         }
+    } catch (Exception $ex) {
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
 }
 ?>
@@ -46,47 +46,43 @@ if (isset($_POST['Register'])) {
             <?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
-            <h1>TopRecettes <small>Editer un recette</small></h1>
+            <h1>TopRecettes <small>Editer une recette</small></h1>
         </header>
 
         <section>
             <div class="container contenu">
 
                 <div class="modal-header col-sm-6 col-sm-offset-3">
-                    <h1 class="text-center">Editer un recette</h1>
+                    <h1 class="text-center">Editer une recette</h1>
                 </div>
                 <div class="modal-body col-sm-6 col-sm-offset-3">
+
+                    <!-- etape 1 -->
 
                     <form class="form col-md-12 center-block" action="#" method="post">
 
                         <div class="form-group">
-                            <input type="text" name="Ingredient" id="Ingredient" class="form-control " list="Ingredients" placeholder="Ingredient" required="">
-                        </div>
-                        <?php echo DataList('Ingredients', $ingredients, NULL); ?>
-                        <div class="form-group">
-                            <?php echo Select('Ingredients', $ingredients, NULL, FALSE); ?>
+                            <label class="control-label" for="EditTitle">Titre de la recette</label>
+                            <input id="EditTitle" name="EditTitle" type="text" placeholder="Titre de la recette" class="form-control" required="">
                         </div>
 
                         <div class="form-group">
-                            <input type="text" name="RegisterPseudo" id="RegisterPseudo" class="form-control " placeholder="Pseudo" required="">
+                            <label class="control-label" for="EditType">Type de plat</label>
+                            <?php echo Select('EditType', $RecipeTypes, NULL, TRUE); ?>
                         </div>
-
                         <div class="form-group">
-                            <input type="email" pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$"  name="RegisterEmail" id="RegisterEmail" class="form-control" placeholder="Email" required="">
+                            <label class="control-label" for="EditNbIngredient">Nombre d'ingrédients nécessaire</label>
+                            <input id="EditNbIngredient" name="EditNbIngredient" type="number" placeholder="Nombre d'ingrédients nécessaire" class="form-control" min="0" max="20" required="">
                         </div>
 
-                        <div id="inputPwd" class="form-group">
-                            <input type="password" name="RegisterPassword" id="RegisterPassword" class="form-control" placeholder="Mot de passe" required="">
-                        </div>
 
-                        <div id="inputPwdConfirm" class="form-group">
-                            <input type="password" name="RegisterConfirm" id="RegisterConfirm" class="form-control" placeholder="Confirmation du mot de passe" required="">
+                        <div class="form-group col-md-6">
+                            <button class="btn btn-primary btn-block" type="reset" >Annuler</button>
                         </div>
-
-                        <div class="form-group">
-                            <button class="btn btn-primary btn-block" type="submit" name="Register" id="btn-submit" >Inscription</button>
-                            <p>Déjà inscris clique <a href="connexion.php">ici</a><p>
+                        <div class="form-group col-md-6">
+                            <button class="btn btn-primary btn-block" type="submit" name="EditRecipeStep1" id="btn-submit" >Suivant</button>
                         </div>
+                        <?php echo DataList('EditListIngredient', $ingredients, NULL); ?>
                     </form>
                 </div>
             </div>
@@ -102,16 +98,16 @@ if (isset($_POST['Register'])) {
         <script src="script/js/bootstrap.min.js"></script>
         <script src="script/js/custom.js"></script>
         <script>
-            $(document).ready(function () {
-                $("#RegisterPassword").keyup(function () {
-                    checkPasswordMatch($("#RegisterPassword").val(), $("#RegisterConfirm").val());
-                }
-                );
-                $("#RegisterConfirm").keyup(function () {
-                    checkPasswordMatch($("#RegisterPassword").val(), $("#RegisterConfirm").val());
+            $(document).ready(function() {
+                $("#EditNbIngredient").change(function() {
+                    create_select_ingredient($("#EditNbIngredient").val());
                 }
                 );
             });
         </script>
     </body>
 </html>
+
+<?php
+//var_dump_pre($ingredients);
+?>
