@@ -201,26 +201,6 @@ function get_recipe($idRecipe) {
     }
 }
 
-function get_ingredients() {
-    $pdo = connectDB();
-    $query = 'SELECT * FROM tingredient';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idRecipe" => $idRecipe));
-    $statement = $statement->fetchAll();
-    return $statement;
-}
-
-
-function ingredients_associate(){
-    //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
-    $table = get_ingredients();
-    $table_associate = array('' => 'non defini');
-    foreach ($table as $ingredient) {
-        $table_associate[$ingredient['idIngredient']] = $ingredient['IngredientName'];
-    }
-    return $table_associate;
-}
-
 function get_ingredients_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -338,13 +318,13 @@ function check_password($idUser, $password) {
 function edit_user($NewPseudo, $NewEmail, $idUser) {
     try {
         $pdo = connectDB();
-        if ((!empty($NewPseudo)) AND ( empty($NewEmail))) { //test si le pseudo n'est pas vide et si l'email est vide
+        if ((!empty($NewPseudo)) AND (empty($NewEmail))) { //test si le pseudo n'est pas vide et si l'email est vide
             $ToDo = 1; //modifie le pseudo uniquement
         }
-        if ((!empty($NewEmail)) AND ( empty($NewPseudo))) { //test si l'email n'est pas vide et si le pseudo est vide
+        if ((!empty($NewEmail)) AND (empty($NewPseudo))) { //test si l'email n'est pas vide et si le pseudo est vide
             $ToDo = 2; //modifie l'email uniquement
         }
-        if ((!empty($NewPseudo)) AND ( !empty($NewEmail))) { //test si le pseudo et le mot de passe ne sont pas vide
+        if ((!empty($NewPseudo)) AND (!empty($NewEmail))) { //test si le pseudo et le mot de passe ne sont pas vide
             $ToDo = 3; //modifie le pseudo et l'email
         }
 
@@ -376,16 +356,6 @@ function edit_user($NewPseudo, $NewEmail, $idUser) {
         ShowError('Une erreur est survenue : ' . $ex->getMessage());
         return false;
     }
-}
-
-function set_administrateur($UserAdmin, $idUser) {
-    $pdo = connectDB();
-    $query = 'UPDATE tuser SET UserAdmin = :UserAdmin WHERE idUser = :idUser;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser,
-        ":UserAdmin" => $UserAdmin));
-    $statement = $statement->fetch();
-    return true;
 }
 
 function edit_user_password($idUser, $NewPassword) {
@@ -431,7 +401,6 @@ function delete_link_user_recipes($idUser) {
     $statement = $statement->fetch();
     return;
 }
-
 function delete_link_user_comments($idUser) {
     $pdo = connectDB();
     $query = 'UPDATE trecipe SET idUser = "0" WHERE idUser = :idUser;';

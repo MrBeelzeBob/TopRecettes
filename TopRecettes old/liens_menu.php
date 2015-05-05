@@ -42,13 +42,6 @@ if (isset($_SESSION['idUser'])) {
                     <li><a href="http://getbootstrap.com/components"/>Demo</a></li>
                 </ul>
             </li>
-
-           <!-- <form class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Mot de passe actuel" required="">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>-->
         </ul>
 
 
@@ -65,7 +58,7 @@ if (isset($_SESSION['idUser'])) {
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="gererutilisateur.php">
+                            <a href="gerercompte.php">
                                 <span class="glyphicon glyphicon-cog"></span> Mon compte
                             </a>
                         </li>
@@ -73,7 +66,7 @@ if (isset($_SESSION['idUser'])) {
                             <li class="divider"></li>
                             <li class="dropdown-header">Administrer</li>
                             <li>
-                                <a href="utilisateurs.php">
+                                <a href="gererutilisateur.php">
                                     <span class="glyphicon glyphicon-cog"></span> Gestion des utilisateurs
                                 </a>
                             </li>

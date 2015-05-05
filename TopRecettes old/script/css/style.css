@@ -3,7 +3,7 @@
 html {
     height: 100%;
     margin: 0;
-   // margin-top: 50px; //Afficher les var dump
+    margin-top: 50px; //Afficher les var dump
     padding: 0;
 
 }
@@ -78,22 +78,17 @@ textarea {
     font-size: 15px;
 }
 
-thead {
-    background-color: #bf3e11;
+#form_edit_pwd {
+    display: none;
 }
 
-tbody tr {
-    background-color: #e3e3e3;
+
+.has-success [placeholder] {
+    // background-color: green;
 }
 
-tbody tr:hover {
-    cursor: pointer;
-    background-color: #DE6A1C;
-}
-
-.table-striped tbody tr:nth-child(odd):hover {
-    cursor: pointer;
-   background-color: #DE6A1C;
+.has-error [placeholder] {
+    //background-color: red;
 }
 
 

@@ -5,47 +5,47 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once('./script/php/function.php');
 
-$recherche = NULL;
-$tri = NULL;
+$search = NULL;
+$sort = NULL;
 $connected = FALSE;
 $idUser = NULL;
 
-$title = 'Recettes';
+$TableSort = array("" => "Pas de tri", "1" => "Plus récentes", "2" => "Plus anciennes", "3" => "Meilleures notes", "4" => "Moins bonne notes");
+
+$title = 'Liste des Recettes';
 
 //test si un utilisateur est connecté
-if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
+if (isset($_SESSION['idUser'])) {
     $connected = true;
     $idUser = $_SESSION['idUser'];
+    $TableSort = array("" => "Pas de tri", "1" => "Plus récentes", "2" => "Plus anciennes",
+        "3" => "Meilleures notes", "4" => "Moins bonne notes", "5" => "Mes recettes");
 }
 
 //test les parametre dans l'url 
-if ((isset($_GET['tri'])) or (isset($_GET['recherche']))) {
+if ((isset($_GET['sort'])) or ( isset($_GET['search']))) {
 
-    if ((isset($_GET['recherche'])) AND (!empty($_GET['recherche']))) {
+    if ((isset($_GET['search'])) AND ( !empty($_GET['search']))) {
 
-        $recipes = get_recipes($_GET['tri'], $_GET['recherche'], $idUser);
-        $search = $_GET['recherche'];
-        $tri = $_GET['tri'];
+        $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser);
+        $search = $_GET['search'];
+        $sort = $_GET['sort'];
     } else {
-        $recipes = get_recipes($_GET['tri'], NULL, $idUser);
-        $tri = $_GET['tri'];
+        $recipes = get_recipes($_GET['sort'], NULL, $idUser);
+        $sort = $_GET['sort'];
     }
 } else {
     $recipes = get_recipes(NULL, NULL, $idUser);
 }
 
 //Modifie le titre selon le tri efféctué
-switch ($tri) {
+switch ($sort) {
     case 1: $title = 'Recettes - Plus récentes';
     case 2: $title = 'Recettes - Plus anciennes';
     case 3: $title = 'Recettes - Mieux notées';
     case 4: $title = 'Recettes - Moins bien notées';
     case 5: $title = 'Recettes - Mes recettes';
 }
-
-var_dump_pre($recipes);
-var_dump_pre($recherche);
-var_dump_pre($tri);
 ?>
 
 <!doctype html>
@@ -70,57 +70,36 @@ var_dump_pre($tri);
         <section>
             <div class="container contenu">
                 <div class="col-sm-12">
+
                     <div class="page-header">
-
-                        <!-- formualire de recherche -->
-                        <form class="form" role="search" action="recettes.php" method="get">
-                            <div class="row">
-                                <!-- select de trie-->
-                                <div class="col-md-4 col-md-offset-1 col-sm-6 col-xs-6">
-                                    <div class="form-group">
-                                        <label class="control-label" for="sort">Trier les recettes</label>
-                                        <div class="input-group">
-                                            <select name="tri" id="tri" class="form-control" autofocus="<?= $sort; ?>">
-                                                <option value="">Pas de tri</option>
-                                                <option value="1">Plus récentes</option>
-                                                <option value="2">Plus anciennes</option>
-                                                <option value="3">Meilleures notes</option>
-                                                <option value="4">Moins bonne notes</option>
-                                                <?php if ($connected) { ?>
-                                                    <option value="5">Mes recettes</option>
-                                                <?php } ?>
-
-                                            </select>
-                                            <span class="input-group-btn">
-                                                <button type="submit" class="btn btn-default">
-                                                    <img class="glyph" src="glyphicons_free/glyphicons/glyphicons-28-search.png">
-                                                </button>
-                                            </span>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- input de recherche  ol-md-4 col-md-offset- col-sm-6 col-xs-6 -->
-
-                                <div class="col-md-4 col-md-offset-1 col-sm-6 col-xs-6">
-                                    <div class="form-group">
-                                        <label class="control-label" for="search">Recherche</label>
-                                        <div class="input-group">
-                                            <input type="text" name="recherche" id="recherche" value="<?= $recherche; ?>" class="form-control" name="" placeholder="Rechercher...">
-                                            <span class="input-group-btn">
-                                                <button type="submit" class="btn btn-default">
-                                                    <img class="glyph" src="glyphicons_free/glyphicons/glyphicons-28-search.png">
-                                                </button>
-                                                <a class="btn btn-warning" href="recettes.php">Annuler</a>
-                                            </span>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                        <h2 class="text-center">Liste des recettes</h2>
                     </div>
+
+                    <!-- formualire de recherche -->
+                    <form class="form col-md-12 center-block" role="search" action="recettes.php" method="get">
+                        <div class="row">
+
+                            <div class="form-group col-md-2">
+                                <h4>Recherche</h4>
+                            </div>
+                            <!-- input de recherche  ol-md-4 col-md-offset- col-sm-6 col-xs-6 -->
+                            <div class="form-group col-sm-4">
+                                <input type="text" name="search" id="search" value="<?= $search; ?>" class="form-control" name="" placeholder="Rechercher...">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <!-- select de trie-->
+                                <?php echo Select('sort', $TableSort, $sort, FALSE); ?>
+                            </div>
+                            <div class="form-group col-sm-2 col-xs-4">
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                                <a href="recettes.php" class="btn btn-default" title="Annuler la recherche">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                     <!-- Affiche la liste des recettes -->
                     <?php if (empty($recipes)) { //Affiche un message d'erreur?>
                         <p style="text-align : center;">Ancune recette n'a été trouvée.</p>

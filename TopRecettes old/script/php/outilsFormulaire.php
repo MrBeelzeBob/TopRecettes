@@ -4,19 +4,15 @@
  * Permet de créer un Select (formulaire) à partir d'un tableau associatif
  * @param type $name nom du select
  * @param type $liste tableau associatif
- * @param type $courant
- * @param type $required
+ * @param type $courant 
  * @return string
  */
-function Select($name, $liste, $courant, $required) {
+function Select($name, $liste, $courant) {
     //CREATE A SELECT WITH OPTIONS
-    
-    if ($required) {
-        $text = '<select id="' . $name . '" name="' . $name . '" class="form-control" required="">';
-    } else {
-        $text = '<select id="' . $name . '" name="' . $name . '" class="form-control">';
-    }
-    
+    $text = '<select id="' . $name . '" name="' . $name . '" class="form-control" required=""';
+
+    $text .= '>';
+
     foreach ($liste as $option => $val)
         if ($option == $courant)
             $text .= '<option value="' . $option . '" selected=\"selected\">' . $val . '</option>';
@@ -25,6 +21,8 @@ function Select($name, $liste, $courant, $required) {
     $text .= '</select>';
     return $text;
 }
+
+
 
 /**
  * Construit une série de cases à cocher basée sur le tableau associatif $liste,
@@ -51,27 +49,4 @@ function Checkboxes($name, $liste, $checked) {
     }
     return $cbs;
 }
-
-/**
- * Permet de créer une DataList (formulaire) à partir d'un tableau associatif
- * @param type $name nom du dataliste
- * @param type $liste tableau associatif
- * @param type $courant 
- * @return string
- */
-function DataList($name, $liste, $courant) {
-    //CREATE A DATALIST WITH OPTIONS
-    $text = '<datalist  id="' . $name . '" name="' . $name;
-
-    $text .= '>';
-
-    foreach ($liste as $option => $val)
- if ($option == $courant)
-      $text .= '<option value="' . $$val . '" selected=\"selected\">';
-      else
-      $text .= '<option value="' . $val . '">'; 
-    $text .= '</datalist>';
-    return $text;
-}
-
 ?>
