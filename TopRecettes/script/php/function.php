@@ -218,6 +218,16 @@ function get_recipe($idRecipe) {
     }
 }
 
+function add_recipe($TableInfos, $idUser, $PathImage) {
+    $pdo = connectDB();
+
+    $query = '';
+
+    /* $statement = $pdo->prepare($query);
+      $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'], "" => ));
+      $statement = $statement->fetch(); */
+}
+
 /**
  * 
  * @return type
@@ -235,7 +245,7 @@ function get_ingredients() {
  * 
  * @return type
  */
-function ingredients_associate(){
+function ingredients_associate() {
     //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_ingredients();
     //$table_associate = array('' => 'non defini');
@@ -298,7 +308,7 @@ function get_recipe_types() {
     return $statement;
 }
 
-function recipe_types_associate(){
+function recipe_types_associate() {
     //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_recipe_types();
     $table_associate = array('' => 'Type de plat');
@@ -409,6 +419,7 @@ function check_password($idUser, $password) {
         return;
     }
 }
+
 /**
  * 
  * @param type $NewPseudo
@@ -425,7 +436,7 @@ function edit_user($NewPseudo, $NewEmail, $idUser) {
         if ((!empty($NewEmail)) AND ( empty($NewPseudo))) { //test si l'email n'est pas vide et si le pseudo est vide
             $ToDo = 2; //modifie l'email uniquement
         }
-        if ((!empty($NewPseudo)) AND ( !empty($NewEmail))) { //test si le pseudo et le mot de passe ne sont pas vide
+        if ((!empty($NewPseudo)) AND (!empty($NewEmail))) { //test si le pseudo et le mot de passe ne sont pas vide
             $ToDo = 3; //modifie le pseudo et l'email
         }
 
@@ -528,24 +539,15 @@ function delete_link_user_comments($idUser) {
  * @param type $name nom du fichier
  * @param type $type type du fichier
  * @return string
- */ function upload($fichier, $type) {
+ */ function upload($file) {
 
-    if ($type == 'console') {
-        $uploaddir = './uploads/consoles/';
-        $path_info = pathinfo($fichier['name']);
-        $extension = $path_info['extension'];
-        $temp_file_name = uniqid('console_', false) . '.' . $extension;
-        $uploadfile = $uploaddir . $temp_file_name;
-        move_uploaded_file($fichier['tmp_name'], $uploadfile);
-    }
-    if ($type == 'jeu') {
-        $uploaddir = './uploads/jeux/';
-        $path_info = pathinfo($fichier['name']);
-        $extension = $path_info['extension'];
-        $temp_file_name = uniqid('jeu_', false) . '.' . $extension;
-        $uploadfile = $uploaddir . $temp_file_name;
-        move_uploaded_file($fichier['tmp_name'], $uploadfile);
-    }
+    $uploaddir = '';
+    $path_info = pathinfo($file['name']);
+    $extension = $path_info['extension'];
+    $temp_file_name = uniqid('', false) . '.' . $extension;
+    $uploadfile = $uploaddir . $temp_file_name;
+    move_uploaded_file($file['tmp_name'], $uploadfile);
+
     return $uploadfile;
 }
 ?>

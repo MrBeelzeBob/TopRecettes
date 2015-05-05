@@ -10,13 +10,13 @@
  */
 function Select($name, $liste, $courant, $required) {
     //CREATE A SELECT WITH OPTIONS
-    
+
     if ($required) {
         $text = '<select id="' . $name . '" name="' . $name . '" class="form-control" required="">';
     } else {
         $text = '<select id="' . $name . '" name="' . $name . '" class="form-control">';
     }
-    
+
     foreach ($liste as $option => $val)
         if ($option == $courant)
             $text .= '<option value="' . $option . '" selected=\"selected\">' . $val . '</option>';
@@ -59,17 +59,14 @@ function Checkboxes($name, $liste, $checked) {
  * @param type $courant 
  * @return string
  */
-function DataList($name, $liste, $courant) {
+function DataList($name, $liste) {
     //CREATE A DATALIST WITH OPTIONS
     $text = '<datalist  id="' . $name . '" name="' . $name;
 
     $text .= '>';
 
     foreach ($liste as $option => $val)
- if ($option == $courant)
-      $text .= '<option value="' . $$val . '" selected=\"selected\">';
-      else
-      $text .= '<option value="' . $val . '">'; 
+        $text .= '<option value="' . $val . '">';
     $text .= '</datalist>';
     return $text;
 }
