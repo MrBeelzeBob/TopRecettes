@@ -15,7 +15,7 @@ $ingredients = ingredients_associate();
 
 
 <!-- etape 1 du formulaire d'edition de recette-->
-<form class = "form col-md-12 center-block" action="editerrecette.php" method="post">
+<form class = "form col-md-12 center-block" action="editerrecette.php" method="post" enctype="multipart/form-data">
 
     <?php for ($i = 1; $i <= $nbIngredients; $i++) { ?>
         <div class="form-group">
@@ -28,6 +28,11 @@ $ingredients = ingredients_associate();
     <div class="form-group">
         <label class="control-label" for="EditRecipePreparation">Préparation de la recette</label>
         <textarea maxlength="1000" class="form-control" id="UserComment" name="EditRecipePreparation" id="EditRecipePreparation." placeholder="Préparation de la recette" ></textarea>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label" for="EditRecipeImage">Image représentant la recette</label>
+        <input id="EditRecipeImage" name="EditRecipeImage" class="input-file" type="file" accept="image/*" >
     </div>
 
     <div class="form-group col-md-6">

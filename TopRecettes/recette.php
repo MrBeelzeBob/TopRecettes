@@ -8,7 +8,7 @@ $connected = FALSE;
 
 
 //test si l'utilisateur est connecté
-if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
+if (isset($_SESSION['idUser'])) {
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
 }
@@ -30,8 +30,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
     //récupere les infos principal de la recette
     $recipe = get_recipe($idRecipe);
-
-    //test si le jeu existe
+    //test si la recette existe
     if ($recipe == FALSE) {
         header('location: ./recettes.php');
         exit();
@@ -41,7 +40,6 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     // récupre les commentaire posté sur cette recette
     $comments = get_comments_recipe($idRecipe);
 
-   // var_dump_pre($comments);
 } else {
 
     //header('location: ./Liste.php?type=consoles');
@@ -87,14 +85,12 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                             <tr>
                                 <td>Ingrédient</td>
                                 <td>Quantité</td> 
-                                <td>Unité</td>
                             </tr>
                         </thead>
                         <?php foreach ($ingredients as $ingredient) { ?>
                             <tr>
                                 <td><?= $ingredient['IngredientName'] ?></td>
                                 <td><?= $ingredient['ContainsQuantity'] ?></td> 
-                                <td><?= $ingredient['ContainsUnit'] ?></td>
                             </tr>
                         <?php } ?>
                     </table>
@@ -102,9 +98,9 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
                 <div class="col-md-8 col-md-offset-2">
                     <div class="page-header">
-                        <h2 class="text-center">Réalisation de la recette</h2>
+                        <h2 class="text-center">Préparation de la recette</h2>
                     </div>
-                    <p><?= $recipe['RecipeContenu']; ?></p>
+                    <p><?= $recipe['RecipePreparation']; ?></p>
                 </div>
             </div>
             <div class="container contenu">

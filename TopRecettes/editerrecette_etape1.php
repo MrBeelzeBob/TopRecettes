@@ -42,7 +42,7 @@ $RecipeTypes = recipe_types_associate();
     <body>
 
         <!-- etape 1 du formulaire d'edition de recette-->
-        <form class = "form col-md-12 center-block" action = "editerrecette.php" method = "post" enctype="multipart/form-data">
+        <form class = "form col-md-12 center-block" action = "editerrecette.php" method = "post" >
 
             <div class="form-group">
                 <label class="control-label" for="EditRecipeTitle">Titre de la recette</label>
@@ -60,13 +60,7 @@ $RecipeTypes = recipe_types_associate();
 
             <div class="form-group">
                 <label class="control-label" for="EditRecipeOrigin">Origine de la recette</label>
-                <input id="EditRecipeOrigin" name="EditRecipeOrigin" type="text" placeholder="Origine de la recette" value="<?= $RecipeOrigin ?>" class="form-control" min="0" max="20" required="">
-            </div>
-
-
-            <div class="form-group">
-                <label class="control-label" for="EditRecipeImage">Image représentant la recette</label>
-                <input id="EditRecipeImage" name="EditRecipeImage" class="input-file" type="file" accept="image/*" >
+                <input id="EditRecipeOrigin" name="EditRecipeOrigin" type="text" placeholder="Origine de la recette" value="<?= $RecipeOrigin ?>" class="form-control" >
             </div>
 
             <div class="form-group col-md-6">

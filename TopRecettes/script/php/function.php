@@ -33,11 +33,7 @@ function debug($sObj = NULL) {
     echo '</pre>';
 }
 
-/**
- * 
- * @param type $Message
- * @return string
- */
+
 function ShowError($Message) {
     echo ' <div class="col-sm-6 col-sm-offset-3 alert alert-dismissible alert-danger"> ';
     echo '<button type="button" class="close" data-dismiss="alert">×</button>';
@@ -52,12 +48,6 @@ function ShowSuccess($Message) {
     echo '</div>';
 }
 
-/**
- * 
- * @param type $UserEmail
- * @param type $UserPassword
- * @return boolean
- */
 function login($UserEmail, $UserPassword) {
     $pdo = connectDB();
     $query = "SELECT idUser, UserPseudo, UserAdmin FROM tUser WHERE UserEmail = :UserEmail AND UserPassword = :UserPassword ;";
@@ -72,17 +62,10 @@ function login($UserEmail, $UserPassword) {
     return false;
 }
 
-/**
- * 
- * @param type $UserPseudo
- * @param type $UserEmail
- * @param type $UserPassword
- * @return boolean
- */
 function register($UserPseudo, $UserEmail, $UserPassword) {
     $pdo = connectDB();
 //insert les données dans la base
-    $query = 'INSERT INTO tUser (UserPseudo, UserEmail, UserPassword) VALUES (:UserPseudo, :UserEmail, :UserPassword);';
+    $query = 'INSERT INTO tuser (UserPseudo, UserEmail, UserPassword) VALUES (:UserPseudo, :UserEmail, :UserPassword);';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":UserPseudo" => $UserPseudo,
         ":UserEmail" => $UserEmail,
@@ -116,10 +99,6 @@ function CheckExist_Pseudo($UserPseudo) {
     }
 }
 
-/**
- * 
- * @return boolean
- */
 function CheckExist_Email($UserEmail) {
     $pdo = connectDB();
     $query = 'SELECT UserEmail FROM tUser WHERE UserEmail = :UserEmail ;';
@@ -134,11 +113,6 @@ function CheckExist_Email($UserEmail) {
     }
 }
 
-/**
- * 
- * @param type $idUser
- * @return boolean
- */
 function CheckAdmin($idUser) {
     try {
         $pdo = connectDB();
@@ -157,13 +131,6 @@ function CheckAdmin($idUser) {
     }
 }
 
-/**
- * 
- * @param type $sort
- * @param type $search
- * @param type $idUser
- * @return type
- */
 function get_recipes($sort, $search, $idUser) {
     try {
         $pdo = connectDB();
@@ -195,15 +162,10 @@ function get_recipes($sort, $search, $idUser) {
     }
 }
 
-/**
- * 
- * @param type $idRecipe
- * @return type
- */
 function get_recipe($idRecipe) {
     try {
         $pdo = connectDB();
-        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeContenu, trecipe.RecipeOrigin, '
+        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipePreparation, trecipe.RecipeOrigin, '
                 . 'trecipe.RecipeImage, GROUP_CONCAT(tcategory.CategoryName) AS Categories '
                 . 'FROM trecipe '
                 . 'NATURAL JOIN tcategory '
@@ -219,19 +181,28 @@ function get_recipe($idRecipe) {
 }
 
 function add_recipe($TableInfos, $idUser, $PathImage) {
+    
+    var_dump_pre($TableInfos);
+    echo 'dossier img '.$PathImage;
+    echo 'id '.$idUser;
     $pdo = connectDB();
+    $date = date('Y-m-d', time()); //recupere la date
+    
+    $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, RecipeImage, idUser, RecipeDate) '
+            . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :RecipeImage, :idUser, :RecipeDate)';
 
-    $query = '';
-
-    /* $statement = $pdo->prepare($query);
-      $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'], "" => ));
-      $statement = $statement->fetch(); */
+     $statement = $pdo->prepare($query);
+      $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'],
+          ":RecipePreparation" => $TableInfos['RecipePreparation'],
+          ":RecipeOrigin" => $TableInfos['RecipeOrigin'],
+          ":RecipeImage" => $PathImage,
+          ":idUser" => $idUser,
+          ":RecipeDate" => $date));
+      $statement = $statement->fetch(); 
+      
+      return $pdo->lastinsertid();
 }
 
-/**
- * 
- * @return type
- */
 function get_ingredients() {
     $pdo = connectDB();
     $query = 'SELECT * FROM tingredient';
@@ -241,10 +212,28 @@ function get_ingredients() {
     return $statement;
 }
 
-/**
- * 
- * @return type
- */
+function checkExist_ingredient($IngredientName) {
+    $pdo = connectDB();
+    $query = 'SELECT idIngredient FROM tingredient WHERE IngredientName = :IngredientName';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":IngredientName" => $IngredientName));
+    $statement = $statement->fetch();
+    return $statement['idIngredient'];
+}
+
+
+function add_ingredient($IngredientName) {
+    $IngredientName = strtoupper($IngredientName); //renvoi l'ingredient en majuscule 
+    
+    $pdo = connectDB();
+    $query = 'INSERT INTO tingredient (IngredientName) VALUES(:IngredientName)';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":IngredientName" => $IngredientName));
+    $statement = $statement->fetch();
+    return $pdo->lastInsertId() ;
+    
+}
+
 function ingredients_associate() {
     //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_ingredients();
@@ -255,15 +244,10 @@ function ingredients_associate() {
     return $table_associate;
 }
 
-/**
- * 
- * @param type $idRecipe
- * @return type
- */
 function get_ingredients_recipe($idRecipe) {
     try {
         $pdo = connectDB();
-        $query = 'SELECT contains.ContainsQuantity, contains.ContainsUnit, tingredient.IngredientName '
+        $query = 'SELECT contains.ContainsQuantity, tingredient.IngredientName '
                 . 'FROM contains '
                 . 'LEFT JOIN tingredient ON tingredient.idIngredient = contains.idIngredient '
                 . 'WHERE contains.idRecipe = :idRecipe';
@@ -277,11 +261,6 @@ function get_ingredients_recipe($idRecipe) {
     }
 }
 
-/**
- * 
- * @param type $idRecipe
- * @return type
- */
 function get_comments_recipe($idRecipe) {
     try {
         $pdo = connectDB();
@@ -318,13 +297,6 @@ function recipe_types_associate() {
     return $table_associate;
 }
 
-/**
- * 
- * @param type $idUser
- * @param type $idRecipe
- * @param type $comment
- * @return type
- */
 function add_comment($idUser, $idRecipe, $comment) {
     try {
         $pdo = connectDB();
@@ -343,10 +315,6 @@ function add_comment($idUser, $idRecipe, $comment) {
     }
 }
 
-/**
- * 
- * @return type
- */
 function get_users() {
     try {
         $pdo = connectDB();
@@ -362,11 +330,6 @@ function get_users() {
     }
 }
 
-/**
- * 
- * @param type $idUser
- * @return type
- */
 function get_user($idUser) {
     try {
         $pdo = connectDB();
@@ -382,11 +345,6 @@ function get_user($idUser) {
     }
 }
 
-/**
- * Récupere le pseudo de l'utilisateur dont l'identifiant est en paramètre
- * @param type $idUser
- * @return type
- */
 function get_user_pseudo($idUser) {
     $pdo = connectDB();
 
@@ -397,12 +355,6 @@ function get_user_pseudo($idUser) {
     return $statement;
 }
 
-/**
- * 
- * @param type $idUser
- * @param type $password
- * @return boolean
- */
 function check_password($idUser, $password) {
     try {
         $pdo = connectDB();
@@ -420,13 +372,6 @@ function check_password($idUser, $password) {
     }
 }
 
-/**
- * 
- * @param type $NewPseudo
- * @param type $NewEmail
- * @param type $idUser
- * @return boolean
- */
 function edit_user($NewPseudo, $NewEmail, $idUser) {
     try {
         $pdo = connectDB();
@@ -510,11 +455,6 @@ function delete_user($idUser) {
     return true;
 }
 
-/**
- * 
- * @param type $idUser
- * @return boolean
- */
 function delete_link_user_recipes($idUser) {
     $pdo = connectDB();
     $query = 'UPDATE comments SET idUser = "0" WHERE idUser = :idUser;';
@@ -541,7 +481,7 @@ function delete_link_user_comments($idUser) {
  * @return string
  */ function upload($file) {
 
-    $uploaddir = '';
+    $uploaddir = './imgRecettes/';
     $path_info = pathinfo($file['name']);
     $extension = $path_info['extension'];
     $temp_file_name = uniqid('', false) . '.' . $extension;
