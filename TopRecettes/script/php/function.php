@@ -33,7 +33,6 @@ function debug($sObj = NULL) {
     echo '</pre>';
 }
 
-
 function ShowError($Message) {
     echo ' <div class="col-sm-6 col-sm-offset-3 alert alert-dismissible alert-danger"> ';
     echo '<button type="button" class="close" data-dismiss="alert">×</button>';
@@ -181,26 +180,26 @@ function get_recipe($idRecipe) {
 }
 
 function add_recipe($TableInfos, $idUser, $PathImage) {
-    
+
     var_dump_pre($TableInfos);
-    echo 'dossier img '.$PathImage;
-    echo 'id '.$idUser;
+    echo 'dossier img ' . $PathImage;
+    echo 'id ' . $idUser;
     $pdo = connectDB();
     $date = date('Y-m-d', time()); //recupere la date
-    
+
     $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, RecipeImage, idUser, RecipeDate) '
             . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :RecipeImage, :idUser, :RecipeDate)';
 
-     $statement = $pdo->prepare($query);
-      $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'],
-          ":RecipePreparation" => $TableInfos['RecipePreparation'],
-          ":RecipeOrigin" => $TableInfos['RecipeOrigin'],
-          ":RecipeImage" => $PathImage,
-          ":idUser" => $idUser,
-          ":RecipeDate" => $date));
-      $statement = $statement->fetch(); 
-      
-      return $pdo->lastinsertid();
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'],
+        ":RecipePreparation" => $TableInfos['RecipePreparation'],
+        ":RecipeOrigin" => $TableInfos['RecipeOrigin'],
+        ":RecipeImage" => $PathImage,
+        ":idUser" => $idUser,
+        ":RecipeDate" => $date));
+    $statement = $statement->fetch();
+
+    return $pdo->lastinsertid();
 }
 
 function get_ingredients() {
@@ -221,17 +220,15 @@ function checkExist_ingredient($IngredientName) {
     return $statement['idIngredient'];
 }
 
-
 function add_ingredient($IngredientName) {
     $IngredientName = strtoupper($IngredientName); //renvoi l'ingredient en majuscule 
-    
+
     $pdo = connectDB();
     $query = 'INSERT INTO tingredient (IngredientName) VALUES(:IngredientName)';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":IngredientName" => $IngredientName));
     $statement = $statement->fetch();
-    return $pdo->lastInsertId() ;
-    
+    return $pdo->lastInsertId();
 }
 
 function ingredients_associate() {
@@ -242,6 +239,17 @@ function ingredients_associate() {
         $table_associate[$ingredient['idIngredient']] = $ingredient['IngredientName'];
     }
     return $table_associate;
+}
+
+function add_contains($idIngredient, $IngredientQuantity, $idNewRecipe) {
+    $pdo = connectDB();
+    $query = 'INSERT INTO contains (ContainsQuantity, idRecipe, idIngredient) VALUES(:ContainsQuantity, :idRecipe, :idIngredient)';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":ContainsQuantity" => $IngredientQuantity,
+        ":idIngredient" => $idIngredient,
+        ":idRecipe" => $idNewRecipe));
+    $statement = $statement->fetch();
+    return $pdo->lastInsertId();
 }
 
 function get_ingredients_recipe($idRecipe) {

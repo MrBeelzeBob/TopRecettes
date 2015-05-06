@@ -7,7 +7,6 @@ require_once('script/php/function.php');
 
 $nbIngredients = $_SESSION['EditRecipe']["RecipeNbIngredient"];
 
-var_dump_pre($nbIngredients);
 $ingredients = ingredients_associate();
 ?>
 
@@ -27,7 +26,7 @@ $ingredients = ingredients_associate();
 
     <div class="form-group">
         <label class="control-label" for="EditRecipePreparation">Préparation de la recette</label>
-        <textarea maxlength="1000" class="form-control" id="UserComment" name="EditRecipePreparation" id="EditRecipePreparation." placeholder="Préparation de la recette" ></textarea>
+        <textarea maxlength="1000" class="form-control" id="EditRecipePreparation" name="EditRecipePreparation" id="EditRecipePreparation." placeholder="Préparation de la recette" ></textarea>
     </div>
 
     <div class="form-group">

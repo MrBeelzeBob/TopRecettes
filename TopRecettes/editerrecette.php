@@ -37,50 +37,58 @@ if (isset($_POST['EditRecipeStep1'])) {
     } catch (Exception $ex) {
         ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
-}
-
+} // end if etape 1
 //test la réception de l'etape 2
 if (isset($_POST['EditRecipeStep2'])) {
     try {
         $nbIngredients = $_SESSION['EditRecipe']['RecipeNbIngredient'];
-         // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 2 POUR LES AJOUTER DANS UN TABLEAU DANS LA SESSION
+        $j = 1;
+        // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 2 POUR LES AJOUTER DANS UN TABLEAU DANS LA SESSION
         for ($i = 1; $i <= $nbIngredients; $i++) { //Permet de tester si les input des ingrédients sont vide
-            if ((isset($_POST['EditRecipeIngredient' . $i])) AND (isset($_POST['EditRecipeQuantity' . $i])) AND (!empty($_POST['EditRecipeIngredient' . $i])) 
-                    AND (!empty($_POST['EditRecipeQuantity' . $i]))) {
-                $EditRecipe_Ingredients[$i]["IngredientName"] = $_POST['EditRecipeIngredient' . $i]; //recupere l'ingredient (ajouté dans un tableau)
-                $EditRecipe_Ingredients[$i]["IngredientQuantity"] = $_POST['EditRecipeQuantity' . $i]; //recupere la quantité (ajouté dans un tableau)
-                $EditRecipe_Ingredients[$i]["IngredientId"] =  checkExist_ingredient($_POST['EditRecipeIngredient' . $i]); //recupere l'id de l'ingredient pour teste ensuite si il existe
-                if (! $EditRecipe_Ingredients[$i]["IngredientId"]) {//check si l'ingredient existe pas'
+            if ((isset($_POST['EditRecipeIngredient' . $i])) AND (isset($_POST['EditRecipeQuantity' . $i])) AND (!empty($_POST['EditRecipeIngredient' . $i])) AND (!empty($_POST['EditRecipeQuantity' . $i]))) {
+                $EditRecipe_Ingredients[$j]["IngredientName"] = $_POST['EditRecipeIngredient' . $i]; //recupere l'ingredient (ajouté dans un tableau)
+                $EditRecipe_Ingredients[$j]["IngredientQuantity"] = $_POST['EditRecipeQuantity' . $i]; //recupere la quantité (ajouté dans un tableau)
+                $EditRecipe_Ingredients[$j]["IngredientId"] = checkExist_ingredient($_POST['EditRecipeIngredient' . $i]); //recupere l'id de l'ingredient pour teste ensuite si il existe
+                if (!$EditRecipe_Ingredients[$j]["IngredientId"]) {//check si l'ingredient existe pas'
                     $idNewIngredient = add_ingredient($_POST['EditRecipeIngredient' . $i]); //Ajoute l'ingredient dans la base si il n'existe pas et recupere l'id de l'ingredient ajouté
-                    $EditRecipe_Ingredients[$i]["IngredientId"] = $idNewIngredient; 
+                    $EditRecipe_Ingredients[$j]["IngredientId"] = $idNewIngredient;
                 } //end if
-                
+                $j++; //index du tableau des ingredient, s'incrémente seuelemtn si l'ingrédient est définit
             } //end if 
         }// end for
-        var_dump_pre($EditRecipe_Ingredients);
+
+        if ((isset($_POST['EditRecipePreparation'])) AND (!empty($_POST['EditRecipePreparation']))) {
+            $EditRecipe_step2['RecipePreparation'] = $_POST['EditRecipePreparation']; //recupere la preparation
+            $TableRecipe_Infos = array_merge($_SESSION['EditRecipe'], $EditRecipe_step2); //Recupere la preparation
+        } else {
+            throw new Exception('Merci de remplir la préparation de la recette.');
+        }
+
         
-        
+        //TEST L'IMAGE
         $EditRecipe_Image = $_FILES['EditRecipeImage']; //recupere l'image
-        $EditRecipe_step2['RecipePreparation'] = $_POST['EditRecipePreparation']; //recupere la preparation
-        $TableRecipe_Infos = array_merge($_SESSION['EditRecipe'], $EditRecipe_step2); //Recupere la pre
-        
-        //test si une image est reçu
         if (!empty($EditRecipe_Image['name'])) {
             $File_Path = upload($EditRecipe_Image); //Upload l'image dans un dossier du serveur et récupère le dossier ou l'image à été uploadé
-        }else {
+        } else {
             $File_Path = NULL;
         }
         //Ajoute la nouvelle recette + retourne l'id de la recette ajoutée
-        $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path); 
+        $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path);
+        var_dump_pre($EditRecipe_Ingredients);
+        for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
+            echo ' ma bite' .$i;
+            $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
+            $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
+            add_contains($idIngredient, $IngredientQuantity, $idNewRecipe);
+        }
         
-        
-        add_contains($Ingredients);
+        $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+        header('Location: recette.php?id='.$idNewRecipe);
         
     } catch (Exception $ex) {
         ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
-}
-
+}// end if etape 2
 //test si l'utilisateur veut revenir à l'etape 1 lorsqu'il est dans l'etape 2
 if (isset($_POST['EditRecipeBack'])) {
     $_SESSION['EditRecipe']['step'] = 1;
@@ -100,7 +108,7 @@ if (isset($_POST['EditRecipeBack'])) {
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top">
-<?php include "liens_menu.php"; ?> 
+            <?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Editer une recette</small></h1>
@@ -115,15 +123,15 @@ if (isset($_POST['EditRecipeBack'])) {
                 <div class="modal-body col-sm-6 col-sm-offset-3">
 
                     <!-- etape 1 -->
-<?php
-if ($_SESSION['EditRecipe']["step"] == 1) {
-    include "editerrecette_etape1.php";
-}
+                    <?php
+                    if ($_SESSION['EditRecipe']["step"] == 1) {
+                        include "editerrecette_etape1.php";
+                    }
 
-if ($_SESSION['EditRecipe']["step"] == 2) {
-    include "editerrecette_etape2.php";
-}
-?>
+                    if ($_SESSION['EditRecipe']["step"] == 2) {
+                        include "editerrecette_etape2.php";
+                    }
+                    ?>
                 </div>
             </div>
         </section>
