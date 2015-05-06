@@ -164,10 +164,10 @@ function get_recipes($sort, $search, $idUser) {
 function get_recipe($idRecipe) {
     try {
         $pdo = connectDB();
-        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipePreparation, trecipe.RecipeOrigin, '
-                . 'trecipe.RecipeImage, GROUP_CONCAT(tcategory.CategoryName) AS Categories '
+        $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipePreparation, trecipe.RecipeOrigin, trecipe.idType, '
+                . 'trecipe.RecipeImage, trecipe.idUser, ttype.TypeName '
                 . 'FROM trecipe '
-                . 'NATURAL JOIN tcategory '
+                . 'NATURAL JOIN ttype '
                 . 'WHERE trecipe.idRecipe =  :idRecipe';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":idRecipe" => $idRecipe));
@@ -181,19 +181,20 @@ function get_recipe($idRecipe) {
 
 function add_recipe($TableInfos, $idUser, $PathImage) {
 
-    var_dump_pre($TableInfos);
+
     echo 'dossier img ' . $PathImage;
     echo 'id ' . $idUser;
     $pdo = connectDB();
     $date = date('Y-m-d', time()); //recupere la date
 
-    $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, RecipeImage, idUser, RecipeDate) '
-            . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :RecipeImage, :idUser, :RecipeDate)';
+    $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, RecipeImage, idUser, RecipeDate) '
+            . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
 
     $statement = $pdo->prepare($query);
     $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'],
         ":RecipePreparation" => $TableInfos['RecipePreparation'],
         ":RecipeOrigin" => $TableInfos['RecipeOrigin'],
+        ":idType" => $TableInfos['idType'],
         ":RecipeImage" => $PathImage,
         ":idUser" => $idUser,
         ":RecipeDate" => $date));
@@ -209,6 +210,15 @@ function get_ingredients() {
     $statement->execute();
     $statement = $statement->fetchAll();
     return $statement;
+}
+
+function count_ingredient_recipe($idRecipe) {
+    $pdo = connectDB();
+    $query = 'SELECT count(idIngredient) AS NbIngredient FROM contains WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement = $statement->fetch();
+    return $statement['NbIngredient'];
 }
 
 function checkExist_ingredient($IngredientName) {
@@ -288,7 +298,7 @@ function get_comments_recipe($idRecipe) {
 
 function get_recipe_types() {
     $pdo = connectDB();
-    $query = 'SELECT * FROM tcategory';
+    $query = 'SELECT * FROM ttype';
     $statement = $pdo->prepare($query);
     $statement->execute();
     $statement = $statement->fetchAll();
@@ -300,20 +310,21 @@ function recipe_types_associate() {
     $table = get_recipe_types();
     $table_associate = array('' => 'Type de plat');
     foreach ($table as $type) {
-        $table_associate[$type['idCategory']] = $type['CategoryName'];
+        $table_associate[$type['idType']] = $type['TypeName'];
     }
     return $table_associate;
 }
 
-function add_comment($idUser, $idRecipe, $comment) {
+function add_comment($idUser, $idRecipe, $comment, $note) {
     try {
         $pdo = connectDB();
         $date = date('Y-m-d H:i:s', time()); //recupere la date et l'heure
-        $query = 'INSERT INTO comments (CommentText, CommentDate, idUser, idRecipe) VALUES (:CommentText, :CommentDate, :idUser, :idRecipe)';
+        $query = 'INSERT INTO comments (CommentText, CommentNote, CommentDate, idUser, idRecipe) VALUES (:CommentText, :CommentNote, :CommentDate, :idUser, :idRecipe)';
         $statement = $pdo->prepare($query);
         $statement->execute(array(":idUser" => $idUser,
             ":idRecipe" => $idRecipe,
             ":CommentText" => $comment,
+            ":CommentNote" => $note,
             ":CommentDate" => $date));
         $statement = $statement->fetch();
         return;
@@ -360,7 +371,7 @@ function get_user_pseudo($idUser) {
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idUser" => $idUser));
     $statement = $statement->fetch();
-    return $statement;
+    return $statement['UserPseudo'];
 }
 
 function check_password($idUser, $password) {
@@ -479,6 +490,43 @@ function delete_link_user_comments($idUser) {
     $statement->execute(array(":idUser" => $idUser));
     $statement = $statement->fetch();
     return;
+}
+
+function check_owner_recipe($idUser, $idRecipe) {
+
+    $pdo = connectDB();
+//recupere une valeur pour vérifier si l'utilisateur est propriétaire du commentaire
+    $query = 'SELECT idUser FROM trecipe WHERE idRecipe = :idRecipe;';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement = $statement->fetch();
+    if ($statement['idUser'] === $idUser) {
+        return true;
+    }
+    return false;
+}
+
+function check_owner_comment($idUser, $idComment) {
+
+    $pdo = connectDB();
+//recupere une valeur pour vérifier si l'utilisateur est propriétaire du commentaire
+    $query = 'SELECT idUser FROM comment WHERE idComment = :idComment;';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idComment" => $idComment));
+    $statement = $statement->fetch();
+    if ($statement['idUser'] === $idUser) {
+        return true;
+    }
+    return false;
+}
+
+function delete_comment($idComment) {
+    $pdo = connectDB();
+
+    $query = 'DELETE FROM comments WHERE idComment = :idComment';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idComment" => $idComment));
+    $statement = $statement->fetch();
 }
 
 /**

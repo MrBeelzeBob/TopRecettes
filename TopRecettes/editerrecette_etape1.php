@@ -10,13 +10,33 @@ $RecipeType = NULL;
 $RecipeNbIngredient = NULL;
 $RecipeOrigin = NULL;
 
+
+if (isset($_SESSION['idUser'])) {
+    $idUser = $_SESSION['idUser'];
+    $edit = 'update';
+    try {
+//MODIFICATRION D'UNE RECETTE
+        if ((isset($_GET['idRecipe'])) AND (!empty($_GET['idRecipe']))) {
+            $idRecipe = $_GET['idRecipe'];
+            if ((CheckAdmin($idUser) AND (check_owner_recipe($idUser, $idRecipe)))) {
+                $recipe = get_recipe($idRecipe);
+                var_dump_pre($recipe);
+
+                $_SESSION['EditRecipe'] = $recipe;
+            }
+        }
+    } catch (Exception $ex) {
+        
+    }
+}
+
 //Test si l'info est dans la session pour pouvoir l'afficher dans le formulaire
 if (isset($_SESSION['EditRecipe']['RecipeTitle'])) {
     $RecipeTitle = $_SESSION['EditRecipe']['RecipeTitle']; //recupere l'info
 }
 //Test si l'info est dans la session pour pouvoir l'afficher dans le formulaire
-if (isset($_SESSION['EditRecipe']['RecipeType'])) {
-    $RecipeType = $_SESSION['EditRecipe']['RecipeType']; //recupere l'info
+if (isset($_SESSION['EditRecipe']['idType'])) {
+    $RecipeType = $_SESSION['EditRecipe']['idType']; //recupere l'info
 }
 //Test si l'info est dans la session pour pouvoir l'afficher dans le formulaire
 if (isset($_SESSION['EditRecipe']['RecipeTitle'])) {
@@ -51,7 +71,7 @@ $RecipeTypes = recipe_types_associate();
 
             <div class="form-group">
                 <label class="control-label" for="EditRecipeType">Type de plat</label>
-                <?php echo Select('EditRecipeType', $RecipeTypes, $RecipeType, TRUE); ?>
+<?php echo Select('EditRecipeType', $RecipeTypes, $RecipeType, TRUE); ?>
             </div>
             <div class="form-group">
                 <label class="control-label" for="EditRecipeNbIngredient">Nombre d'ingrédients nécessaire</label>

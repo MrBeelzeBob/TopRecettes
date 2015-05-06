@@ -20,26 +20,47 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
     //Ajoute un nouveau commentaire si envoyé
     if ($connected) {
+        //Test si l'utilisateur connecter est le propriétaire de la recette
+        $isOwner_Recipe = check_owner_recipe($_SESSION['idUser'], $idRecipe);
+
         if (isset($_POST['SubmitComment'])) {
-            if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) {
-                add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment']);
-                header('location: #comments');
+            try {
+                if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) {
+
+                    if ((isset($_POST['UserNote'])) AND (!empty($_POST['UserNote']))) { //test si l'utilisateur note la recette
+                        $UserNote = $_POST['UserNote'];
+                        if (($UserNote > 1) AND ($UserNote < 5)) { //test si la note est comprise entre 1 et 5
+                            add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment'], $UserNote); //Ajoute le commentaire avec la note
+                        } else {
+                            throw new Exception('Le commentaire n\'a pas été ajouté car la note n\'est par comprise entre 1 et 5.');
+                        }
+                    } else {
+                        //Ajoute le commentaire sans note
+                        add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment'], NULL);
+                        header('location: #comments');
+                    }
+                } else {
+                    throw new Exception('Il n\'y pas de commentaire.');
+                }
+            } catch (Exception $ex) {
+                ShowError('Une erreur est survenue : ' . $ex->getMessage());
             }
         }
     }
 
     //récupere les infos principal de la recette
     $recipe = get_recipe($idRecipe);
+    var_dump_pre($recipe);
     //test si la recette existe
     if ($recipe == FALSE) {
-        header('location: ./recettes.php');
-        exit();
+        echo 'vide';
+        /*header('location: ./recettes.php');
+        exit();*/
     }
     //récupere les ingrédients qui composent cette recette
     $ingredients = get_ingredients_recipe($idRecipe);
     // récupre les commentaire posté sur cette recette
     $comments = get_comments_recipe($idRecipe);
-
 } else {
 
     //header('location: ./Liste.php?type=consoles');
@@ -72,14 +93,14 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                 <div class="page-header">
                     <h2 class="text-center"><?= $recipe['RecipeTitle'] ?></h2>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="thumbnail">
                         <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="">
                     </div>
                 </div>
 
                 <!-- table des ingrédients -->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <table style="width:100%" class="thumbnail table table-striped">
                         <thead>
                             <tr>
@@ -87,21 +108,54 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <td>Quantité</td> 
                             </tr>
                         </thead>
-                        <?php foreach ($ingredients as $ingredient) { ?>
-                            <tr>
-                                <td><?= $ingredient['IngredientName'] ?></td>
-                                <td><?= $ingredient['ContainsQuantity'] ?></td> 
-                            </tr>
-                        <?php } ?>
+                        <tbody>
+                            <?php foreach ($ingredients as $ingredient) { ?>
+                                <tr>
+                                    <td><?= $ingredient['IngredientName'] ?></td>
+                                    <td><?= $ingredient['ContainsQuantity'] ?></td> 
+                                </tr>
+                            <?php } ?>
+                        </tbody>
                     </table>
                 </div>
 
+
+
                 <div class="col-md-8 col-md-offset-2">
                     <div class="page-header">
-                        <h2 class="text-center">Préparation de la recette</h2>
+                        <h3 class="text-center">Préparation de la recette</h3>
                     </div>
                     <p><?= $recipe['RecipePreparation']; ?></p>
                 </div>
+
+                <div class="thumbnail col-md-4">
+                    <p>
+                        Auteur : 
+                        <?php
+                        if (!$recipe['idUser']) {
+                            echo 'Utilisateur supprimé';
+                        } else {
+                            echo get_user_pseudo($recipe['idUser']);
+                        }
+                        ?>
+                    </p>
+                    <p>
+                        Origine : 
+                        <?= $recipe['RecipeOrigin']; ?>
+                    </p>
+
+
+                </div> 
+
+
+                <?php
+                if ($connected) {
+                    if (($isAdmin) OR ($isOwner_Recipe['idUser'] === $_SESSION['idUser'])) {
+                        echo '<a href="">Supprimer la recette</a> <br>';
+                        echo '<a href="editerrecette.php?idRecipe='.$idRecipe.'">Modifier la recette la recette</a>';
+                    }
+                }
+                ?>
             </div>
             <div class="container contenu">
                 <!-- Commentaires -->
@@ -113,10 +167,14 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                         <!-- formulaire d'ajout de commentaire -->
 
                         <form class="form col-md-12 center-block" action="#" method="post">
-                            <div class="form-group col-md-8">
+                            <div class="form-group col-md-7">
                                 <textarea maxlength="1000" class="form-control" id="UserComment" name="UserComment" placeholder="Votre commentaire ici" required=""></textarea>
                             </div>   
-                            <div class="form-group col-md-4">
+
+                            <div class="form-group col-md-2">
+                                <input id="UserNote" name="UserNote" type="number" placeholder="Noter" class="form-control" min="1" max="5">
+                            </div>
+                            <div class="form-group col-md-3">
                                 <button class="btn btn-primary btn-block" type="submit" name="SubmitComment" id="SubmitComment" >Commenter</button>
                             </div>
                         </form>
@@ -127,6 +185,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                             <p class="text-center"> Ancun commentaire</p>
                         </div>
                     <?php } ?>
+
+                    <!-- Affiche tous les commentaire -->    
                     <?php foreach ($comments as $comment) { ?>
                         <div class="col-md-12 breadcrumb">
                             <div class="col-md-4">
@@ -136,23 +196,31 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                         if (!$comment['idUser']) {
                                             echo 'Utilisateur supprimé';
                                         } else {
-                                            $pseudo = get_user_pseudo($comment['idUser']);
-                                            echo $pseudo['UserPseudo'];
+                                            echo get_user_pseudo($comment['idUser']);
+                                            ;
                                         }
-                                        ?></b>
+                                        ?>
+                                    </b>
                                 </p>
                                 <p>Ajouté le 
                                     <?= $comment['CommentDate'] ?>
                                 </p>
-                                <?php if ($isAdmin) { ?>
-                                    <a href="" >Supprimer</a>
-                                <?php } ?>
+                                <?php
+                                if ($connected) {
+                                    if (($isAdmin) OR ($comment['idUser'] === $_SESSION['idUser'])) {
+                                        echo '<a href = "supprimercommentaire.php?idComment='.$comment['idComment'].'&idRecipe='.$idRecipe.'" >Supprimer</a>';
+                                    }
+                                }
+                                ?>
+
                             </div>
                             <div class="col-md-8">
                                 <p>
                                     <?= $comment['CommentText'] ?>
                                 </p>
+
                             </div>
+
                         </div>
                     <?php } ?>
 

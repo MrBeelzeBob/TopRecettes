@@ -11,7 +11,7 @@ $UserPseudo = 'Profil';
 //test si l'utilisateur est connecté
 if (isset($_SESSION['idUser'])) {
 
-    $UserPseudo = get_user_pseudo($_SESSION['idUser'])['UserPseudo'];
+    $UserPseudo = get_user_pseudo($_SESSION['idUser']);
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
 }

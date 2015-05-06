@@ -117,8 +117,7 @@ switch ($sort) {
                                         if (!$recipe['idUser']) {
                                             echo 'Utilisateur supprimé';
                                         } else {
-                                            $pseudo = get_user_pseudo($recipe['idUser']);
-                                            echo $pseudo['UserPseudo'];
+                                            echo get_user_pseudo($recipe['idUser']);
                                         }
                                         ?>
                                     </p>
