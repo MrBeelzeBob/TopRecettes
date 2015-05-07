@@ -25,14 +25,15 @@ if (isset($_SESSION['idUser'])) {
 //test les parametre dans l'url 
 if ((isset($_GET['sort'])) or ( isset($_GET['search']))) {
 
-    if ((isset($_GET['search'])) AND ( !empty($_GET['search']))) {
+    if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
 
         $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser);
-        $search = $_GET['search'];
-        $sort = $_GET['sort'];
+
+        $search = $_GET['search']; //utilisater pour définir la valeur dans le formulaire
+        $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
     } else {
         $recipes = get_recipes($_GET['sort'], NULL, $idUser);
-        $sort = $_GET['sort'];
+        $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
     }
 } else {
     $recipes = get_recipes(NULL, NULL, $idUser);
@@ -46,6 +47,7 @@ switch ($sort) {
     case 4: $title = 'Recettes - Moins bien notées';
     case 5: $title = 'Recettes - Mes recettes';
 }
+var_dump_pre($recipes);
 ?>
 
 <!doctype html>
@@ -122,6 +124,12 @@ switch ($sort) {
                                         ?>
                                     </p>
                                     <p>Date d'ajout : <?= $recipe['RecipeDate']; ?></p>
+                                    <p>
+                                        Moyenne des notes : 
+                                        <?php
+                                        echo get_avg_note_recipe($recipe['idRecipe']);
+                                        ?>
+                                    </p>
                                 </div>
                             </div>
                         </div>

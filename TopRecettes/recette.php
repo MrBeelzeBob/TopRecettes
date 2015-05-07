@@ -28,7 +28,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
                     if ((isset($_POST['UserNote'])) AND (!empty($_POST['UserNote']))) { //test si l'utilisateur note la recette
                         $UserNote = $_POST['UserNote'];
-                        if (($UserNote > 1) AND ($UserNote < 5)) { //test si la note est comprise entre 1 et 5
+                        if (($UserNote >= 1) AND ($UserNote <= 5)) { //test si la note est comprise entre 1 et 5
                             add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment'], $UserNote); //Ajoute le commentaire avec la note
                         } else {
                             throw new Exception('Le commentaire n\'a pas été ajouté car la note n\'est par comprise entre 1 et 5.');

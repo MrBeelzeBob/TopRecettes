@@ -137,7 +137,7 @@ function get_recipes($sort, $search, $idUser) {
         $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, trecipe.idUser '
                 . 'FROM trecipe ';
         if (!empty($search)) {
-            $query .= 'WHERE trecipe.RecipeTitle REGEXP ' . $search;
+            $query .= 'WHERE trecipe.RecipeTitle REGEXP "' . $search.'"';
         }
 
         switch ($sort) {
@@ -552,6 +552,35 @@ function delete_contains_recipe($idRecipe) {
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idRecipe" => $idRecipe));
     $statement = $statement->fetch();
+}
+
+
+function get_top_recipes() {
+    $pdo = connectDB();
+    $query = 'SELECT *, AVG(Note) as avg_note
+            FROM noter
+            NATURAL JOIN t_videos
+            GROUP BY nomVideo
+            ORDER BY avg_note DESC ';
+    $statement = $pdo->prepare($query);
+    $statement->execute();
+    $statement = $statement->fetchAll();
+    return $statement;
+}
+
+function get_avg_note_recipe($idRecipe) {
+    $pdo = connectDB();
+    $query = 'SELECT idRecipe, AVG(comments.CommentNote) as avg FROM comments WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement = $statement->fetch();
+    $text = NULL;
+    
+    for ($i = 1; $i <= $statement['avg']; $i++) {
+            $text .= '<span class="glyphicon glyphicon-star"></span>';
+    }
+    return $text;
+    
 }
 
 /**

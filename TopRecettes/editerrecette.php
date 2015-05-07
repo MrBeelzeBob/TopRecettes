@@ -106,9 +106,13 @@ if (isset($_SESSION['idUser'])) {
                 var_dump_pre($EditRecipe_Ingredients);
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
                     echo ' ma bite' . $i;
-                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId']; 
+                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $idNewRecipe);
+
+//                    header('Location: recette.php?id=' . $idNewRecipe);
+//                    $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+//                    exit();
                 }
             }
             if ($_SESSION['EditRecipe']['Edit'] == 'update') {
@@ -118,17 +122,17 @@ if (isset($_SESSION['idUser'])) {
                 delete_contains_recipe($_SESSION['EditRecipe']['idRecipe']); //Supprime tous les ingrédients associé à la recette en cours de mdification
                 //Ajoute les nouveaux ingredients et quantités dans la base
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
-                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId']; 
+                    
+                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
+
+//                    header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
+//                    $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+//                    exit();
                 }
-                
             }
-
-
-
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
-            //header('Location: recette.php?id=' . $idNewRecipe);
         } catch (Exception $ex) {
             ShowError('Une erreur est survenue : ' . $ex->getMessage());
         }
