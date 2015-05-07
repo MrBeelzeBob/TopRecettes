@@ -5,28 +5,31 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once('script/php/function.php');
 
-$edit = 'add';
-
+if (!isset($_SESSION['EditRecipe']['Edit'])) {
+    $_SESSION['EditRecipe']['Edit'] = 'add'; // Définit pour reconnaitre qu'il y a un ajout
+}
 
 //test si un utilisateur est connecté
 if (isset($_SESSION['idUser'])) {
     $idUser = $_SESSION['idUser'];
-    $edit = 'update';
+
     try {
         //MODIFICATRION D'UNE RECETTE
         if ((isset($_GET['idRecipe'])) AND (!empty($_GET['idRecipe']))) {
+            $_SESSION['EditRecipe']['Edit'] = 'update'; // Définit pour reconnaitre qu'il y a une modification
             $idRecipe = $_GET['idRecipe'];
-            if ((CheckAdmin($idUser ) AND (check_owner_recipe($idUser, $idRecipe)))) {
-                $recipe = get_recipe($idRecipe);
-                var_dump_pre($recipe);
-                
-                $_SESSION['EditRecipe'] = $recipe;
-                
+            if ((CheckAdmin($idUser) OR (check_owner_recipe($idUser, $idRecipe)))) {
+                $recipe = get_recipe($idRecipe); //Recupere les infos de la recette
+                $nbIngredients = count_ingredient_recipe($idRecipe); //Recupere le nombre d'ingrédient nécessaire à la réalisation de la recette
+
+                $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $recipe, $nbIngredients); // Envoie tous dans la session
+
+
                 echo 'modif de la recettes';
-            }else {
+            } else {
                 echo 'erreur admin ou owner';
             }
-        } 
+        }
     } catch (Exception $ex) {
         ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
@@ -37,7 +40,7 @@ if (isset($_SESSION['idUser'])) {
     //test si l'edition d'une recette est en cours
     if ((!isset($_SESSION['EditRecipe']['step'])) AND (empty($_SESSION['EditRecipe']['step']))) {
         $EditRecipe["step"] = 1; //définit l'etape d'édition de la recette a 1
-        $_SESSION['EditRecipe'] = $EditRecipe;
+        $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $EditRecipe);
     }
 
 
@@ -67,7 +70,7 @@ if (isset($_SESSION['idUser'])) {
         try {
             $nbIngredients = $_SESSION['EditRecipe']['RecipeNbIngredient'];
             $j = 1;
-            // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 2 POUR LES AJOUTER DANS UN TABLEAU DANS LA SESSION
+            // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 2 
             for ($i = 1; $i <= $nbIngredients; $i++) { //Permet de tester si les input des ingrédients sont vide
                 if ((isset($_POST['EditRecipeIngredient' . $i])) AND (isset($_POST['EditRecipeQuantity' . $i])) AND (!empty($_POST['EditRecipeIngredient' . $i])) AND (!empty($_POST['EditRecipeQuantity' . $i]))) {
                     $EditRecipe_Ingredients[$j]["IngredientName"] = $_POST['EditRecipeIngredient' . $i]; //recupere l'ingredient (ajouté dans un tableau)
@@ -96,18 +99,36 @@ if (isset($_SESSION['idUser'])) {
             } else {
                 $File_Path = './imgRecettes/toprecette.jpg';
             }
-            //AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
-            $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path);
-            var_dump_pre($EditRecipe_Ingredients);
-            for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
-                echo ' ma bite' . $i;
-                $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
-                $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
-                add_contains($idIngredient, $IngredientQuantity, $idNewRecipe);
+
+            if ($_SESSION['EditRecipe']['Edit'] == 'add') {
+//AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
+                $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path);
+                var_dump_pre($EditRecipe_Ingredients);
+                for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
+                    echo ' ma bite' . $i;
+                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId']; 
+                    $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
+                    add_contains($idIngredient, $IngredientQuantity, $idNewRecipe);
+                }
+            }
+            if ($_SESSION['EditRecipe']['Edit'] == 'update') {
+                //MODIFICATION DE LA RECETTE
+                edit_recipe($_SESSION['EditRecipe']['idRecipe'], $TableRecipe_Infos);
+                var_dump_pre($_SESSION['EditRecipe']['idRecipe']);
+                delete_contains_recipe($_SESSION['EditRecipe']['idRecipe']); //Supprime tous les ingrédients associé à la recette en cours de mdification
+                //Ajoute les nouveaux ingredients et quantités dans la base
+                for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
+                    $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId']; 
+                    $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
+                    add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
+                }
+                
             }
 
+
+
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
-            header('Location: recette.php?id=' . $idNewRecipe);
+            //header('Location: recette.php?id=' . $idNewRecipe);
         } catch (Exception $ex) {
             ShowError('Une erreur est survenue : ' . $ex->getMessage());
         }
@@ -120,6 +141,17 @@ if (isset($_SESSION['idUser'])) {
     header('Location: ./');
     exit();
 }
+
+
+if ($_SESSION['EditRecipe']['Edit'] == 'add') {
+    $edit = 'Ajouter';
+}
+if ($_SESSION['EditRecipe']['Edit'] == 'update') {
+    $edit = 'Modifier';
+}
+
+
+//var_dump_pre($_SESSION['EditRecipe']);
 ?>
 
 <!doctype html>
@@ -138,14 +170,14 @@ if (isset($_SESSION['idUser'])) {
             <?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
-            <h1>TopRecettes <small>Editer une recette</small></h1>
+            <h1>TopRecettes <small><?= $edit ?> une recette</small></h1>
         </header>
 
         <section>
             <div class="container contenu">
 
                 <div class="modal-header col-sm-6 col-sm-offset-3">
-                    <h1 class="text-center">Editer une recette</h1>
+                    <h1 class="text-center"><?= $edit ?> une recette</h1>
                 </div>
                 <div class="modal-body col-sm-6 col-sm-offset-3">
 

@@ -20,8 +20,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
     //Ajoute un nouveau commentaire si envoyé
     if ($connected) {
-        //Test si l'utilisateur connecter est le propriétaire de la recette
-        $isOwner_Recipe = check_owner_recipe($_SESSION['idUser'], $idRecipe);
+         
 
         if (isset($_POST['SubmitComment'])) {
             try {
@@ -150,7 +149,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
                 <?php
                 if ($connected) {
-                    if (($isAdmin) OR ($isOwner_Recipe['idUser'] === $_SESSION['idUser'])) {
+                    if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
                         echo '<a href="">Supprimer la recette</a> <br>';
                         echo '<a href="editerrecette.php?idRecipe='.$idRecipe.'">Modifier la recette la recette</a>';
                     }

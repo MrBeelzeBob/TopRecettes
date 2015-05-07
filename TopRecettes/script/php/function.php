@@ -179,7 +179,7 @@ function get_recipe($idRecipe) {
     }
 }
 
-function add_recipe($TableInfos, $idUser, $PathImage) {
+function add_recipe($RecipeInfos, $idUser, $PathImage) {
 
 
     echo 'dossier img ' . $PathImage;
@@ -191,16 +191,32 @@ function add_recipe($TableInfos, $idUser, $PathImage) {
             . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
 
     $statement = $pdo->prepare($query);
-    $statement->execute(array(":RecipeTitle" => $TableInfos['RecipeTitle'],
-        ":RecipePreparation" => $TableInfos['RecipePreparation'],
-        ":RecipeOrigin" => $TableInfos['RecipeOrigin'],
-        ":idType" => $TableInfos['idType'],
+    $statement->execute(array(":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+        ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+        ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+        ":idType" => $RecipeInfos['idType'],
         ":RecipeImage" => $PathImage,
         ":idUser" => $idUser,
         ":RecipeDate" => $date));
     $statement = $statement->fetch();
 
     return $pdo->lastinsertid();
+}
+
+function edit_recipe($idRecipe, $RecipeInfos) {
+    var_dump_pre($RecipeInfos);
+    
+    $pdo = connectDB();
+
+    $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType '
+            . 'WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe,
+        ":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+        ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+        ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+        ":idType" => $RecipeInfos['idType']));
+    $statement = $statement->fetch();
 }
 
 function get_ingredients() {
@@ -214,11 +230,11 @@ function get_ingredients() {
 
 function count_ingredient_recipe($idRecipe) {
     $pdo = connectDB();
-    $query = 'SELECT count(idIngredient) AS NbIngredient FROM contains WHERE idRecipe = :idRecipe';
+    $query = 'SELECT count(idIngredient) AS RecipeNbIngredient FROM contains WHERE idRecipe = :idRecipe';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idRecipe" => $idRecipe));
     $statement = $statement->fetch();
-    return $statement['NbIngredient'];
+    return $statement;
 }
 
 function checkExist_ingredient($IngredientName) {
@@ -526,6 +542,15 @@ function delete_comment($idComment) {
     $query = 'DELETE FROM comments WHERE idComment = :idComment';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idComment" => $idComment));
+    $statement = $statement->fetch();
+}
+
+function delete_contains_recipe($idRecipe) {
+    $pdo = connectDB();
+
+    $query = 'DELETE FROM contains WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
     $statement = $statement->fetch();
 }
 

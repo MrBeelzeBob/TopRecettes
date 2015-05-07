@@ -11,18 +11,18 @@ $RecipeNbIngredient = NULL;
 $RecipeOrigin = NULL;
 
 
-if (isset($_SESSION['idUser'])) {
+if ($_SESSION['EditRecipe']['Edit'] === 'update') {
     $idUser = $_SESSION['idUser'];
-    $edit = 'update';
+    
     try {
 //MODIFICATRION D'UNE RECETTE
         if ((isset($_GET['idRecipe'])) AND (!empty($_GET['idRecipe']))) {
             $idRecipe = $_GET['idRecipe'];
             if ((CheckAdmin($idUser) AND (check_owner_recipe($idUser, $idRecipe)))) {
-                $recipe = get_recipe($idRecipe);
-                var_dump_pre($recipe);
-
-                $_SESSION['EditRecipe'] = $recipe;
+               // $recipe = get_recipe($idRecipe);
+               // var_dump_pre($recipe);
+                //echo 'ma bite' ;
+                //$_SESSION['EditRecipe'] = $recipe;
             }
         }
     } catch (Exception $ex) {
