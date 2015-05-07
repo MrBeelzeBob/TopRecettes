@@ -93,7 +93,13 @@ tbody tr:hover {
 
 .table-striped tbody tr:nth-child(odd):hover {
     cursor: pointer;
-   background-color: #DE6A1C;
+    background-color: #DE6A1C;
 }
 
+.glyphicon-star {
+    color: #dd4814;
+}
+.glyphicon-star-empty {
+    color: #dd4814;
+}
 

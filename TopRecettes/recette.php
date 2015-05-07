@@ -15,17 +15,11 @@ if (isset($_SESSION['idUser'])) {
 
 //vérifie l'id dans l'url
 if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
-
     $idRecipe = $_GET['id'];
-
-    //Ajoute un nouveau commentaire si envoyé
     if ($connected) {
-         
-
-        if (isset($_POST['SubmitComment'])) {
+        if (isset($_POST['SubmitComment'])) {//Ajoute un nouveau commentaire si envoyé
             try {
-                if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) {
-
+                if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) { //test la reception du commentaire
                     if ((isset($_POST['UserNote'])) AND (!empty($_POST['UserNote']))) { //test si l'utilisateur note la recette
                         $UserNote = $_POST['UserNote'];
                         if (($UserNote >= 1) AND ($UserNote <= 5)) { //test si la note est comprise entre 1 et 5
@@ -46,15 +40,12 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
             }
         }
     }
-
     //récupere les infos principal de la recette
     $recipe = get_recipe($idRecipe);
-    var_dump_pre($recipe);
     //test si la recette existe
     if ($recipe == FALSE) {
-        echo 'vide';
-        /*header('location: ./recettes.php');
-        exit();*/
+        header('location: ./recettes.php');
+        exit();
     }
     //récupere les ingrédients qui composent cette recette
     $ingredients = get_ingredients_recipe($idRecipe);
@@ -62,9 +53,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     $comments = get_comments_recipe($idRecipe);
 } else {
 
-    //header('location: ./Liste.php?type=consoles');
-    //exit();
-    echo 'erreur id';
+    header('location: ./Liste.php?type=consoles');
+    exit();
 }
 ?>
 <!doctype html>
@@ -150,8 +140,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                 <?php
                 if ($connected) {
                     if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
-                        echo '<a href="">Supprimer la recette</a> <br>';
-                        echo '<a href="editerrecette.php?idRecipe='.$idRecipe.'">Modifier la recette la recette</a>';
+                        echo '<a href="supprimerrecette.php?idRecipe=' . $idRecipe . '">Supprimer la recette</a> <br>';
+                        echo '<a href="editerrecette.php?idRecipe=' . $idRecipe . '">Modifier la recette la recette</a>';
                     }
                 }
                 ?>
@@ -196,7 +186,6 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                             echo 'Utilisateur supprimé';
                                         } else {
                                             echo get_user_pseudo($comment['idUser']);
-                                            ;
                                         }
                                         ?>
                                     </b>
@@ -207,7 +196,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <?php
                                 if ($connected) {
                                     if (($isAdmin) OR ($comment['idUser'] === $_SESSION['idUser'])) {
-                                        echo '<a href = "supprimercommentaire.php?idComment='.$comment['idComment'].'&idRecipe='.$idRecipe.'" >Supprimer</a>';
+                                        echo '<a href = "supprimercommentaire.php?idComment=' . $comment['idComment'] . '&idRecipe=' . $idRecipe . '" >Supprimer</a>';
                                     }
                                 }
                                 ?>

@@ -5,10 +5,6 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once('script/php/function.php');
 
-if (!isset($_SESSION['EditRecipe']['Edit'])) {
-    $_SESSION['EditRecipe']['Edit'] = 'add'; // Définit pour reconnaitre qu'il y a un ajout
-}
-
 //test si un utilisateur est connecté
 if (isset($_SESSION['idUser'])) {
     $idUser = $_SESSION['idUser'];
@@ -21,20 +17,18 @@ if (isset($_SESSION['idUser'])) {
             if ((CheckAdmin($idUser) OR (check_owner_recipe($idUser, $idRecipe)))) {
                 $recipe = get_recipe($idRecipe); //Recupere les infos de la recette
                 $nbIngredients = count_ingredient_recipe($idRecipe); //Recupere le nombre d'ingrédient nécessaire à la réalisation de la recette
-
                 $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $recipe, $nbIngredients); // Envoie tous dans la session
-
-
-                echo 'modif de la recettes';
             } else {
-                echo 'erreur admin ou owner';
+                throw new Exception('Vous devez être administrateur ou l\'auteur de la recette pour pouvoir la modifier');
             }
         }
     } catch (Exception $ex) {
         ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
 
-
+    if (!isset($_SESSION['EditRecipe']['Edit'])) {
+        $_SESSION['EditRecipe']['Edit'] = 'add'; // Définit pour reconnaitre qu'il y a un ajout
+    }
 
 
     //test si l'edition d'une recette est en cours
@@ -100,37 +94,30 @@ if (isset($_SESSION['idUser'])) {
                 $File_Path = './imgRecettes/toprecette.jpg';
             }
 
-            if ($_SESSION['EditRecipe']['Edit'] == 'add') {
-//AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
+            if ($_SESSION['EditRecipe']['Edit'] == 'add') {//AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
                 $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path);
-                var_dump_pre($EditRecipe_Ingredients);
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
-                    echo ' ma bite' . $i;
                     $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $idNewRecipe);
-
-//                    header('Location: recette.php?id=' . $idNewRecipe);
-//                    $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
-//                    exit();
                 }
+                header('Location: recette.php?id=' . $idNewRecipe);
+                $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+                exit();
             }
-            if ($_SESSION['EditRecipe']['Edit'] == 'update') {
-                //MODIFICATION DE LA RECETTE
+            if ($_SESSION['EditRecipe']['Edit'] == 'update') {//MODIFICATION DE LA RECETTE
                 edit_recipe($_SESSION['EditRecipe']['idRecipe'], $TableRecipe_Infos);
-                var_dump_pre($_SESSION['EditRecipe']['idRecipe']);
                 delete_contains_recipe($_SESSION['EditRecipe']['idRecipe']); //Supprime tous les ingrédients associé à la recette en cours de mdification
                 //Ajoute les nouveaux ingredients et quantités dans la base
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
-                    
+
                     $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
-
-//                    header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
-//                    $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
-//                    exit();
                 }
+                header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
+                $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+                exit();
             }
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
         } catch (Exception $ex) {
@@ -153,9 +140,6 @@ if ($_SESSION['EditRecipe']['Edit'] == 'add') {
 if ($_SESSION['EditRecipe']['Edit'] == 'update') {
     $edit = 'Modifier';
 }
-
-
-//var_dump_pre($_SESSION['EditRecipe']);
 ?>
 
 <!doctype html>
@@ -210,7 +194,3 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
         <script src="script/js/custom.js"></script>
     </body>
 </html>
-
-<?php
-var_dump_pre($_SESSION);
-?>

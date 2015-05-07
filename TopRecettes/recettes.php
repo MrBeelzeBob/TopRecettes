@@ -47,7 +47,6 @@ switch ($sort) {
     case 4: $title = 'Recettes - Moins bien notées';
     case 5: $title = 'Recettes - Mes recettes';
 }
-var_dump_pre($recipes);
 ?>
 
 <!doctype html>
@@ -93,7 +92,7 @@ var_dump_pre($recipes);
                                 <?php echo Select('sort', $TableSort, $sort, FALSE); ?>
                             </div>
                             <div class="form-group col-sm-2 col-xs-4">
-                                <button type="submit" class="btn btn-default">
+                                <button type="submit" class="btn btn-primary">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
                                 <a href="recettes.php" class="btn btn-default" title="Annuler la recherche">
@@ -127,7 +126,7 @@ var_dump_pre($recipes);
                                     <p>
                                         Moyenne des notes : 
                                         <?php
-                                        echo get_avg_note_recipe($recipe['idRecipe']);
+                                        echo show_avg_note_recipe($recipe['RecipeAVG']);
                                         ?>
                                     </p>
                                 </div>
