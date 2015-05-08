@@ -65,7 +65,7 @@ $RecipeTypes = recipe_types_associate();
             </div>
 
             <div class="form-group col-md-6">
-                <button class="btn btn-primary btn-block" type="reset" >Annuler</button>
+                <button class="btn btn-primary btn-block" type="reset" name="EditReset">Annuler</button>
             </div>
             <div class="form-group col-md-6">
                 <button class="btn btn-primary btn-block" type="submit" name="EditRecipeStep1" id="btn-submit" >Suivant</button>

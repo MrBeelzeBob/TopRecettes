@@ -13,8 +13,8 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
     //Recupere les ingrédient associé à la recette en cours de modification
     $ingredients = get_ingredients_recipe($_SESSION['EditRecipe']['idRecipe']);
     $RecipePreparation = $_SESSION['EditRecipe']['RecipePreparation'];
-}else{
-    $RecipePreparation =  NULL;
+} else {
+    $RecipePreparation = NULL;
 }
 ?>
 
@@ -40,7 +40,7 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
 
     <div class="form-group">
         <label class="control-label" for="EditRecipePreparation">Préparation de la recette</label>
-        <textarea maxlength="1000" class="form-control" id="EditRecipePreparation" name="EditRecipePreparation" id="EditRecipePreparation."  placeholder="Préparation de la recette" ><?= $RecipePreparation ?></textarea>
+        <textarea maxlength="5000" class="form-control" id="EditRecipePreparation" name="EditRecipePreparation" id="EditRecipePreparation."  placeholder="Préparation de la recette" ><?= $RecipePreparation ?></textarea>
     </div>
 
     <div class="form-group">
@@ -48,10 +48,15 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
         <input id="EditRecipeImage" name="EditRecipeImage" class="input-file" type="file" accept="image/*" >
     </div>
 
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-4">
         <button class="btn btn-primary btn-block" type="submit" name="EditRecipeBack">Précédent</button>
     </div>
-    <div class="form-group col-md-6">
+
+    <div class="form-group col-md-4">
+        <button class="btn btn-primary btn-block" type="submit" name="EditReset">Annuler</button>
+    </div>
+
+    <div class="form-group col-md-4">
         <button class="btn btn-primary btn-block" type="submit" name="EditRecipeStep2" id="btn-submit" >Terminer</button>
     </div>
     <?php echo DataList('EditListIngredient', $TableIngredients); ?>

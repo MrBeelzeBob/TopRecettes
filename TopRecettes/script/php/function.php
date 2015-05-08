@@ -125,32 +125,8 @@ function CheckAdmin($idUser) {
     return false;
 }
 
-function get_recipes($sort, $search, $idUser) {
+function get_recipes($sort, $search, $idUser, $limit) {
     $pdo = connectDB();
-
-//    $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, trecipe.idUser, AVG(comments.CommentNote) AS RecipeAVG '
-//            . 'FROM trecipe '
-//            . 'LEFT JOIN comments ON comments.idRecipe = trecipe.idRecipe '
-//            . 'GROUP BY trecipe.idRecipe '
-//            . 'ORDER BY trecipe.RecipeTitle ';
-//    if (!empty($search)) {
-//        $query .= 'WHERE trecipe.RecipeTitle REGEXP "' . $search . '" ';
-//    }
-//
-//    switch ($sort) {
-//        case 1:
-//            $query .= 'ORDER BY trecipe.RecipeDate DESC ;';
-//        case 2:
-//            $query .= 'ORDER BY trecipe.RecipeDate ASC ;';
-//        case 3:
-//            $query .= 'ORDER BY RecipeAVG ASC;';
-//        case 4:
-//            $query .= 'ORDER BY RecipeAVG DESC;';
-//        case 5:
-//            if (!empty($idUser)) { //vérifie si l'iduser n'est pas vide
-//                $query .= 'WHERE trecipe.idUser = ' . $idUser;
-//            }
-//    }
 
     $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipeImage, trecipe.RecipeDate, trecipe.idUser, AVG(comments.CommentNote) AS RecipeAVG '
             . 'FROM trecipe '
@@ -196,15 +172,18 @@ function get_recipes($sort, $search, $idUser) {
             break;
         case 5:
             if (!empty($search)) {
-                $query .= 'WHERE trecipe.RecipeTitle REGEXP "' . $search . '" AND trecipe.idUser = ' . $idUser. ' ';
+                $query .= 'WHERE trecipe.RecipeTitle REGEXP "' . $search . '" AND trecipe.idUser = ' . $idUser . ' ';
             } else {
-                $query .= 'WHERE trecipe.idUser = ' . $idUser. ' ';
-                
+                $query .= 'WHERE trecipe.idUser = ' . $idUser . ' ';
             }
             $query .= 'GROUP BY trecipe.idRecipe '
                     . 'ORDER BY RecipeTitle ';
             break;
     }//end switch
+
+    if (!empty($limit)) {  //Ajoute une limit de recettes à récupéré
+        $query .= 'Limit 4 ';
+    }
     $statement = $pdo->prepare($query);
     $statement->execute();
     $statement = $statement->fetchall();
@@ -225,40 +204,84 @@ function get_recipe($idRecipe) {
     return $statement;
 }
 
-function add_recipe($RecipeInfos, $idUser, $PathImage) {
+function add_recipe($RecipeInfos, $idUser) {
     $pdo = connectDB();
     $date = date('Y-m-d', time()); //recupere la date
+    //Test si l'image doit aussi etre modifier
+    if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
+        $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
+        //AJOUTE LA RECETTE AVEC L'IMAGE
+        $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, RecipeImage, idUser, RecipeDate) '
+                . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
 
-    $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, RecipeImage, idUser, RecipeDate) '
-            . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+            ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+            ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+            ":idType" => $RecipeInfos['idType'],
+            ":RecipeImage" => $PathImage,
+            ":idUser" => $idUser,
+            ":RecipeDate" => $date));
+        $statement = $statement->fetch();
 
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":RecipeTitle" => $RecipeInfos['RecipeTitle'],
-        ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
-        ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
-        ":idType" => $RecipeInfos['idType'],
-        ":RecipeImage" => $PathImage,
-        ":idUser" => $idUser,
-        ":RecipeDate" => $date));
-    $statement = $statement->fetch();
+        return $pdo->lastinsertid();
+    } else {
+        //AJOUTE LA RECETTE SANS IMAGE
+        $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, idUser, RecipeDate) '
+                . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :idUser, :RecipeDate)';
 
-    return $pdo->lastinsertid();
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+            ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+            ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+            ":idType" => $RecipeInfos['idType'],
+            ":idUser" => $idUser,
+            ":RecipeDate" => $date));
+        $statement = $statement->fetch();
+
+        return $pdo->lastinsertid();
+    }
 }
 
 function edit_recipe($idRecipe, $RecipeInfos) {
 
+    var_dump_pre($RecipeInfos);
+
     $pdo = connectDB();
 
-    $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType '
-            . 'WHERE idRecipe = :idRecipe';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idRecipe" => $idRecipe,
-        ":RecipeTitle" => $RecipeInfos['RecipeTitle'],
-        ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
-        ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
-        ":idType" => $RecipeInfos['idType']));
-    $statement = $statement->fetch();
-    return;
+    //Test si l'image doit aussi etre modifier
+    if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
+        if ($RecipeInfos['RecipeImage'] == './imgRecettes/toprecette.jpg') { //Teste si l'image actuel est celle par défaut
+            $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
+        } else {
+            unlink($RecipeInfos['RecipeImage']); //supprime l'ancienne image
+            $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
+        }
+        //MODIFIE LA RECETTE AVEC L'IMAGE
+        $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType, RecipeImage = :RecipeImage '
+                . 'WHERE idRecipe = :idRecipe';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idRecipe" => $idRecipe,
+            ":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+            ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+            ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+            ":idType" => $RecipeInfos['idType'],
+            ":RecipeImage" => $PathImage));
+        $statement = $statement->fetch();
+        return;
+    } else {
+        //MODIFIE LA RECETTE SANS MODIFIER L'IMAGE
+        $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType '
+                . 'WHERE idRecipe = :idRecipe';
+        $statement = $pdo->prepare($query);
+        $statement->execute(array(":idRecipe" => $idRecipe,
+            ":RecipeTitle" => $RecipeInfos['RecipeTitle'],
+            ":RecipePreparation" => $RecipeInfos['RecipePreparation'],
+            ":RecipeOrigin" => $RecipeInfos['RecipeOrigin'],
+            ":idType" => $RecipeInfos['idType']));
+        $statement = $statement->fetch();
+        return;
+    }
 }
 
 function delete_recipe($idRecipe) {
@@ -590,9 +613,9 @@ function show_avg_note_recipe($AvgNote) {
     //Affiche 5 étoile remplies ou vides selon la moyenne des notes récupére
     for ($i = 1; $i <= 5; $i++) {
         if ($i <= $AvgNote) {
-            $text .= '<span class="glyphicon glyphicon-star"></span> '; //Etoile remplie
+            $text .= '<span class="glyphicon glyphicon-star"></span>'; //Etoile remplie
         } else {
-            $text .= '<span class="glyphicon glyphicon-star-empty"></span> '; //Etoile vide
+            $text .= '<span class="glyphicon glyphicon-star-empty"></span>'; //Etoile vide
         }
     }
     return $text;

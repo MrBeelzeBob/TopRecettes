@@ -16,6 +16,9 @@ if (isset($_SESSION['idUser'])) {
             $idRecipe = $_GET['idRecipe'];
             if ((CheckAdmin($idUser) OR (check_owner_recipe($idUser, $idRecipe)))) {
                 $recipe = get_recipe($idRecipe); //Recupere les infos de la recette
+                if (!$recipe) {
+                    throw new Exception('Cette recette n\'existe pas.');
+                }
                 $nbIngredients = count_ingredient_recipe($idRecipe); //Recupere le nombre d'ingrédient nécessaire à la réalisation de la recette
                 $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $recipe, $nbIngredients); // Envoie tous dans la session
             } else {
@@ -80,22 +83,17 @@ if (isset($_SESSION['idUser'])) {
             //Test si la preparation est vide
             if ((isset($_POST['EditRecipePreparation'])) AND (!empty($_POST['EditRecipePreparation']))) {
                 $EditRecipe_step2['RecipePreparation'] = $_POST['EditRecipePreparation']; //recupere la preparation
+                $EditRecipe_step2['RecipeImage_New'] = $_FILES['EditRecipeImage'];
                 $TableRecipe_Infos = array_merge($_SESSION['EditRecipe'], $EditRecipe_step2); //Recupere la preparation
             } else {
                 throw new Exception('Merci de remplir la préparation de la recette.');
             }
 
 
-            //TEST L'IMAGE
-            $EditRecipe_Image = $_FILES['EditRecipeImage']; //recupere l'image
-            if (!empty($EditRecipe_Image['name'])) {
-                $File_Path = upload($EditRecipe_Image); //Upload l'image dans un dossier du serveur et récupère le dossier ou l'image à été uploadé
-            } else {
-                $File_Path = './imgRecettes/toprecette.jpg';
-            }
+
 
             if ($_SESSION['EditRecipe']['Edit'] == 'add') {//AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
-                $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser'], $File_Path);
+                $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser']); //Ajoute la recette avec une image par défaut
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
                     $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
@@ -104,13 +102,12 @@ if (isset($_SESSION['idUser'])) {
                 header('Location: recette.php?id=' . $idNewRecipe);
                 $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
                 exit();
-            }
+            }//end add
             if ($_SESSION['EditRecipe']['Edit'] == 'update') {//MODIFICATION DE LA RECETTE
-                edit_recipe($_SESSION['EditRecipe']['idRecipe'], $TableRecipe_Infos);
+                edit_recipe($_SESSION['EditRecipe']['idRecipe'], $TableRecipe_Infos); // MODIFIE LA RECETTE
                 delete_contains_recipe($_SESSION['EditRecipe']['idRecipe']); //Supprime tous les ingrédients associé à la recette en cours de mdification
                 //Ajoute les nouveaux ingredients et quantités dans la base
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
-
                     $idIngredient = $EditRecipe_Ingredients[$i]['IngredientId'];
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
@@ -118,7 +115,7 @@ if (isset($_SESSION['idUser'])) {
                 header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
                 $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
                 exit();
-            }
+            }//end edit
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
         } catch (Exception $ex) {
             ShowError('Une erreur est survenue : ' . $ex->getMessage());
@@ -127,6 +124,11 @@ if (isset($_SESSION['idUser'])) {
 //test si l'utilisateur veut revenir à l'etape 1 lorsqu'il est dans l'etape 2
     if (isset($_POST['EditRecipeBack'])) {
         $_SESSION['EditRecipe']['step'] = 1;
+    }
+    if (isset($_POST['EditReset'])) {
+        header('Location: ./');
+        $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+        exit();
     }
 } else {
     header('Location: ./');

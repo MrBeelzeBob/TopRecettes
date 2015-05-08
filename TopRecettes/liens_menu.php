@@ -81,7 +81,7 @@ if (isset($_SESSION['idUser'])) {
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="recettes.php">
                                     <span class="glyphicon glyphicon-cog"></span> Gestion des recettes
                                 </a>
                             </li>

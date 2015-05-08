@@ -4,6 +4,11 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once('./script/php/function.php');
+
+
+$toprecipes = get_recipes($sort = 3, $search = NULL, $idUser = NULL, $limit = 4);
+
+$lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4)
 ?>
 
 <!doctype html>
@@ -28,24 +33,80 @@ require_once('./script/php/function.php');
 
         <section>
             <div class="container contenu">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#home" data-toggle="tab" aria-expanded="false">Home</a></li>
-                    <li class=""><a href="#profile" data-toggle="tab" aria-expanded="false">Profile</a></li>
-                </ul>
-                <div id="myTabContent" class="tab-content">
-                    <div class="tab-pane fade active in" id="home">
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
-                        <p>
-                            Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros est euismod turpis, id tincidunt sapien risus a quam. Maecenas fermentum consequat mi. Donec fermentum. Pellentesque malesuada nulla a mi. Duis sapien sem, aliquet nec, commodo eget, consequat quis, neque. Aliquam faucibus, elit ut dictum aliquet, felis nisl adipiscing sapien, sed malesuada diam lacus eget erat. Cras mollis scelerisque nunc. Nullam arcu. Aliquam consequat. Curabitur augue lorem, dapibus quis, laoreet et, pretium ac, nisi. Aenean magna nisl, mollis quis, molestie eu, feugiat in, orci. In hac habitasse platea dictumst.
-                        </p>
+                <!-- Affiche la liste des recettes -->
+                <div class="col-md-6 col-sm-12">
+                    <div class="page-header">
+                        <h3 class="text-center">Les meilleures recettes</h3>
                     </div>
-                    <div class="tab-pane fade" id="profile">
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
+                    <?php if (empty($toprecipes)) { //Affiche un message d'erreur?>
+                        <p style="text-align : center;">Ancune recette n'a été trouvée.</p>
+                    <?php } ?>
+                    <?php foreach ($toprecipes as $toprecipe) { ?>
+                        <div class="col-xs-6">
+                            <div class="thumbnail">
+                                <a href="recette.php?id=<?= $toprecipe['idRecipe']; ?>" class="post-image-link">
+                                    <p><img src="<?= $toprecipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
+                                </a>
+                                <div class="caption-full">
+                                    <h3><?= $toprecipe['RecipeTitle']; ?></h3>
+                                    <p>Auteur : 
+                                        <?php
+                                        if (!$toprecipe['idUser']) {
+                                            echo 'Utilisateur supprimé';
+                                        } else {
+                                            echo get_user_pseudo($toprecipe['idUser']);
+                                        }
+                                        ?>
+                                    </p>
+                                    <p>Date d'ajout : <?= $toprecipe['RecipeDate']; ?></p>
+                                    <p>
+                                        Moyenne des notes : 
+                                        <?php
+                                        echo show_avg_note_recipe($toprecipe['RecipeAVG']);
+                                        ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+                
+                <div class="col-md-6 col-sm-12">
+                    <div class="page-header">
+                        <h3 class="text-center">Les dernières recettes</h3>
                     </div>
+                    <?php if (empty($lastrecipes)) { //Affiche un message d'erreur?>
+                        <p style="text-align : center;">Ancune recette n'a été trouvée.</p>
+                    <?php } ?>
+                    <?php foreach ($lastrecipes as $lastrecipe) { //Affiche toutes les recettes recettes récup?>
+                        <div class="col-xs-6">
+                            <div class="thumbnail">
+                                <a href="recette.php?id=<?= $lastrecipe['idRecipe']; ?>" class="post-image-link">
+                                    <p><img src="<?= $lastrecipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
+                                </a>
+                                <div class="caption-full">
+                                    <h3><?= $lastrecipe['RecipeTitle']; ?></h3>
+                                    <p>Auteur : 
+                                        <?php
+                                        if (!$lastrecipe['idUser']) {
+                                            echo 'Utilisateur supprimé';
+                                        } else {
+                                            echo get_user_pseudo($lastrecipe['idUser']);
+                                        }
+                                        ?>
+                                    </p>
+                                    <p>Date d'ajout : <?= $lastrecipe['RecipeDate']; ?></p>
+                                    <p>
+                                        Moyenne des notes : 
+                                        <?php
+                                        //Affiche la moyenne des notes pour cette recette
+                                        echo show_avg_note_recipe($lastrecipe['RecipeAVG']);
+                                        ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
         </section>

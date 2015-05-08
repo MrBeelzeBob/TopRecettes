@@ -27,16 +27,16 @@ if ((isset($_GET['sort'])) or ( isset($_GET['search']))) {
 
     if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
 
-        $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser);
+        $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser, $limit = NULL);
 
         $search = $_GET['search']; //utilisater pour définir la valeur dans le formulaire
         $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
     } else {
-        $recipes = get_recipes($_GET['sort'], NULL, $idUser);
+        $recipes = get_recipes($_GET['sort'], NULL, $idUser, $limit = NULL);
         $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
     }
 } else {
-    $recipes = get_recipes(NULL, NULL, $idUser);
+    $recipes = get_recipes(NULL, NULL, $idUser, $limit = NULL);
 }
 
 //Modifie le titre selon le tri efféctué

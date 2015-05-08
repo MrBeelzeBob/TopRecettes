@@ -53,7 +53,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     $comments = get_comments_recipe($idRecipe);
 } else {
 
-    header('location: ./Liste.php?type=consoles');
+    header('location: ./');
     exit();
 }
 ?>
@@ -73,24 +73,27 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <?php include "liens_menu.php"; ?>    
         </nav>
+        <!-- Titre de la page -->
         <header class="container page-header">
             <h1>TopRecettes <small>Consulter une recette</small></h1>
         </header>
 
         <section>
+            <!-- Informations sur la recettes  -->
             <div class="container contenu">
                 <div class="page-header">
                     <h2 class="text-center"><?= $recipe['RecipeTitle'] ?></h2>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <div class="thumbnail">
-                        <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="">
+                        <!-- Image de la recette -->
+                        <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="<?= $recipe['RecipeTitle']; ?>">
                     </div>
                 </div>
 
                 <!-- table des ingrédients -->
-                <div class="col-md-4">
-                    <table style="width:100%" class="thumbnail table table-striped">
+                <div class="col-md-6">
+                    <table  class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <td>Ingrédient</td>
@@ -110,14 +113,14 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
 
 
-                <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-6">
                     <div class="page-header">
                         <h3 class="text-center">Préparation de la recette</h3>
                     </div>
-                    <p><?= $recipe['RecipePreparation']; ?></p>
+                    <?= $recipe['RecipePreparation']; ?>
                 </div>
 
-                <div class="thumbnail col-md-4">
+                <div class="col-md-4">
                     <p>
                         Auteur : 
                         <?php
@@ -133,18 +136,18 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                         <?= $recipe['RecipeOrigin']; ?>
                     </p>
 
-
+                    <?php
+                    if ($connected) {
+                        if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
+                            echo '<a class="btn btn-primary" href="supprimerrecette.php?idRecipe=' . $idRecipe . '">Supprimer</a> ';
+                            echo '<a class="btn btn-primary" href="editerrecette.php?idRecipe=' . $idRecipe . '">Modifier</a>';
+                        }
+                    }
+                    ?>
                 </div> 
 
 
-                <?php
-                if ($connected) {
-                    if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
-                        echo '<a href="supprimerrecette.php?idRecipe=' . $idRecipe . '">Supprimer la recette</a> <br>';
-                        echo '<a href="editerrecette.php?idRecipe=' . $idRecipe . '">Modifier la recette la recette</a>';
-                    }
-                }
-                ?>
+
             </div>
             <div class="container contenu">
                 <!-- Commentaires -->
@@ -171,7 +174,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
                     <?php if (empty($comments)) { ?>
                         <div class="col-md-12 breadcrumb">
-                            <p class="text-center"> Ancun commentaire</p>
+                            <p class="text-center"> Ancuns commentaires</p>
                         </div>
                     <?php } ?>
 
@@ -182,16 +185,16 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <p>Posté par 
                                     <b>
                                         <?php
-                                        if (!$comment['idUser']) {
+                                        if (!$comment['idUser']) { //Test si l'id est false -> 0
                                             echo 'Utilisateur supprimé';
                                         } else {
-                                            echo get_user_pseudo($comment['idUser']);
+                                            echo get_user_pseudo($comment['idUser']); //recupere le pseudo de l'utilisateur grace à son id
                                         }
                                         ?>
                                     </b>
                                 </p>
                                 <p>Ajouté le 
-                                    <?= $comment['CommentDate'] ?>
+                                    <?= $comment['CommentDate'] //affiche la date d'ajout du commentaire'?>
                                 </p>
                                 <?php
                                 if ($connected) {
@@ -223,8 +226,6 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                 Cedric Dos Reis - CFPT 2015 
             </p>
         </footer>
-
-
         <script src="script/js/jquery.js"></script>
         <script src="script/js/bootstrap.min.js"></script>
 

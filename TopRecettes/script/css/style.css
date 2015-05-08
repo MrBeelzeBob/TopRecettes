@@ -86,7 +86,7 @@ tbody tr {
     background-color: #e3e3e3;
 }
 
-tbody tr:hover {
+/*tbody tr:hover {
     cursor: pointer;
     background-color: #DE6A1C;
 }
@@ -94,7 +94,7 @@ tbody tr:hover {
 .table-striped tbody tr:nth-child(odd):hover {
     cursor: pointer;
     background-color: #DE6A1C;
-}
+}*/
 
 .glyphicon-star {
     color: #dd4814;
