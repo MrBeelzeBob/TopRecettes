@@ -23,20 +23,29 @@ if (isset($_SESSION['idUser'])) {
 }
 
 //test les parametre dans l'url 
-if ((isset($_GET['sort'])) or ( isset($_GET['search']))) {
-
-    if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
-
+if ((isset($_GET['sort'])) or ( isset($_GET['search']))) { //Test si une recherche est 
+//test si les deux parametre (sort, search) sont reçus
+    if ((isset($_GET['search'])) AND (!empty($_GET['search'])) AND (isset($_GET['sort'])) AND (!empty($_GET['sort']))) {
         $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser, $limit = NULL);
-
-        $search = $_GET['search']; //utilisater pour définir la valeur dans le formulaire
-        $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
-    } else {
-        $recipes = get_recipes($_GET['sort'], NULL, $idUser, $limit = NULL);
-        $sort = $_GET['sort']; //utilisater pour définir la valeur dans le formulaire
+        $search = $_GET['search'];
+        $sort = $_GET['sort'];
+    } else
+    //test la reception d'une recherche sans tri
+    if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
+        $recipes = get_recipes($sort = NULL, $_GET['search'], $idUser, $limit = NULL);
+        $search = $_GET['search'];
+    } else
+    //test la reception dun tri sans recherche
+    if ((isset($_GET['sort'])) AND (!empty($_GET['sort']))) {
+        $recipes = get_recipes($_GET['sort'], $search = NULL, $idUser, $limit = NULL);
+        $sort = $_GET['sort'];
+    } else
+    //Test la reception d'un tri vide et d'une recherche vide
+    if ((empty($_GET['sort'])) AND (empty($_GET['search']))) {
+        $recipes = get_recipes($sort = NULL, $search = NULL, $idUser, $limit = NULL);
     }
 } else {
-    $recipes = get_recipes(NULL, NULL, $idUser, $limit = NULL);
+    $recipes = get_recipes($sort = NULL, $search = NULL, $idUser, $limit = NULL);
 }
 
 //Modifie le titre selon le tri efféctué
@@ -102,15 +111,13 @@ switch ($sort) {
                         </div>
                     </form>
                     <!-- Affiche la liste des recettes -->
-                    <?php if (empty($recipes)) { //Affiche un message d'erreur?>
+                    <?php if (empty($recipes)) { //Affiche un message d'erreur      ?>
                         <p style="text-align : center;">Ancune recette n'a été trouvée.</p>
                     <?php } ?>
                     <?php foreach ($recipes as $recipe) { ?>
                         <div class="col-md-3 col-sm-4 col-xs-6">
-                            <div class="thumbnail">
-                                <a href="recette.php?id=<?= $recipe['idRecipe']; ?>" class="post-image-link">
-                                    <p><img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
-                                </a>
+                            <a href="recette.php?id=<?= $recipe['idRecipe']; ?>" class="thumbnail post-image-link info_thumbnail">
+                                <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="">
                                 <div class="caption-full">
                                     <h3><?= $recipe['RecipeTitle']; ?></h3>
                                     <p>Auteur : 
@@ -130,7 +137,7 @@ switch ($sort) {
                                         ?>
                                     </p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     <?php } ?>
                 </div>

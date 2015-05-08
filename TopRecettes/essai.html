@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="script/css/bootstrap.min.css" rel="stylesheet">
+        <link href="script/css/style.css" rel="stylesheet">
+        <style>
+            .main  {
+                width: 250px;
+                height: 600px;
+                border: 1px solid red;
+            }
+
+            .img {
+                background-image: url("130 MX.jpg");
+                background-color: #cccccc;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                width: 250px;
+                height: 125px;
+                border: 1px solid pink;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>Hello World!</h1>
+
+
+        <div class="main col-md-3 col-sm-4 col-xs-6">
+            <div class="thumbnail">
+                <a href="recette.php?id=1" class="post-image-link">
+                    <div id="img">
+                        
+                    </div>
+                    <!--<p><img src="130 MX.jpg" class="img-responsive" alt=""></p>-->
+                </a>
+                <div class="caption-full">
+                    <h3><?= $recipe['RecipeTitle']; ?></h3>
+                    <p>Auteur : df
+                    </p>
+                    <p>Date d'ajout : ddd</p>
+                    <p>
+                        Moyenne des notes : ddd
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+</html>

@@ -18,7 +18,6 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
         <meta charset="utf-8">
         <title>Titre de la page  </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
-
         <link href="script/css/style.css" rel="stylesheet">
 
     </head>
@@ -43,10 +42,8 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
                     <?php } ?>
                     <?php foreach ($toprecipes as $toprecipe) { ?>
                         <div class="col-xs-6">
-                            <div class="thumbnail">
-                                <a href="recette.php?id=<?= $toprecipe['idRecipe']; ?>" class="post-image-link">
-                                    <p><img src="<?= $toprecipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
-                                </a>
+                            <a href="recette.php?id=<?= $toprecipe['idRecipe']; ?>" class="thumbnail post-image-link info_thumbnail">
+                                <img src="<?= $toprecipe['RecipeImage']; ?>" class="img-responsive" alt="">
                                 <div class="caption-full">
                                     <h3><?= $toprecipe['RecipeTitle']; ?></h3>
                                     <p>Auteur : 
@@ -66,11 +63,11 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
                                         ?>
                                     </p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     <?php } ?>
                 </div>
-                
+
                 <div class="col-md-6 col-sm-12">
                     <div class="page-header">
                         <h3 class="text-center">Les dernières recettes</h3>
@@ -80,10 +77,9 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
                     <?php } ?>
                     <?php foreach ($lastrecipes as $lastrecipe) { //Affiche toutes les recettes recettes récup?>
                         <div class="col-xs-6">
-                            <div class="thumbnail">
-                                <a href="recette.php?id=<?= $lastrecipe['idRecipe']; ?>" class="post-image-link">
-                                    <p><img src="<?= $lastrecipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
-                                </a>
+                            <a href="recette.php?id=<?= $lastrecipe['idRecipe']; ?>" class="thumbnail post-image-link info_thumbnail">
+                                <p><img src="<?= $lastrecipe['RecipeImage']; ?>" class="img-responsive" alt=""></p>
+
                                 <div class="caption-full">
                                     <h3><?= $lastrecipe['RecipeTitle']; ?></h3>
                                     <p>Auteur : 
@@ -104,7 +100,7 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
                                         ?>
                                     </p>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     <?php } ?>
                 </div>

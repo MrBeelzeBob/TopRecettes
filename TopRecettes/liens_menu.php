@@ -21,8 +21,9 @@ if (isset($_SESSION['idUser'])) {
 <div class="container">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" >
-            <span class="sr-only">Toggle navigation</span>
-            <span class="glyphicon glyphicon-list"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
         </button>
         <!-- Lien acceuil -->
         <a class="navbar-brand" href="./" title="Acceuil">
@@ -35,23 +36,16 @@ if (isset($_SESSION['idUser'])) {
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
             <li><a href="recettes.php">Des Recettes</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">liens utiles <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="https://bootswatch.com/united/">Demo</a></li>
-                    <li><a href="http://getbootstrap.com/components"/>Demo</a></li>
-                </ul>
-            </li>
             <?php if ($connected) { ?>
                 <li><a href="editerrecette.php">Ajouter une recette</a></li>
             <?php } ?>
 
-            <!-- <form class="navbar-form navbar-left" role="search">
-                 <div class="form-group">
-                     <input type="password" name="CurrentPassword" id="CurrentPassword" class="form-control" placeholder="Mot de passe actuel" required="">
-                 </div>
-                 <button type="submit" class="btn btn-default">Submit</button>
-             </form>-->
+            <form class="navbar-form navbar-left" action="recettes.php" method="get" role="search">
+                <div class="form-group">
+                    <input type="text" name="search" id="search" class="form-control" placeholder="Rechercher ici.." required="">
+                </div>
+                <button type="submit" class="btn btn-primary" ><span class="glyphicon glyphicon-search"></span></button>
+            </form>
         </ul>
 
 

@@ -94,7 +94,7 @@ function CheckExist_Pseudo($UserPseudo) {
         return true; //existe
     }
     if ($statement == false) {
-        //existe pas
+//existe pas
     }
 }
 
@@ -207,10 +207,10 @@ function get_recipe($idRecipe) {
 function add_recipe($RecipeInfos, $idUser) {
     $pdo = connectDB();
     $date = date('Y-m-d', time()); //recupere la date
-    //Test si l'image doit aussi etre modifier
+//Test si l'image doit aussi etre modifier
     if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
         $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
-        //AJOUTE LA RECETTE AVEC L'IMAGE
+//AJOUTE LA RECETTE AVEC L'IMAGE
         $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, RecipeImage, idUser, RecipeDate) '
                 . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
 
@@ -226,7 +226,7 @@ function add_recipe($RecipeInfos, $idUser) {
 
         return $pdo->lastinsertid();
     } else {
-        //AJOUTE LA RECETTE SANS IMAGE
+//AJOUTE LA RECETTE SANS IMAGE
         $query = 'INSERT INTO trecipe (RecipeTitle, RecipePreparation, RecipeOrigin, idType, idUser, RecipeDate) '
                 . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :idUser, :RecipeDate)';
 
@@ -249,7 +249,7 @@ function edit_recipe($idRecipe, $RecipeInfos) {
 
     $pdo = connectDB();
 
-    //Test si l'image doit aussi etre modifier
+//Test si l'image doit aussi etre modifier
     if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
         if ($RecipeInfos['RecipeImage'] == './imgRecettes/toprecette.jpg') { //Teste si l'image actuel est celle par défaut
             $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
@@ -257,7 +257,7 @@ function edit_recipe($idRecipe, $RecipeInfos) {
             unlink($RecipeInfos['RecipeImage']); //supprime l'ancienne image
             $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
         }
-        //MODIFIE LA RECETTE AVEC L'IMAGE
+//MODIFIE LA RECETTE AVEC L'IMAGE
         $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType, RecipeImage = :RecipeImage '
                 . 'WHERE idRecipe = :idRecipe';
         $statement = $pdo->prepare($query);
@@ -270,7 +270,7 @@ function edit_recipe($idRecipe, $RecipeInfos) {
         $statement = $statement->fetch();
         return;
     } else {
-        //MODIFIE LA RECETTE SANS MODIFIER L'IMAGE
+//MODIFIE LA RECETTE SANS MODIFIER L'IMAGE
         $query = 'UPDATE trecipe SET RecipeTitle = :RecipeTitle, RecipePreparation = :RecipePreparation, RecipeOrigin = :RecipeOrigin, idType = :idType '
                 . 'WHERE idRecipe = :idRecipe';
         $statement = $pdo->prepare($query);
@@ -292,6 +292,19 @@ function delete_recipe($idRecipe) {
     $statement->execute(array(":idRecipe" => $idRecipe));
     $statement = $statement->fetch();
     return;
+}
+
+function get_recipe_image($idRecipe) {
+    $pdo = connectDB();
+
+    $query = 'Select RecipeImage FROM trecipe WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement = $statement->fetch();
+    if ($statement['RecipeImage'] == './imgRecettes/toprecette.jpg') {
+        return NULL;
+    }
+    return $statement['RecipeImage'];
 }
 
 function get_ingredients() {
@@ -333,9 +346,9 @@ function add_ingredient($IngredientName) {
 }
 
 function ingredients_associate() {
-    //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
+//TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_ingredients();
-    //$table_associate = array('' => 'non defini');
+//$table_associate = array('' => 'non defini');
     foreach ($table as $ingredient) {
         $table_associate[$ingredient['idIngredient']] = $ingredient['IngredientName'];
     }
@@ -389,7 +402,7 @@ function get_recipe_types() {
 }
 
 function recipe_types_associate() {
-    //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
+//TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_recipe_types();
     $table_associate = array('' => 'Type de plat');
     foreach ($table as $type) {
@@ -610,7 +623,7 @@ function get_top_recipes() {
 
 function show_avg_note_recipe($AvgNote) {
     $text = NULL;
-    //Affiche 5 étoile remplies ou vides selon la moyenne des notes récupére
+//Affiche 5 étoile remplies ou vides selon la moyenne des notes récupére
     for ($i = 1; $i <= 5; $i++) {
         if ($i <= $AvgNote) {
             $text .= '<span class="glyphicon glyphicon-star"></span>'; //Etoile remplie

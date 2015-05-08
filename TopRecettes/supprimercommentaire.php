@@ -11,13 +11,14 @@ if ((isset($_GET['idComment'])) AND (!empty($_GET['idComment'])) AND (isset($_GE
     if (isset($_SESSION['idUser'])) {
         if ((CheckAdmin($_SESSION['idUser'])) OR ($_GET['idComment'] === $_SESSION['idUser'])) {//test si admin ou proprietaire du commentaire
             delete_comment($_GET['idComment']); //supprime le commentaire
-            header('Location: recette.php?id=' . $_GET['idRecipe']);
+            header('Location: recette.php?id=' . $_GET['idRecipe']."#comments");
+            exit();
         } else {
-            header('Location: recette.php?id=' . $_GET['idRecipe']);
+            header('Location: recette.php?id=' . $_GET['idRecipe']. "#comments");
             exit();
         }
     } else {
-        header('Location: recette.php?id=' . $_GET['idRecipe']);
+        header('Location: recette.php?id=' . $_GET['idRecipe']. "#comments");
         exit();
     }
 } else {

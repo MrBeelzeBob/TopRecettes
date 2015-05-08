@@ -139,8 +139,13 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                     <?php
                     if ($connected) {
                         if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
-                            echo '<a class="btn btn-primary" href="supprimerrecette.php?idRecipe=' . $idRecipe . '">Supprimer</a> ';
-                            echo '<a class="btn btn-primary" href="editerrecette.php?idRecipe=' . $idRecipe . '">Modifier</a>';
+                            ?>
+                            <a class="btn btn-primary" href="#ConfirmDeleteRecipe" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> Supprimer</a>
+                            <a class="btn btn-primary" href="editerrecette.php?idRecipe=<?= $idRecipe ?>">
+                                <span class="glyphicon glyphicon-pencil"></span> 
+                                Modifier
+                            </a>
+                            <?php
                         }
                     }
                     ?>
@@ -194,12 +199,14 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                     </b>
                                 </p>
                                 <p>Ajouté le 
-                                    <?= $comment['CommentDate'] //affiche la date d'ajout du commentaire'?>
+                                    <?= $comment['CommentDate'] //affiche la date d'ajout du commentaire' ?>
                                 </p>
                                 <?php
                                 if ($connected) {
                                     if (($isAdmin) OR ($comment['idUser'] === $_SESSION['idUser'])) {
-                                        echo '<a href = "supprimercommentaire.php?idComment=' . $comment['idComment'] . '&idRecipe=' . $idRecipe . '" >Supprimer</a>';
+                                        ?>
+                                        <a href="#ConfirmDeleteComment" data-toggle="modal">Supprimer</a>
+                                        <?php
                                     }
                                 }
                                 ?>
@@ -219,7 +226,57 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                 </div>
 
             </div>
+            <?php
+            if ($connected) {
+                if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
+                    ?>
+                    <!-- MODAL DE SUPRESSION DE RECETTE -->
+                    <div class="modal fade" id="ConfirmDeleteRecipe" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>
+                                        Etes-vous de sur de vouloir supprimer cette recette ?
+                                    </h4>
+                                </div> 
+                                <div class="modal-body">
+                                    <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
+                                    <a class="btn btn-primary right" href="supprimerrecette.php?idRecipe=<?= $idRecipe ?>">
+                                        <span class="glyphicon glyphicon-trash"></span> 
+                                        Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                }
+            }
+            ?>
+
+
+            <!-- MODAL DE SUPRESSION DE COMMENTAIRE -->
+            <div class="modal fade" id="ConfirmDeleteComment" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>
+                                Etes-vous de sur de vouloir supprimer cette recette ?
+                            </h4>
+                        </div> 
+                        <div class="modal-body">
+                            <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
+                            <a class="btn btn-primary right" href="supprimercommentaire.php?idComment=<?= $comment['idComment'] ?>&idRecipe=<?= $idRecipe ?>" >
+                                <span class="glyphicon glyphicon-trash"></span> 
+                                Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
+
+
 
         <footer class="container">
             <p class="navbar-text">

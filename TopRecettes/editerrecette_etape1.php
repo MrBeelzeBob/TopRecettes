@@ -54,6 +54,12 @@ $RecipeTypes = recipe_types_associate();
                 <label class="control-label" for="EditRecipeType">Type de plat</label>
                 <?php echo Select('EditRecipeType', $RecipeTypes, $RecipeType, TRUE); ?>
             </div>
+            
+            <div class="form-group">
+                <label class="control-label" for="EditRecipeOrigin">Nombre de portions</label>
+                <input id="EditRecipeOrigin" name="EditRecipeOrigin" type="number" placeholder="Origine de la recette" value="<?= $RecipeOrigin ?>" class="form-control" >
+            </div>
+            
             <div class="form-group">
                 <label class="control-label" for="EditRecipeNbIngredient">Nombre d'ingrédients nécessaire</label>
                 <input id="EditRecipeNbIngredient" name="EditRecipeNbIngredient" type="number" placeholder="Nombre d'ingrédients nécessaire" value="<?= $RecipeNbIngredient ?>" class="form-control" min="0" max="20" required="">

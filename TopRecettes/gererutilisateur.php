@@ -215,19 +215,6 @@ $isAdmin = CheckAdmin($_SESSION['idUser']);
                                 </div>
                             </div>
                             <br>
-                            <?php if ($Admin_Modif) { ?>
-                                <form class="form col-sm-12 center-block" action="#" method="post">
-                                    <div class="form-group col-xs-3">
-                                        <input type="hidden" name="idUser_toDlete" value="<?= $idUser ?>">
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <button class="btn btn-primary btn-block" type="submit" name="DeleteUser" >Supprimer
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </div>
-                                </form>    
-                            <?php } ?>
-
                         </div>
                     </div>
                     <!-- Onglet de modification du mot de passe -->

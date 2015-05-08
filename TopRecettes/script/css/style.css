@@ -40,14 +40,27 @@ footer {
     color: #000;
 }
 
-.thumbnail img {
+.info_thumbnail {
     width: 100%;
+    transition: all 0.3s ease 0s;
+    text-decoration: none;
+}
+.info_thumbnail:hover {
+    transform: scale(1.05);
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.ratings {
-    padding-right: 10px;
-    padding-left: 10px;
-    color: #d17581;
+.info_thumbnail:active{
+    text-decoration: none;
+}
+
+.info_thumbnail:visited{
+    text-decoration: none;
+}
+
+.info_thumbnail:link{
+    text-decoration: none;
 }
 
 .thumbnail {
@@ -85,16 +98,6 @@ thead {
 tbody tr {
     background-color: #e3e3e3;
 }
-
-/*tbody tr:hover {
-    cursor: pointer;
-    background-color: #DE6A1C;
-}
-
-.table-striped tbody tr:nth-child(odd):hover {
-    cursor: pointer;
-    background-color: #DE6A1C;
-}*/
 
 .glyphicon-star {
     color: #dd4814;
