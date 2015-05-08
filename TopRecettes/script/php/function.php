@@ -193,10 +193,11 @@ function get_recipes($sort, $search, $idUser, $limit) {
 
 function get_recipe($idRecipe) {
     $pdo = connectDB();
-    $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipePreparation, trecipe.RecipeOrigin, trecipe.idType, '
+    $query = 'SELECT trecipe.idRecipe, trecipe.RecipeTitle, trecipe.RecipePreparation, trecipe.RecipeOrigin, trecipe.idType, AVG(comments.CommentNote) AS RecipeAVG, '
             . 'trecipe.RecipeImage, trecipe.idUser, ttype.TypeName '
             . 'FROM trecipe '
             . 'NATURAL JOIN ttype '
+            . 'LEFT JOIN comments ON comments.idRecipe = trecipe.idRecipe '
             . 'WHERE trecipe.idRecipe =  :idRecipe';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idRecipe" => $idRecipe));
@@ -531,7 +532,7 @@ function edit_user_password($idUser, $NewPassword) {
 
 /**
  * Supprime l'utilisateur dont l'id est reçu en paramètre
- * @param type $idUser_ToDelete 
+ * @param type $idUser
  * @return boolean
  */
 function delete_user($idUser) {

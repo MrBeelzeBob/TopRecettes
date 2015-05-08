@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Mar 28 Avril 2015 à 08:29
+-- Généré le :  Ven 08 Mai 2015 à 16:43
 -- Version du serveur :  5.6.15-log
 -- Version de PHP :  5.4.24
 
@@ -31,12 +31,24 @@ USE `toprecettes`;
 CREATE TABLE IF NOT EXISTS `comments` (
   `idComment` int(11) NOT NULL AUTO_INCREMENT,
   `CommentText` text NOT NULL,
-  `CommentNote` int(11) NOT NULL,
-  `idUser` int(11) NOT NULL,
+  `CommentNote` int(11) DEFAULT NULL,
+  `CommentDate` datetime NOT NULL,
+  `idUser` int(11) NOT NULL DEFAULT '0',
   `idRecipe` int(11) NOT NULL,
   PRIMARY KEY (`idComment`),
-  KEY `idUser` (`idUser`,`idRecipe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  KEY `idUser` (`idUser`),
+  KEY `idRecipe` (`idRecipe`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=25 ;
+
+--
+-- Contenu de la table `comments`
+--
+
+INSERT INTO `comments` (`idComment`, `CommentText`, `CommentNote`, `CommentDate`, `idUser`, `idRecipe`) VALUES
+(16, 'sdsds', 3, '2015-05-08 08:19:22', 5, 11),
+(17, 'Délicieux', 5, '2015-05-08 08:39:56', 1, 11),
+(20, 'délicieux', 3, '2015-05-08 14:01:01', 1, 9),
+(24, 'asas', 1, '2015-05-08 15:32:52', 1, 9);
 
 -- --------------------------------------------------------
 
@@ -46,38 +58,53 @@ CREATE TABLE IF NOT EXISTS `comments` (
 
 CREATE TABLE IF NOT EXISTS `contains` (
   `idContains` int(11) NOT NULL AUTO_INCREMENT,
-  `ContainsQuantity` double NOT NULL,
-  `ContainsUnit` varchar(10) NOT NULL,
+  `ContainsQuantity` varchar(30) NOT NULL,
   `idRecipe` int(11) NOT NULL,
   `idIngredient` int(11) NOT NULL,
   PRIMARY KEY (`idContains`),
-  KEY `idRecipe` (`idRecipe`,`idIngredient`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `isin`
---
-
-CREATE TABLE IF NOT EXISTS `isin` (
-  `idRecipe` int(11) NOT NULL,
-  `idCategory` int(11) NOT NULL,
-  KEY `idRecipe` (`idRecipe`,`idCategory`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+  KEY `idRecipe` (`idRecipe`,`idIngredient`),
+  KEY `idIngredient` (`idIngredient`),
+  KEY `idRecipe_2` (`idRecipe`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=111 ;
 
 --
--- Structure de la table `tcategory`
+-- Contenu de la table `contains`
 --
 
-CREATE TABLE IF NOT EXISTS `tcategory` (
-  `idCategory` int(11) NOT NULL AUTO_INCREMENT,
-  `CategoryName` varchar(30) NOT NULL,
-  PRIMARY KEY (`idCategory`),
-  UNIQUE KEY `CategoryName` (`CategoryName`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+INSERT INTO `contains` (`idContains`, `ContainsQuantity`, `idRecipe`, `idIngredient`) VALUES
+(24, '375 grammes', 9, 118),
+(25, '4', 9, 206),
+(26, '1 cuillères a soupe', 9, 308),
+(27, '50 cl', 9, 156),
+(28, '20 g', 9, 26),
+(29, '2 pincées', 9, 309),
+(61, 'uhgvkug', 0, 5),
+(63, 'ss', 15, 11),
+(67, '1 kg', 24, 274),
+(68, '1 pincée', 24, 309),
+(69, '4 cuil à soupe', 24, 308),
+(70, '50 g', 24, 26),
+(71, '4', 24, 55),
+(72, '1.5 kg', 24, 199),
+(73, '500 g', 24, 313),
+(74, '4', 24, 95),
+(75, '1.5 kg', 24, 311),
+(76, '2', 24, 208),
+(77, '2 gousse', 24, 3),
+(78, '140 g', 24, 292),
+(79, '1 cuil à café', 24, 148),
+(99, 'frais', 11, 21),
+(100, '100 g', 11, 26),
+(101, '1', 11, 55),
+(102, '1', 11, 58),
+(103, '250cl', 11, 156),
+(104, '1', 11, 208),
+(105, '150 g', 11, 270),
+(106, '2', 11, 292),
+(107, '2 cuil', 11, 308),
+(108, '500 g', 11, 310),
+(109, '250 g', 11, 311),
+(110, '1 pincée', 11, 312);
 
 -- --------------------------------------------------------
 
@@ -89,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `tingredient` (
   `idIngredient` int(11) NOT NULL AUTO_INCREMENT,
   `IngredientName` varchar(50) NOT NULL,
   PRIMARY KEY (`idIngredient`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=307 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=314 ;
 
 --
 -- Contenu de la table `tingredient`
@@ -401,7 +428,14 @@ INSERT INTO `tingredient` (`idIngredient`, `IngredientName`) VALUES
 (303, 'VODKA'),
 (304, 'VOLAILLE'),
 (305, 'WHISKY'),
-(306, 'YAOURT');
+(306, 'YAOURT'),
+(307, 'CONFITURE AU FROMAGE'),
+(308, 'HUILE D''OLIVE'),
+(309, 'SEL'),
+(310, 'PÂTE à LASAGNES'),
+(311, 'VIANDE DE BOEUF'),
+(312, 'POIVRE'),
+(313, 'POIS CHICHE');
 
 -- --------------------------------------------------------
 
@@ -412,11 +446,54 @@ INSERT INTO `tingredient` (`idIngredient`, `IngredientName`) VALUES
 CREATE TABLE IF NOT EXISTS `trecipe` (
   `idRecipe` int(11) NOT NULL AUTO_INCREMENT,
   `RecipeTitle` varchar(50) NOT NULL,
-  `RecipeContenu` text NOT NULL COMMENT 'Réalisation de la recette',
+  `RecipePreparation` text NOT NULL COMMENT 'Réalisation de la recette',
   `RecipeOrigin` varchar(30) DEFAULT NULL,
-  `RecipeImage` varchar(100) NOT NULL,
-  PRIMARY KEY (`idRecipe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  `idType` int(11) DEFAULT NULL,
+  `RecipeImage` varchar(100) NOT NULL DEFAULT './imgRecettes/toprecette.jpg',
+  `idUser` int(11) DEFAULT NULL,
+  `RecipeDate` date NOT NULL,
+  PRIMARY KEY (`idRecipe`),
+  KEY `idUser` (`idUser`),
+  KEY `idType` (`idType`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
+
+--
+-- Contenu de la table `trecipe`
+--
+
+INSERT INTO `trecipe` (`idRecipe`, `RecipeTitle`, `RecipePreparation`, `RecipeOrigin`, `idType`, `RecipeImage`, `idUser`, `RecipeDate`) VALUES
+(9, 'Crêpes', 'Mélanger la farine avec les oeufs, l''huile et le sel.\r\n\r\nAjoutez ensuite le lait, la bière et le rhum.\r\n\r\nMélangez le tout : c''est prêt en deux minutes avec un mixer !\r\n\r\nFaites cuire à la poêle avec une noix de beurre.', '', 3, './imgRecettes/554b6f7044040.jpg', 9, '2015-05-07'),
+(11, 'Lasagnes', 'Faites revenir les échalotes dans le beurre, laisser fondre. \r\n\r\nAjouter le haché et laisser cuire à feu moyen. \r\n\r\nQuand le haché à blanchi, ajouter la boîte de tomates pelées ainsi que le concentré de tomates, remuer et bien mélanger. \r\n\r\nAjouter ensuite le poivron rouge coupé en dés, la carotte en dés, les champignons et l''ail pressée. \r\n\r\nAjouter les épices selon votre goût ainsi que le vin, laisser s''évaporer.\r\n\r\nLaisser mijoter à feux moyen durant 45 min en mélangeant de temps en temps. \r\n\r\nPréparer la sauce béchamel. \r\n\r\nCouper la mozzarella en rondelles très fines. \r\n\r\nDans un plat à gratin, disposer une couche de béchamel, une plaque, une couche de sauce bolognaise, une couche de béchamel, une couche de mozzarella, ainsi de suite... terminer par de la béchamel. \r\n\r\nParsemer de gruyère, de parmesan et de petits morceaux de beurre. \r\n\r\nLaisser gratiner au four à 200°C durant +/- 30 min.\r\n\r\n\r\n\r\nDès que le dessus est bien doré, servir', '', 3, './imgRecettes/554b7a83ea1b0.jpg', 5, '2015-05-07'),
+(24, 'Couscous', 'Préparation de la semoule :\n\nVerser la semoule dans un grand récipient et la noyer avec l''eau. Remuer doucement.\n\nÉgoutter la semoule quand l''eau devient blanche\n\nLaisser reposer 15-20 mn (30 maxi), saler (1 cuillère à soupe rase), huiler (1 cuillère à soupe).\n\nMalaxer pour briser les mottes.\n\nCuisson de la semoule :\n\nDans une couscoussière de 5 litres, remplir à moitié d''eau la partie basse et verser la semoule dans la partie haute (ne pas mettre de couvercle).\n\nRendre hermétique si possible la couscoussière au niveau de la jonction des 2 parties afin d''éviter l''évaporation de la vapeur.\n\nCompter une cuisson de 20 min à partir de l''apparition de la vapeur à travers la semoule.\n\nVerser la semoule dans un récipient, remuer doucement avec une cuillère en bois pour briser les mottes, ajouter 50 g de beurre et mélanger doucement.\n\nLégumes et viandes :\n\nMettre dans une grande casserole 3 c à soupe d''huile, faire revenir les 2 oignons, les 2/3 gousses d''ail et faire dorer la viande. Saler, poivrer, ajouter les carottes en rondelles. Laisser cuire à feu doux 15 min.\n\nAjouter le concentré de tomate puis 2 litres d''eau bouillante.\n\nLaisser cuire 20 min.\n\nPendant cet temps, cuire à part dans l''eau salée les navets en morceaux pendant 20 min. Ajouter 5 min avant la fin les courgettes en rondelles. Égoutter en fin de cuisson.\n\nQuand la viande est cuite, y ajouter les navets et courgettes et les pois chiches.\n\nLaisser cuire le tout 5 à 10 min.\n\nAssaisonnement (facultatif) :\n\nRetirer 1 louche du jus de cuisson de la viande, ajouter 1 cuillère à café de harissa. La servir à part.\n', '', 3, './imgRecettes/554c7a3f1a49b.JPG', 5, '2015-05-08'),
+(29, 'Spaghettis bolognaise', 'Hachez la sauge, le basilic et le persil.\r\n\r\nHachez les oignons, découpez le céleri en cubes.\r\n\r\nDétaillez les champignons en cubes également.\r\n\r\nFaites chauffer 3 cuillerées à soupe d''huile d''olive dans une cocotte, mettez-y les oignons, le céleri et les champignons.\r\n\r\nAjoutez l''ail écrasé, le concentré de tomate, la sauce tomate, la viande hachée et pressez bien le tout.\r\n\r\nAjoutez alors le thym et le laurier, mouillez de 50 cl d''eau, rajoutez les herbes fraîches hachées, 2 morceaux de sucre, la harissa, assaisonner.\r\n\r\nLaissez mijoter 30 min à feu doux.\r\n\r\n10 minutes avant la fin, faites cuire les pâtes al dente.\r\n\r\nEgouttez-les pâtes, mélangez-les avec un peu de beurre.\r\n\r\nRetirez le laurier de la sauce, versez-la sur les pâtes.\r\n\r\nParsemez de parmesan et servez.', '', 3, './imgRecettes/554cb21cf1223.jpg', 1, '2015-05-08');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ttype`
+--
+
+CREATE TABLE IF NOT EXISTS `ttype` (
+  `idType` int(11) NOT NULL AUTO_INCREMENT,
+  `TypeName` varchar(30) NOT NULL,
+  PRIMARY KEY (`idType`),
+  UNIQUE KEY `CategoryName` (`TypeName`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+--
+-- Contenu de la table `ttype`
+--
+
+INSERT INTO `ttype` (`idType`, `TypeName`) VALUES
+(4, 'Accompagnement'),
+(5, 'Amuse-gueule'),
+(6, 'Boisson'),
+(7, 'Confiserie'),
+(9, 'Conseil'),
+(1, 'Dessert'),
+(2, 'Entrée'),
+(3, 'Plat principal'),
+(8, 'Sauce');
 
 -- --------------------------------------------------------
 
@@ -432,28 +509,17 @@ CREATE TABLE IF NOT EXISTS `tuser` (
   `UserAdmin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idUser`,`UserEmail`),
   UNIQUE KEY `UserPseudo` (`UserPseudo`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
 
 --
 -- Contenu de la table `tuser`
 --
 
 INSERT INTO `tuser` (`idUser`, `UserPseudo`, `UserPassword`, `UserEmail`, `UserAdmin`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin@gmail.com', 1),
-(2, 'User', 'ee11cbb19052e40b07aac0ca060c23ee', 'user@gmail.com', 0),
-(3, 'demo', 'fe01ce2a7fbac8fafaed7c982a04e229', 'demo@gmail.com', 0);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `writes`
---
-
-CREATE TABLE IF NOT EXISTS `writes` (
-  `idUser` int(11) NOT NULL,
-  `idRecipe` int(11) NOT NULL,
-  KEY `idUser` (`idUser`,`idRecipe`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+(1, 'administrateur', 'c4ca4238a0b923820dcc509a6f75849b', 'admin@gmail.com', 1),
+(5, 'utilisateur', 'c4ca4238a0b923820dcc509a6f75849b', 'user@gmail.com', 0),
+(6, 'moiap13', '4fec1940e2bc2b6e835a5372e3b59c7a', 'moiap13@gmail.com', 0),
+(9, 'cedric', 'c4ca4238a0b923820dcc509a6f75849b', 'cedric@gmail.com', 1);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

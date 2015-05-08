@@ -112,8 +112,8 @@ if (isset($_SESSION['idUser'])) {
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
                 }
-                header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
                 $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
+                header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
                 exit();
             }//end edit
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 

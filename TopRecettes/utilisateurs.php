@@ -51,7 +51,7 @@ if (isset($_SESSION['idUser'])) {
 
                 </div>
                 <div class="col-md-10 col-md-offset-1">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-striped table-responsive">
                         <thead>
                             <tr>
                                 <td>Pseudo</td>
@@ -100,7 +100,7 @@ if (isset($_SESSION['idUser'])) {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4>
-                            Etes-vous de sur de vouloir supprimer cette recette ?
+                            Etes-vous de sur de vouloir supprimer cet utilisateur ?
                         </h4>
                     </div> 
                     <div class="modal-body">

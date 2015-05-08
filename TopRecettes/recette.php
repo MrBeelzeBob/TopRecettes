@@ -56,6 +56,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     header('location: ./');
     exit();
 }
+
+//var_dump_pre($recipe);
 ?>
 <!doctype html>
 <html lang="fr">
@@ -82,7 +84,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
             <!-- Informations sur la recettes  -->
             <div class="container contenu">
                 <div class="page-header">
-                    <h2 class="text-center"><?= $recipe['RecipeTitle'] ?></h2>
+                    <h2 class="text-center"><?= $recipe['RecipeTitle'] ?> <?= show_avg_note_recipe($recipe['RecipeAVG']) ?>
                 </div>
                 <div class="col-md-6">
                     <div class="thumbnail">
