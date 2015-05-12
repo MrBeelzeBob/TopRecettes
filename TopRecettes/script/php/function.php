@@ -1,38 +1,16 @@
+<!--
+Auteur      : Cedric Dos Reis
+Sujet       : TopRecettes - TPI 2015
+-->
 <?php
 
 require_once('connectDB.php');
 require_once('outilsFormulaire.php');
 
 /**
- * 
- * @param type $var
+ * Affiche un block (rouge) qui contient un message d'erreur
+ * @param type $Message -> message à afficher
  */
-function var_dump_pre($var) {
-    echo '<pre>';
-    echo var_dump($var);
-    echo '</pre>';
-}
-
-/**
- * Debug function
- * Affichage pour debuggage du contenu passé en parametre
- * @param mixed $sObj element à afficher optionnel
- * @return null
- */
-function debug($sObj = NULL) {
-    echo '<pre>';
-
-    if (is_null($sObj)) {
-        echo '|Object is NULL|' . "\n";
-    } else if (is_array($sObj) || is_object($sObj)) {
-        var_dump($sObj);
-    } else {
-        echo '|' . $sObj . '|' . "\n";
-    }
-
-    echo '</pre>';
-}
-
 function ShowError($Message) {
     echo '<div class="message col-sm-6 col-sm-offset-3 alert alert-dismissible alert-danger"> ';
     echo '<button type="button" class="close" data-dismiss="alert">×</button>';
@@ -40,6 +18,10 @@ function ShowError($Message) {
     echo '</div>';
 }
 
+/**
+ * Affiche un block (vert) qui contient un message de succès
+ * @param type $Message -> message à afficher
+ */
 function ShowSuccess($Message) {
     echo '<div class="message col-sm-6 col-sm-offset-3 alert alert-dismissible alert-success"> ';
     echo '<button type="button" class="close" data-dismiss="alert">×</button>';
@@ -47,6 +29,13 @@ function ShowSuccess($Message) {
     echo '</div>';
 }
 
+/**
+ * Connexion au site
+ * Récupère les données de l'utilisateur dont les informations correspondent à celles reçu en paramètre
+ * @param type $UserEmail -> Email utilisé pour récupérer l'utilisateur
+ * @param type $UserPassword -> mot de passe utilisé pour récupérer l'utilisateur
+ * @return boolean
+ */
 function login($UserEmail, $UserPassword) {
     $pdo = connectDB();
     $query = "SELECT idUser, UserPseudo, UserAdmin FROM tusers WHERE UserEmail = :UserEmail AND UserPassword = :UserPassword ;";
@@ -61,6 +50,13 @@ function login($UserEmail, $UserPassword) {
     return false;
 }
 
+/**
+ * Crée un nouvel utilisateur
+ * @param type $UserPseudo -> Pseudo du nouvel utilisateur
+ * @param type $UserEmail -> Email du nouvel utilisateur
+ * @param type $UserPassword -> Mot de passe du nouvel utilisateur
+ * @return boolean
+ */
 function register($UserPseudo, $UserEmail, $UserPassword) {
     $pdo = connectDB();
 //insert les données dans la base
@@ -73,12 +69,79 @@ function register($UserPseudo, $UserEmail, $UserPassword) {
     return true;
 }
 
+
 /**
- * Lors de l'inscription, vérifie si le pseudo ou l'email est déjà utilisé
- * @param type $UserPseudo
- * @param type $UserEmail
- * @param type $UserPassword
- * @return boolean
+ * Récupere tous les utilisateurs présent dans la base
+ * @return type -> Liste des utilisateurs
+ */
+function get_users() {
+
+    $pdo = connectDB();
+
+    $query = 'SELECT idUser, UserEmail, UserPseudo, UserAdmin FROM tusers';
+    $statement = $pdo->prepare($query);
+    $statement->execute();
+    $statement = $statement->fetchAll();
+    return $statement;
+}
+
+/**
+ * Récupere les données de l'utilisateur
+ * @param type $idUser -> identifiant de l'utilisateur à récupérer
+ * @return type -> Retourne les données de l'utilisateur
+ */ 
+function get_user($idUser) {
+    $pdo = connectDB();
+
+    $query = 'SELECT UserEmail, UserPseudo, UserAdmin FROM tusers WHERE idUser = :idUser';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser));
+    $statement = $statement->fetch();
+    return $statement;
+}
+
+/**
+ * Récupère le pseudo de l'utilisateur 
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @return type -> Pseudo de l'utilisateur
+ */
+function get_user_pseudo($idUser) {
+    $pdo = connectDB();
+
+    $query = 'SELECT UserPseudo FROM tusers WHERE idUser = :idUser';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser));
+    $statement = $statement->fetch();
+    return $statement['UserPseudo'];
+}
+
+/**
+ * Vérifie le mot de passe de l'utilisateur
+ * Récupère le mot de passe de l'utilisateur
+ * Vérifie si le mot de passe récuperé est pareil au mot de passe en paramètre
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @param type $password -> mot de passe à vérifier
+ * @return boolean -> pareil ou pas
+ */
+function check_password($idUser, $password) {
+
+    $pdo = connectDB();
+    $query = 'SELECT UserPassword FROM tusers WHERE idUser = :idUser';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser));
+    $statement = $statement->fetch();
+    if ($statement['UserPassword'] == $password) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Vérifie si le pseudo en paramètre est déjà utilisé
+ * Récupère le pseudo qui correspond au pseudo en paramètre
+ * Si une valeurs est récupèrée -> le pseudo est déjà utilisé
+ * @param type $UserPseudo -> pseudo à vérifier
+ * @return boolean -> Utilisé ou pas
  */
 function CheckExist_Pseudo($UserPseudo) {
     $pdo = connectDB();
@@ -91,13 +154,18 @@ function CheckExist_Pseudo($UserPseudo) {
 
 //vérifie si une valeur est récupérée
     if ($statement) {
-        return true; //existe
+        return true; //Existe
     }
-    if ($statement == false) {
-//existe pas
-    }
+    return false; //Existe pas
 }
 
+/**
+ * Vérifie si l' email en paramètre est déjà utilisé
+ * Récupère l'email qui correspond à l'emial en paramètre
+ * Si une valeurs est récupérée -> l'email est déjà utilisé
+ * @param type $UserEmail -> Email
+ * @return boolean
+ */
 function CheckExist_Email($UserEmail) {
     $pdo = connectDB();
     $query = 'SELECT UserEmail FROM tusers WHERE UserEmail = :UserEmail ;';
@@ -107,11 +175,17 @@ function CheckExist_Email($UserEmail) {
     if ($statement) {
         return true; //existe
     }
-    if ($statement == false) {
-        return false; //existe pas
-    }
+    return false; //existe pas
 }
 
+/**
+ * Test si l'utilisateur est admin
+ * Récupère le type d'utilisateur
+ * si la valeur récupérée est 1 -> Administrateur
+ * si la valeur récupérée est 0 -> Utilisateur  
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @return boolean
+ */
 function CheckAdmin($idUser) {
     $pdo = connectDB();
 //recupere une valeur pour vérifier si l'utilisateur est admin
@@ -125,6 +199,109 @@ function CheckAdmin($idUser) {
     return false;
 }
 
+/**
+ * Modifie les données (Peudo, Email) de l'utilisateur
+ * @param type $NewPseudo -> Nouveau pseudo
+ * @param type $NewEmail -> Nouvelle email
+ * @param type $idUser -> Identifiant de l'utilisateur
+ * @return boolean
+ */
+function edit_user($NewPseudo, $NewEmail, $idUser) {
+    $pdo = connectDB();
+    if ((!empty($NewPseudo)) AND ( empty($NewEmail))) { //test si le pseudo n'est pas vide et si l'email est vide
+        $ToDo = 1; //modifie le pseudo uniquement
+    }
+    if ((!empty($NewEmail)) AND ( empty($NewPseudo))) { //test si l'email n'est pas vide et si le pseudo est vide
+        $ToDo = 2; //modifie l'email uniquement
+    }
+    if ((!empty($NewPseudo)) AND (!empty($NewEmail))) { //test si le pseudo et l' email ne sont pas vide
+        $ToDo = 3; //modifie le pseudo et l'email
+    }
+
+    switch ($ToDo) {
+        case 1: $query = 'UPDATE tusers SET UserPseudo = :UserPseudo WHERE idUser = :idUser;';
+            $statement = $pdo->prepare($query);
+            $statement->execute(array(":idUser" => $idUser,
+                ":UserPseudo" => $NewPseudo));
+            break;
+
+        case 2: $query = 'UPDATE tusers SET UserEmail = :UserEmail  WHERE idUser = :idUser;';
+            $statement = $pdo->prepare($query);
+            $statement->execute(array(":idUser" => $idUser,
+                ":UserEmail" => $NewEmail));
+            break;
+
+        case 3: $query = 'UPDATE tusers SET UserPseudo = :UserPseudo, UserEmail = :UserEmail  WHERE idUser = :idUser;';
+            $statement = $pdo->prepare($query);
+            $statement->execute(array(":idUser" => $idUser,
+                ":UserPseudo" => $NewPseudo,
+                ":UserEmail" => $NewEmail));
+            break;
+    }
+
+
+    $statement = $statement->fetch();
+    return true;
+}
+
+
+/**
+ * Modifie le type de l'utilisateur
+ * @param type $UserAdmin -> Type d'utilisateur : Administrateur (1) ou Utilisateur(0)
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @return boolean
+ */
+function set_administrateur($UserAdmin, $idUser) {
+    $pdo = connectDB();
+    $query = 'UPDATE tusers SET UserAdmin = :UserAdmin WHERE idUser = :idUser;';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser,
+        ":UserAdmin" => $UserAdmin));
+    $statement = $statement->fetch();
+    return true;
+}
+
+/**
+ * Modifie le mot de passe de l'utilisateur
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @param type $NewPassword -> Nouveau mot de passe
+ * @return boolean
+ */
+function edit_user_password($idUser, $NewPassword) {
+    $pdo = connectDB();
+    $query = 'UPDATE tusers SET UserPassword = :UserPassword WHERE idUser = :idUser;';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser,
+        ":UserPassword" => $NewPassword));
+    $statement = $statement->fetch();
+    return true;
+}
+
+/**
+ * Supprime l'utilisateur
+ * @param type $idUser -> identifiant de l'utilisateur à supprimer
+ * @return boolean
+ */
+function delete_user($idUser) {
+    $pdo = connectDB();
+
+    $query = 'DELETE FROM tusers WHERE idUser = :idUser;';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idUser" => $idUser));
+    $statement = $statement->fetch();
+    return true;
+}
+
+/**
+ * Récupère la liste des recettes
+ * Test s'il y a un tri à éffectuer
+ * Test s'il y a une recherche à efféectué
+ * @param type $sort -> Définit le tri à éffectuer lors de la récupération (entre 1 et 5 ou NULL)
+ * @param type $search -> Définit la recherche à éffectuer lors de la récupération (vide ou avec une valeur)
+ * @param type $idUser -> Identifiant de l'utilisateur qui veut récupérer ses recettes
+ * @param type $limit -> Limite de rectte à récupérer
+ * @return type
+ */
 function get_recipes($sort, $search, $idUser, $limit) {
     $pdo = connectDB();
 
@@ -132,7 +309,7 @@ function get_recipes($sort, $search, $idUser, $limit) {
             . 'FROM trecipes '
             . 'LEFT JOIN tcomments ON tcomments.idRecipe = trecipes.idRecipe ';
 
-
+    //Récupère les recettes selon un tri 
     switch ($sort) {
         case NULL:
             if (!empty($search)) {
@@ -141,37 +318,46 @@ function get_recipes($sort, $search, $idUser, $limit) {
             $query .= 'GROUP BY trecipes.idRecipe '
                     . 'ORDER BY trecipes.RecipeTitle ';
             break;
-        case 1:
+            
+        case 1:  //trier par Date (plus récentes)
             if (!empty($search)) {
+                //Recherche
                 $query .= 'WHERE trecipes.RecipeTitle REGEXP "' . $search . '" ';
             }
             $query .= 'GROUP BY trecipes.idRecipe '
                     . 'ORDER BY trecipes.RecipeDate DESC ';
             break;
-        case 2:
+            
+        case 2://trier par Date (plus anciennes)
             if (!empty($search)) {
+                //Recherche
                 $query .= 'WHERE trecipes.RecipeTitle REGEXP "' . $search . '" ';
             }
             $query .= 'GROUP BY trecipes.idRecipe '
                     . 'ORDER BY trecipes.RecipeDate ASC ';
             break;
-        case 3:
+            
+        case 3: //trier par meilleures notes
             if (!empty($search)) {
+                //Recherche
                 $query .= 'WHERE trecipes.RecipeTitle REGEXP "' . $search . '" ';
             }
             $query .= 'GROUP BY trecipes.idRecipe '
                     . 'ORDER BY RecipeAVG DESC ';
             break;
-        case 4:
+        case 4: //trier par moins bonne notes
             if (!empty($search)) {
+                //Recherche
                 $query .= 'WHERE trecipes.RecipeTitle REGEXP "' . $search . '" ';
             }
             $query .= 'GROUP BY trecipes.idRecipe '
                     . 'ORDER BY RecipeAVG ASC ';
 
             break;
-        case 5:
+            
+        case 5: //trier par Auteur
             if (!empty($search)) {
+                //Recherche
                 $query .= 'WHERE trecipes.RecipeTitle REGEXP "' . $search . '" AND trecipes.idUser = ' . $idUser . ' ';
             } else {
                 $query .= 'WHERE trecipes.idUser = ' . $idUser . ' ';
@@ -181,7 +367,7 @@ function get_recipes($sort, $search, $idUser, $limit) {
             break;
     }//end switch
 
-    if (!empty($limit)) {  //Ajoute une limit de recettes à récupéré
+    if (!empty($limit)) {  //Ajoute une limit de recettes à récupérer
         $query .= 'Limit 4 ';
     }
     $statement = $pdo->prepare($query);
@@ -191,6 +377,12 @@ function get_recipes($sort, $search, $idUser, $limit) {
     return $statement;
 }
 
+/**
+ * Récupère les données (l'id, le titre, la preparation, l'origine, 
+ * la moyenne des notes, le type de recette, l'image, l'auteur)d'une recette
+ * @param type $idRecipe -> Identifiant de la recette 
+ * @return type
+ */
 function get_recipe($idRecipe) {
     $pdo = connectDB();
     $query = 'SELECT trecipes.idRecipe, trecipes.RecipeTitle, trecipes.RecipePreparation, trecipes.RecipeOrigin, trecipes.idType, AVG(tcomments.CommentNote) AS RecipeAVG, '
@@ -205,13 +397,22 @@ function get_recipe($idRecipe) {
     return $statement;
 }
 
+/**
+ * Ajout d'une nouvelle recette
+ * Récupère l'heure actuelle
+ * Test si la recette a une image -> Ajoute la recette avec l'image reçu
+ * Si il n'y pas d'image reçu -> Ajoute la recette sans image
+ * @param type $RecipeInfos -> Contient les données de la recette (Titre, Preparation, Origine, Type de recette, Image)
+ * @param type $idUser -> Auteur de la recette
+ * @return type -> retourne l'identifiant de la nouvelle recette
+ */
 function add_recipe($RecipeInfos, $idUser) {
     $pdo = connectDB();
     $date = date('Y-m-d', time()); //recupere la date
-//Test si l'image doit aussi etre modifier
+    //Test si l'image doit aussi etre modifier
     if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
         $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
-//AJOUTE LA RECETTE AVEC L'IMAGE
+        //AJOUTE LA RECETTE AVEC L'IMAGE
         $query = 'INSERT INTO trecipes (RecipeTitle, RecipePreparation, RecipeOrigin, idType, RecipeImage, idUser, RecipeDate) '
                 . 'VALUES(:RecipeTitle, :RecipePreparation, :RecipeOrigin, :idType, :RecipeImage, :idUser, :RecipeDate)';
 
@@ -244,6 +445,12 @@ function add_recipe($RecipeInfos, $idUser) {
     }
 }
 
+/**
+ * Modification d'une recette
+ * @param type $idRecipe -> identifiant de la recerre à modifier
+ * @param type $RecipeInfos -> Données de modifications
+ * @return type
+ */
 function edit_recipe($idRecipe, $RecipeInfos) {
 
     var_dump_pre($RecipeInfos);
@@ -285,6 +492,11 @@ function edit_recipe($idRecipe, $RecipeInfos) {
     }
 }
 
+/**
+ * Supprime une recette
+ * @param type $idRecipe -> identifiant de la recette à supprimer
+ * @return type
+ */
 function delete_recipe($idRecipe) {
     $pdo = connectDB();
 
@@ -295,6 +507,13 @@ function delete_recipe($idRecipe) {
     return;
 }
 
+/**
+ * Récupère le chemin d'accès à l'image de la recette dont l'identifiant est en paramètre
+ * Si le chemin récupéré correspond au chemin de l'image par défaut -> retourne false
+ * Si le chemin récupéré ne correspond pas au chemin de l'image par défaut -> retourne le chemin récupéré
+ * @param type $idRecipe -> identifiant de la recette
+ * @return null
+ */
 function get_recipe_image($idRecipe) {
     $pdo = connectDB();
 
@@ -308,6 +527,10 @@ function get_recipe_image($idRecipe) {
     return $statement['RecipeImage'];
 }
 
+/**
+ * Récupère tous les ingédients de la base
+ * @return type
+ */
 function get_ingredients() {
     $pdo = connectDB();
     $query = 'SELECT * FROM tingredients';
@@ -317,6 +540,11 @@ function get_ingredients() {
     return $statement;
 }
 
+/**
+ * Récupère le nombre d'ingrédients qui composent la recette dont l'identifiant est en paramètre
+ * @param type $idRecipe -> idenfiant de la recette
+ * @return type
+ */
 function count_ingredient_recipe($idRecipe) {
     $pdo = connectDB();
     $query = 'SELECT count(idIngredient) AS RecipeNbIngredient FROM tcontains WHERE idRecipe = :idRecipe';
@@ -326,6 +554,11 @@ function count_ingredient_recipe($idRecipe) {
     return $statement;
 }
 
+/**
+ * Récupère l'identifiant de l'ingrédient recherché en paramètre
+ * @param type $IngredientName -> Ingrédient recherché
+ * @return type
+ */
 function checkExist_ingredient($IngredientName) {
     $pdo = connectDB();
     $query = 'SELECT idIngredient FROM tingredients WHERE IngredientName = :IngredientName';
@@ -335,6 +568,11 @@ function checkExist_ingredient($IngredientName) {
     return $statement['idIngredient'];
 }
 
+/**
+ * Ajoute un nouvel ingrédient à la base
+ * @param type $IngredientName -> Nom de l'ingrédient
+ * @return type
+ */
 function add_ingredient($IngredientName) {
     $IngredientName = strtoupper($IngredientName); //renvoi l'ingredient en majuscule 
 
@@ -346,27 +584,45 @@ function add_ingredient($IngredientName) {
     return $pdo->lastInsertId();
 }
 
+/**
+ * Transforme un tableau de données en un tableau associatif
+ * @return type -> retourne le tableau associatif
+ */
 function ingredients_associate() {
 //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
-    $table = get_ingredients();
-//$table_associate = array('' => 'non defini');
+    $table = get_ingredients(); //
     foreach ($table as $ingredient) {
         $table_associate[$ingredient['idIngredient']] = $ingredient['IngredientName'];
     }
     return $table_associate;
 }
 
+/**
+ * Ajoute un contenu d'une recette
+ * Le contenu est composé de : L'identifiant d'un ingrédient, la quantité de l'ingédient et l'identifiant de la recette
+ * @param type $idIngredient -> Identifiant de l'ingédients
+ * @param type $IngredientQuantity -> Quantité d'ingrédient
+ * @param type $idNewRecipe -> identifiant de la recette qui est composé de ce nouveau contenu
+ * @return type
+ */
 function add_contains($idIngredient, $IngredientQuantity, $idNewRecipe) {
     $pdo = connectDB();
-    $query = 'INSERT INTO tcontains (ContainsQuantity, idRecipe, idIngredient) VALUES(:ContainsQuantity, :idRecipe, :idIngredient)';
+    $query = 'INSERT INTO tcontains (ContainsQuantity, idRecipe, idIngredient) '
+            . 'VALUES(:ContainsQuantity, :idRecipe, :idIngredient)';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":ContainsQuantity" => $IngredientQuantity,
         ":idIngredient" => $idIngredient,
         ":idRecipe" => $idNewRecipe));
     $statement = $statement->fetch();
-    return $pdo->lastInsertId();
+    return;
 }
 
+/**
+ * Récupère les contenus de la recette en paramètre
+ * Le contenu est composé de : L'identifiant d'un ingrédient, la quantité de l'ingédient et l'identifiant de la recette
+ * @param type $idRecipe -> identifiant de la recette
+ * @return type
+ */
 function get_ingredients_recipe($idRecipe) {
 
     $pdo = connectDB();
@@ -380,6 +636,11 @@ function get_ingredients_recipe($idRecipe) {
     return $statement;
 }
 
+/**
+ * Récupère les commentaires postés sur une recette
+ * @param type $idRecipe -> identifiant de la recette
+ * @return type
+ */
 function get_comments_recipe($idRecipe) {
 
     $pdo = connectDB();
@@ -393,6 +654,10 @@ function get_comments_recipe($idRecipe) {
     return $statement;
 }
 
+/**
+ * Récupère tous les types de recettes
+ * @return type
+ */
 function get_recipe_types() {
     $pdo = connectDB();
     $query = 'SELECT * FROM ttypes';
@@ -402,6 +667,10 @@ function get_recipe_types() {
     return $statement;
 }
 
+/**
+ * Transforme le tableau de données des types de recettes en un tableau associatif
+ * @return type
+ */
 function recipe_types_associate() {
 //TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
     $table = get_recipe_types();
@@ -412,6 +681,14 @@ function recipe_types_associate() {
     return $table_associate;
 }
 
+/**
+ * Ajoute un commentaire
+ * @param type $idUser -> Identifiant de l'utilisateur qui poste le commentaitre
+ * @param type $idRecipe -> Identifiant de la recette sur laquelle le commentaire est posté
+ * @param type $comment -> Le commentaire
+ * @param type $note -> La note
+ * @return type
+ */
 function add_comment($idUser, $idRecipe, $comment, $note) {
 
     $pdo = connectDB();
@@ -427,125 +704,12 @@ function add_comment($idUser, $idRecipe, $comment, $note) {
     return;
 }
 
-function get_users() {
-
-    $pdo = connectDB();
-
-    $query = 'SELECT idUser, UserEmail, UserPseudo, UserAdmin FROM tusers';
-    $statement = $pdo->prepare($query);
-    $statement->execute();
-    $statement = $statement->fetchAll();
-    return $statement;
-}
-
-function get_user($idUser) {
-    $pdo = connectDB();
-
-    $query = 'SELECT UserEmail, UserPseudo, UserAdmin FROM tusers WHERE idUser = :idUser';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser));
-    $statement = $statement->fetch();
-    return $statement;
-}
-
-function get_user_pseudo($idUser) {
-    $pdo = connectDB();
-
-    $query = 'SELECT UserPseudo FROM tusers WHERE idUser = :idUser';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser));
-    $statement = $statement->fetch();
-    return $statement['UserPseudo'];
-}
-
-function check_password($idUser, $password) {
-
-    $pdo = connectDB();
-    $query = 'SELECT UserPassword FROM tusers WHERE idUser = :idUser';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser));
-    $statement = $statement->fetch();
-    if ($statement['UserPassword'] == $password) {
-        return true;
-    }
-    return false;
-}
-
-function edit_user($NewPseudo, $NewEmail, $idUser) {
-    $pdo = connectDB();
-    if ((!empty($NewPseudo)) AND ( empty($NewEmail))) { //test si le pseudo n'est pas vide et si l'email est vide
-        $ToDo = 1; //modifie le pseudo uniquement
-    }
-    if ((!empty($NewEmail)) AND ( empty($NewPseudo))) { //test si l'email n'est pas vide et si le pseudo est vide
-        $ToDo = 2; //modifie l'email uniquement
-    }
-    if ((!empty($NewPseudo)) AND (!empty($NewEmail))) { //test si le pseudo et le mot de passe ne sont pas vide
-        $ToDo = 3; //modifie le pseudo et l'email
-    }
-
-    switch ($ToDo) {
-        case 1: $query = 'UPDATE tusers SET UserPseudo = :UserPseudo WHERE idUser = :idUser;';
-            $statement = $pdo->prepare($query);
-            $statement->execute(array(":idUser" => $idUser,
-                ":UserPseudo" => $NewPseudo));
-            break;
-
-        case 2: $query = 'UPDATE tusers SET UserEmail = :UserEmail  WHERE idUser = :idUser;';
-            $statement = $pdo->prepare($query);
-            $statement->execute(array(":idUser" => $idUser,
-                ":UserEmail" => $NewEmail));
-            break;
-
-        case 3: $query = 'UPDATE tusers SET UserPseudo = :UserPseudo, UserEmail = :UserEmail  WHERE idUser = :idUser;';
-            $statement = $pdo->prepare($query);
-            $statement->execute(array(":idUser" => $idUser,
-                ":UserPseudo" => $NewPseudo,
-                ":UserEmail" => $NewEmail));
-            break;
-    }
-
-
-    $statement = $statement->fetch();
-    return true;
-}
-
-function set_administrateur($UserAdmin, $idUser) {
-    $pdo = connectDB();
-    $query = 'UPDATE tusers SET UserAdmin = :UserAdmin WHERE idUser = :idUser;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser,
-        ":UserAdmin" => $UserAdmin));
-    $statement = $statement->fetch();
-    return true;
-}
-
-function edit_user_password($idUser, $NewPassword) {
-
-    $pdo = connectDB();
-    $query = 'UPDATE tusers SET UserPassword = :UserPassword WHERE idUser = :idUser;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser,
-        ":UserPassword" => $NewPassword));
-    $statement = $statement->fetch();
-    return true;
-}
-
 /**
- * Supprime l'utilisateur dont l'id est reçu en paramètre
- * @param type $idUser
- * @return boolean
+ * Supprime les liens entre l'utilisateur et les recettes qu'il a posté
+ * @param type $idUser -> identifiant de l'utilisateur 
+ * @return type
  */
-function delete_user($idUser) {
-    $pdo = connectDB();
-
-    $query = 'DELETE FROM tusers WHERE idUser = :idUser;';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idUser" => $idUser));
-    $statement = $statement->fetch();
-    return true;
-}
-
-function delete_link_user_recipes($idUser) {
+function delete_link_user_comments($idUser) {
     $pdo = connectDB();
     $query = 'UPDATE tcomments SET idUser = "0" WHERE idUser = :idUser;';
     $statement = $pdo->prepare($query);
@@ -554,7 +718,12 @@ function delete_link_user_recipes($idUser) {
     return;
 }
 
-function delete_link_user_comments($idUser) {
+/**
+ * Supprime les liens entre l'utilisateur et les commentaires qu'il a posté
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @return type
+ */
+function delete_link_user_recipes($idUser) {
     $pdo = connectDB();
     $query = 'UPDATE trecipes SET idUser = "0" WHERE idUser = :idUser;';
     $statement = $pdo->prepare($query);
@@ -563,8 +732,15 @@ function delete_link_user_comments($idUser) {
     return;
 }
 
+/**
+ * Vérifie si l'utilisateur est le propriétraire de la recette
+ * Récupère l'identifiant de l'utilisateur qui à écrit la recette en paramètre
+ * Vérifie si l'identifiant récuperé est pareil que l'identifiant en peremètre
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @param type $idRecipe -> identifiant de la recette
+ * @return boolean -> Propriétaire ou pas
+ */
 function check_owner_recipe($idUser, $idRecipe) {
-
     $pdo = connectDB();
 //recupere une valeur pour vérifier si l'utilisateur est propriétaire du commentaire
     $query = 'SELECT idUser FROM trecipes WHERE idRecipe = :idRecipe;';
@@ -577,6 +753,14 @@ function check_owner_recipe($idUser, $idRecipe) {
     return false;
 }
 
+/**
+ * Vérifie si l'utilisateur est le propriétraire du commentaire
+ * Récupère l'identifiant de l'utilisateur qui à écrit le commentaire en paramètre
+ * Vérifie si l'identifiant récuperé est pareil que l'identifiant en peremètre
+ * @param type $idUser -> identifiant de l'utilisateur
+ * @param type $idComment -> Identifiant du commentaire
+ * @return boolean -> Propriétaire ou pas
+ */
 function check_owner_comment($idUser, $idComment) {
     $pdo = connectDB();
 //recupere une valeur pour vérifier si l'utilisateur est propriétaire du commentaire
@@ -590,6 +774,10 @@ function check_owner_comment($idUser, $idComment) {
     return false;
 }
 
+/**
+ * Supprime un commentaire de la base
+ * @param type $idComment -> Identifiant du commentaire à supprimé
+ */
 function delete_comment($idComment) {
     $pdo = connectDB();
 
@@ -597,8 +785,14 @@ function delete_comment($idComment) {
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idComment" => $idComment));
     $statement = $statement->fetch();
+    return;
 }
 
+/**
+ * Supprime les associations entre une recette et les ingrédients, quantités qui la compose.
+ * @param type $idRecipe -> identifiant de la recette 
+ * @return type
+ */
 function delete_contains_recipe($idRecipe) {
     $pdo = connectDB();
 
@@ -609,19 +803,12 @@ function delete_contains_recipe($idRecipe) {
     return;
 }
 
-function get_top_recipes() {
-    $pdo = connectDB();
-    $query = 'SELECT *, AVG(Note) as avg_note
-            FROM noter
-            NATURAL JOIN t_videos
-            GROUP BY nomVideo
-            ORDER BY avg_note DESC ';
-    $statement = $pdo->prepare($query);
-    $statement->execute();
-    $statement = $statement->fetchAll();
-    return $statement;
-}
-
+/**
+ * Affiche 5 étoiles vides et/ou remplies 
+ * L'affichage des étoiles dépend de la moyenne reçu en peremètre
+ * @param type $AvgNote -> moyenne des notes d'une recette
+ * @return string
+ */
 function show_avg_note_recipe($AvgNote) {
     $text = NULL;
 //Affiche 5 étoile remplies ou vides selon la moyenne des notes récupére
@@ -635,6 +822,11 @@ function show_avg_note_recipe($AvgNote) {
     return $text;
 }
 
+/**
+ * Supprime les commentaires, notes liés à la recette en paramètre
+ * @param type $idRecipe -> identifiant de la recette 
+ * @return type
+ */
 function delete_comment_recipe($idRecipe) {
     $pdo = connectDB();
 
@@ -646,11 +838,11 @@ function delete_comment_recipe($idRecipe) {
 }
 
 /**
- * upload les vignettes et les hymnes dans le dossier des upload
- * ajoute dans la BD le chemin d'accès du fichier uploadé
- * @param type $name nom du fichier
- * @param type $type type du fichier
- * @return string
+ * upload les images dans le dossier imgRecettes
+ * L'image est traitée afin de changer son nom
+ * Son nouveau nom est définit par la fonction uniqid()
+ * @param type $file Image à uploader
+ * @return string -> emplacement ou l'image à été uploadé
  */ function upload($file) {
 
     $uploaddir = './imgRecettes/';

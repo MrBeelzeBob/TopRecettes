@@ -1,3 +1,7 @@
+<!--
+Auteur      : Cedric Dos Reis
+Sujet       : TopRecettes - TPI 2015
+-->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -12,13 +16,15 @@ if (isset($_SESSION['idUser'])) {
     $isAdmin = CheckAdmin($_SESSION['idUser']);
     $connected = TRUE;
     $TypeUser = array("0" => "Utilisateur", "1" => "Administrateur");
-
-    if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) { //check si id en parametre
+    //check si id en parametre
+    if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
         try {
             if ($isAdmin) { //test si admin
                 $idUser = $_GET['id'];
-                $user = get_user($idUser); //recupere les information de l'utilisateur dont l'id est en parametre
-                $Admin_Modif = TRUE; //Autorise la modif d'utilisateur
+                //recupere les données de l'utilisateur dont l'id est en parametre
+                $user = get_user($idUser);
+                //Autorise la modif d'utilisateur
+                $Admin_Modif = TRUE;
                 if ($user) {
                     if (isset($_POST['DeleteUser'])) {
                         if (isset($_POST['idUser_toDlete'])) {
@@ -30,13 +36,14 @@ if (isset($_SESSION['idUser'])) {
                             throw new Exception('L\'identifiant de l\'utilisateur est manquant.');
                         }
                     }
-
-                    if (isset($_POST['AdminEditUser'])) { //Formulaire de modification de l'utilisateur (pseudo, email , nouveau mot de pass)
+                    //Formulaire de modification de l'utilisateur (pseudo, email , nouveau mot de pass)
+                    if (isset($_POST['AdminEditUser'])) {
                         //check pseudo et email
-                        if ((isset($_POST['AdminEditPseudo'])) AND ( isset($_POST['AdminEditEmail'])) AND ( !empty($_POST['AdminEditPseudo'])) AND ( !empty($_POST['AdminEditEmail']))) {
+                        if ((isset($_POST['AdminEditPseudo'])) AND ( isset($_POST['AdminEditEmail'])) AND (!empty($_POST['AdminEditPseudo'])) AND (!empty($_POST['AdminEditEmail']))) {
                             $NewPseudo = $_POST['AdminEditPseudo'];
                             $NewEmail = $_POST['AdminEditEmail'];
-                            if ($NewPseudo != $user['UserPseudo']) { //test si le pseudo est modifié
+                            //test si le pseudo est modifié
+                            if ($NewPseudo != $user['UserPseudo']) {
                                 $existPseudo = CheckExist_Pseudo($NewPseudo);
                                 if (!$existPseudo) {//test si le pseudo est existe deja
                                     edit_user($NewPseudo, NULL, $idUser); //modifie le pseudo
@@ -45,7 +52,8 @@ if (isset($_SESSION['idUser'])) {
                                     throw new Exception('Le pseudo est déjà utilisé. Aucune modification n\'a été éffectuée,');
                                 }
                             }
-                            if ($NewEmail != $user['UserEmail']) {//test si l'email est modifié
+                            //test si l'email est modifié
+                            if ($NewEmail != $user['UserEmail']) {
                                 $existEmail = CheckExist_Email($NewEmail);
                                 if (!$existEmail) { //test si lemail est existe deja
                                     edit_user(NULL, $NewEmail, $idUser); //modifie l' email
@@ -54,8 +62,10 @@ if (isset($_SESSION['idUser'])) {
                                     throw new Exception('L\'email est déjà utilisé. Aucune modification n\'a été éffectuée');
                                 }
                             }
-                            if (isset($_POST['AdminEditTypeUser'])) { //test si modification du type d'utilisateur
-                                if ($_POST['AdminEditTypeUser'] != $user['UserAdmin']) { //test s'il y a changement du type d'utilisateur
+                            //test si modification du type d'utilisateur
+                            if (isset($_POST['AdminEditTypeUser'])) {
+                                //test s'il y a changement du type d'utilisateur
+                                if ($_POST['AdminEditTypeUser'] != $user['UserAdmin']) {
                                     if (($_POST['AdminEditTypeUser'] == 0) OR ( $_POST['AdminEditTypeUser'] == 1)) {
                                         $SetAddmin = set_administrateur($_POST['AdminEditTypeUser'], $idUser);
                                         if ($SetAddmin) {
@@ -70,7 +80,7 @@ if (isset($_SESSION['idUser'])) {
                             throw new Exception('Merci de remplir le formulaire correctement. Ne modifier pas ce que vous ne voulez pas modifier.');
                         }
                         // test si demande de changer le mot de passe
-                        if ((!empty($_POST['AdminEditNewPwd'])) AND ( !empty($_POST['AdminEditNewPwdConfirm']))) { //check l'admin a modifier lepassword (pas obligatoire)
+                        if ((!empty($_POST['AdminEditNewPwd'])) AND (!empty($_POST['AdminEditNewPwdConfirm']))) { //check l'admin a modifier lepassword (pas obligatoire)
                             $pwd = sha1($_POST['AdminEditNewPwd']);
                             $confirmPwd = sha1($_POST['AdminEditNewPwdConfirm']);
                             if ($pwd == $confirmPwd) { //check si les password sont identique
@@ -307,12 +317,12 @@ $isAdmin = CheckAdmin($_SESSION['idUser']);
         <script src="script/js/bootstrap.min.js"></script>
         <script src="script/js/custom.js"></script>
         <script>
-            $(document).ready(function () {
-                $("#EditNewPwd").keyup(function () {
+            $(document).ready(function() {
+                $("#EditNewPwd").keyup(function() {
                     checkPasswordMatch($("#EditNewPwd").val(), $("#RegisterConfirm").val());
                 }
                 );
-                $("#EditNewPwdConfirm").keyup(function () {
+                $("#EditNewPwdConfirm").keyup(function() {
                     checkPasswordMatch($("#EditNewPwd").val(), $("#EditNewPwdConfirm").val());
                 }
                 );

@@ -1,8 +1,6 @@
 <!--
-Cedric Dos Reis
-I.IN-P4A
-
-logout.php
+Auteur      : Cedric Dos Reis
+Sujet       : TopRecettes - TPI 2015
 -->
 <?php
     session_start();  //Creer une session

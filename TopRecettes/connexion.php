@@ -1,3 +1,7 @@
+<!--
+Auteur      : Cedric Dos Reis
+Sujet       : TopRecettes - TPI 2015
+-->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -6,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once('script/php/function.php');
 
 //test si un utilisateur est connecté
-if ((isset($_SESSION['idUser'])) AND ( isset($_SESSION['UserPseudo']))) {
+if (isset($_SESSION['idUser'])) {
     header('Location: ./');
     exit();
 }
@@ -18,8 +22,8 @@ if (isset($_POST['Login'])) {
     if ((isset($_POST['LoginEmail'])) AND ( isset($_POST['LoginPassword']))) {
         try {
             $UserEmail = $_POST['LoginEmail'];
-            $UserPassword = sha1($_POST['LoginPassword']);
-            $log = login($UserEmail, $UserPassword);
+            $UserPassword = sha1($_POST['LoginPassword']); //Cryptage du mot de passe
+            $log = login($UserEmail, $UserPassword); 
             if ($log) {
                 header('Location: ./');
                 exit();
