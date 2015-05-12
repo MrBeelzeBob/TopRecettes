@@ -14,15 +14,15 @@ if (isset($_SESSION['idUser'])) {
 }
 
 //vérifie l'id dans l'url
-if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
+if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
     $idRecipe = $_GET['id'];
     if ($connected) {
         if (isset($_POST['SubmitComment'])) {//Ajoute un nouveau commentaire si envoyé
             try {
-                if ((isset($_POST['UserComment'])) AND (!empty($_POST['UserComment']))) { //test la reception du commentaire
-                    if ((isset($_POST['UserNote'])) AND (!empty($_POST['UserNote']))) { //test si l'utilisateur note la recette
+                if ((isset($_POST['UserComment'])) AND ( !empty($_POST['UserComment']))) { //test la reception du commentaire
+                    if ((isset($_POST['UserNote'])) AND ( !empty($_POST['UserNote']))) { //test si l'utilisateur note la recette
                         $UserNote = $_POST['UserNote'];
-                        if (($UserNote >= 1) AND ($UserNote <= 5)) { //test si la note est comprise entre 1 et 5
+                        if (($UserNote >= 1) AND ( $UserNote <= 5)) { //test si la note est comprise entre 1 et 5
                             add_comment($_SESSION['idUser'], $idRecipe, $_POST['UserComment'], $UserNote); //Ajoute le commentaire avec la note
                         } else {
                             throw new Exception('Le commentaire n\'a pas été ajouté car la note n\'est par comprise entre 1 et 5.');
@@ -42,8 +42,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     }
     //récupere les infos principal de la recette
     $recipe = get_recipe($idRecipe);
-    //test si la recette existe
-    if ($recipe == FALSE) {
+    //test si la recette existe <!-- COMMENTAIRES -->
+    if ($recipe['idRecipe'] == FALSE) {
         header('location: ./recettes.php');
         exit();
     }
@@ -56,8 +56,6 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
     header('location: ./');
     exit();
 }
-
-//var_dump_pre($recipe);
 ?>
 <!doctype html>
 <html lang="fr">
@@ -114,16 +112,16 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                 </div>
 
 
-
+                <!-- Preparation de la recette -->
                 <div class="col-md-6">
                     <div class="page-header">
                         <h3 class="text-center">Préparation de la recette</h3>
                     </div>
-                    <?= $recipe['RecipePreparation']; ?>
+                    <p><?= $recipe['RecipePreparation']; ?></p>
                 </div>
 
-                <div class="col-md-4">
-                    <p>
+                <div class="col-md-12">
+                    <p class="col-sm-2">
                         Auteur : 
                         <?php
                         if (!$recipe['idUser']) {
@@ -133,29 +131,33 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                         }
                         ?>
                     </p>
-                    <p>
+                    <p class="col-sm-2">
                         Origine : 
                         <?= $recipe['RecipeOrigin']; ?>
                     </p>
+                    <p class="col-sm-3">
+                        Type de plat :
+                        <?= $recipe['TypeName'] ?>
+                    </p>
 
-                    <?php
-                    if ($connected) {
-                        if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
-                            ?>
-                            <a class="btn btn-primary" href="#ConfirmDeleteRecipe" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> Supprimer</a>
-                            <a class="btn btn-primary" href="editerrecette.php?idRecipe=<?= $idRecipe ?>">
-                                <span class="glyphicon glyphicon-pencil"></span> 
-                                Modifier
-                            </a>
-                            <?php
+                    <div class="col-sm-5">
+                        <?php
+                        if ($connected) {
+                            if (($isAdmin) OR ( check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
+                                ?>
+                                <a class="btn btn-primary" href="#ConfirmDeleteRecipe" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span> Supprimer</a>
+                                <a class="btn btn-primary" href="editerrecette.php?idRecipe=<?= $idRecipe ?>">
+                                    <span class="glyphicon glyphicon-pencil"></span> 
+                                    Modifier
+                                </a>
+                                <?php
+                            }
                         }
-                    }
-                    ?>
+                        ?>
+                    </div>
                 </div> 
-
-
-
             </div>
+            <!-- COMMENTAIRES -->
             <div class="container contenu">
                 <!-- Commentaires -->
                 <div id="comments" class="comments col-md-10 col-md-offset-1">
@@ -163,8 +165,8 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                         <h2 class="text-center">Commentaires</h2>
                     </div>
                     <?php if ($connected) { ?>
-                        <!-- formulaire d'ajout de commentaire -->
 
+                        <!-- formulaire d'ajout de commentaire -->
                         <form class="form col-md-12 center-block" action="#" method="post">
                             <div class="form-group col-md-7">
                                 <textarea maxlength="1000" class="form-control" id="UserComment" name="UserComment" placeholder="Votre commentaire ici" required=""></textarea>
@@ -181,7 +183,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
 
                     <?php if (empty($comments)) { ?>
                         <div class="col-md-12 breadcrumb">
-                            <p class="text-center"> Ancuns commentaires</p>
+                            <p class="text-center">Ancuns commentaires</p>
                         </div>
                     <?php } ?>
 
@@ -205,9 +207,9 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 </p>
                                 <?php
                                 if ($connected) {
-                                    if (($isAdmin) OR ($comment['idUser'] === $_SESSION['idUser'])) {
+                                    if (($isAdmin) OR ( check_owner_comment($_SESSION['idUser'], $comment['idComment']))) {
                                         ?>
-                                        <a href="#ConfirmDeleteComment" data-toggle="modal">Supprimer</a>
+                                        <a href="#ConfirmDeleteComment<?= $comment['idComment'] ?>" data-toggle="modal">Supprimer</a>
                                         <?php
                                     }
                                 }
@@ -218,9 +220,26 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
                                 <p>
                                     <?= $comment['CommentText'] ?>
                                 </p>
-
                             </div>
-
+                        </div>
+                        <!-- MODAL DE SUPRESSION DE COMMENTAIRE -->
+                        <div class="modal fade" id="ConfirmDeleteComment<?= $comment['idComment'] ?>" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4>
+                                            Etes-vous de sur de vouloir supprimer cette recette ?
+                                        </h4>
+                                    </div> 
+                                    <div class="modal-body">
+                                        <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
+                                        <a class="btn btn-primary right" href="supprimercommentaire.php?idComment=<?= $comment['idComment'] ?>&idRecipe=<?= $idRecipe ?>" >
+                                            <span class="glyphicon glyphicon-trash"></span> 
+                                            Supprimer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     <?php } ?>
 
@@ -230,7 +249,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
             </div>
             <?php
             if ($connected) {
-                if (($isAdmin) OR (check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
+                if (($isAdmin) OR ( check_owner_recipe($_SESSION['idUser'], $idRecipe))) {
                     ?>
                     <!-- MODAL DE SUPRESSION DE RECETTE -->
                     <div class="modal fade" id="ConfirmDeleteRecipe" role="dialog">
@@ -257,25 +276,7 @@ if ((isset($_GET['id'])) AND (!empty($_GET['id']))) {
             ?>
 
 
-            <!-- MODAL DE SUPRESSION DE COMMENTAIRE -->
-            <div class="modal fade" id="ConfirmDeleteComment" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4>
-                                Etes-vous de sur de vouloir supprimer cette recette ?
-                            </h4>
-                        </div> 
-                        <div class="modal-body">
-                            <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
-                            <a class="btn btn-primary right" href="supprimercommentaire.php?idComment=<?= $comment['idComment'] ?>&idRecipe=<?= $idRecipe ?>" >
-                                <span class="glyphicon glyphicon-trash"></span> 
-                                Supprimer
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </section>
 
 

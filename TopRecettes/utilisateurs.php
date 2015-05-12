@@ -76,43 +76,45 @@ if (isset($_SESSION['idUser'])) {
                                         ?>
                                     </td>
                                     <td>
-                                        <a href="gererutilisateur.php?id=<?= $user['idUser']?>" class="btn btn-primary" title="Modifier">
+                                        <a href="gererutilisateur.php?id=<?= $user['idUser'] ?>" class="btn btn-primary" title="Modifier">
                                             <span class="glyphicon glyphicon-pencil"></span>
                                             Modifier
                                         </a>
 
-                                        <a href="#ConfirmDeleteUser" data-toggle="modal" class="btn btn-primary" title="Supprimer">
+                                        <a href="#ConfirmDeleteUser<?= $user['idUser']?>" data-toggle="modal" class="btn btn-primary" title="Supprimer">
                                             <span class="glyphicon glyphicon-trash"></span>
                                             Supprimer
                                         </a>
                                     </td>
 
                                 </tr>
-                            <?php } ?>
+
+                                <!-- MODAL DE SUPRESSION DE RECETTE -->
+                            <div class="modal fade" id="ConfirmDeleteUser<?= $user['idUser']?>" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4>
+                                                Etes-vous de sur de vouloir supprimer cet utilisateur ?
+                                            </h4>
+                                        </div> 
+                                        <div class="modal-body">
+                                            <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
+                                            <a class="btn btn-primary right" href="supprimerutilisateur.php?idUser=<?= $user['idUser'] ?>">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                Supprimer
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
-        <!-- MODAL DE SUPRESSION DE RECETTE -->
-        <div class="modal fade" id="ConfirmDeleteUser" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4>
-                            Etes-vous de sur de vouloir supprimer cet utilisateur ?
-                        </h4>
-                    </div> 
-                    <div class="modal-body">
-                        <a class="btn btn-default letf" data-dismiss="modal">Annuler</a>
-                        <a class="btn btn-primary right" href="supprimerutilisateur.php?idUser=<?= $user['idUser'] ?>">
-                            <span class="glyphicon glyphicon-trash"></span>
-                            Supprimer
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <footer class="container">
             <p class="navbar-text">

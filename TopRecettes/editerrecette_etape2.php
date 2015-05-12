@@ -3,6 +3,11 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!isset($_SESSION['idUser'])) { //test si l'utilisateur est connecté
+    header('location: ./');
+    exit();
+}
+
 require_once('script/php/function.php');
 
 $nbIngredients = $_SESSION['EditRecipe']["RecipeNbIngredient"]; //Récupère le nombre d'ingrédient 
@@ -32,14 +37,14 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
         }
         ?>
         <div class="form-group">
-            <label class="control-label" for="EditIngredient<?= $i ?>">Ingredient et quantité - n° <?= $i ?></label>
+            <label class="control-label" for="EditIngredient<?= $i ?>">Ingredient et quantité - n° <?= $i ?> *</label>
             <input id="EditIngredient<?= $i ?>" name="EditRecipeIngredient<?= $i ?>" type="text" value="<?= $ingredients[$i - 1]['IngredientName'] ?>" placeholder="Ingredient" class="form-control"  list="EditListIngredient"> 
             <input id="EditQuantity<?= $i ?>" name="EditRecipeQuantity<?= $i ?>" type="text" value="<?= $ingredients[$i - 1]['ContainsQuantity'] ?>" placeholder="Quantité" class="form-control" > 
         </div>
     <?php } ?>
 
     <div class="form-group">
-        <label class="control-label" for="EditRecipePreparation">Préparation de la recette</label>
+        <label class="control-label" for="EditRecipePreparation">Préparation de la recette *</label>
         <textarea maxlength="5000" class="form-control" id="EditRecipePreparation" name="EditRecipePreparation" id="EditRecipePreparation."  placeholder="Préparation de la recette" ><?= $RecipePreparation ?></textarea>
     </div>
 

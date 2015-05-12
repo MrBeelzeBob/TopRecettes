@@ -3,6 +3,12 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+
+if (!isset($_SESSION['idUser'])) { //test si l'utilisateur est connecté
+    header('location: ./');
+    exit();
+}
+
 require_once('script/php/function.php');
 
 $RecipeTitle = NULL;

@@ -10,7 +10,7 @@ $sort = NULL;
 $connected = FALSE;
 $idUser = NULL;
 
-$TableSort = array("" => "Pas de tri", "1" => "Plus récentes", "2" => "Plus anciennes", "3" => "Meilleures notes", "4" => "Moins bonne notes");
+$TableSort = array("" => "Pas de tri", "1" => "Les plus récentes", "2" => "Les plus anciennes", "3" => "Les mieux notées", "4" => "Les moins bien notées");
 
 $title = 'Liste des Recettes';
 
@@ -25,23 +25,23 @@ if (isset($_SESSION['idUser'])) {
 //test les parametre dans l'url 
 if ((isset($_GET['sort'])) or ( isset($_GET['search']))) { //Test si une recherche est 
 //test si les deux parametre (sort, search) sont reçus
-    if ((isset($_GET['search'])) AND (!empty($_GET['search'])) AND (isset($_GET['sort'])) AND (!empty($_GET['sort']))) {
+    if ((isset($_GET['search'])) AND ( !empty($_GET['search'])) AND ( isset($_GET['sort'])) AND ( !empty($_GET['sort']))) {
         $recipes = get_recipes($_GET['sort'], $_GET['search'], $idUser, $limit = NULL);
         $search = $_GET['search'];
         $sort = $_GET['sort'];
     } else
     //test la reception d'une recherche sans tri
-    if ((isset($_GET['search'])) AND (!empty($_GET['search']))) {
+    if ((isset($_GET['search'])) AND ( !empty($_GET['search']))) {
         $recipes = get_recipes($sort = NULL, $_GET['search'], $idUser, $limit = NULL);
         $search = $_GET['search'];
     } else
     //test la reception dun tri sans recherche
-    if ((isset($_GET['sort'])) AND (!empty($_GET['sort']))) {
+    if ((isset($_GET['sort'])) AND ( !empty($_GET['sort']))) {
         $recipes = get_recipes($_GET['sort'], $search = NULL, $idUser, $limit = NULL);
         $sort = $_GET['sort'];
     } else
     //Test la reception d'un tri vide et d'une recherche vide
-    if ((empty($_GET['sort'])) AND (empty($_GET['search']))) {
+    if ((empty($_GET['sort'])) AND ( empty($_GET['search']))) {
         $recipes = get_recipes($sort = NULL, $search = NULL, $idUser, $limit = NULL);
     }
 } else {
@@ -50,11 +50,21 @@ if ((isset($_GET['sort'])) or ( isset($_GET['search']))) { //Test si une recherc
 
 //Modifie le titre selon le tri efféctué
 switch ($sort) {
-    case 1: $title = 'Recettes - Plus récentes';
-    case 2: $title = 'Recettes - Plus anciennes';
-    case 3: $title = 'Recettes - Mieux notées';
-    case 4: $title = 'Recettes - Moins bien notées';
-    case 5: $title = 'Recettes - Mes recettes';
+    case 1:
+        $title = 'Recettes - Plus récentes';
+        break;
+    case 2:
+        $title = 'Recettes - Plus anciennes';
+        break;
+    case 3:
+        $title = 'Recettes - Mieux notées';
+        break;
+    case 4:
+        $title = 'Recettes - Moins bien notées';
+        break;
+    case 5:
+        $title = 'Recettes - Mes recettes';
+        break;
 }
 ?>
 

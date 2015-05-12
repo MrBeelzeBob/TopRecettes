@@ -14,10 +14,10 @@ if ((isset($_GET['idUser'])) AND (!empty($_GET['idUser']))) {
             delete_user($idUser);
             delete_link_user_recipes($idUser);
             delete_link_user_comments($idUser); //supprime l'utilisateur
-            header('Location: recette.php?id=' . $_GET['idRecipe'] . "#comments");
+            header('Location: utilisateurs.php');
             exit();
         } else {
-            header('Location: recette.php?id=' . $_GET['idRecipe'] . "#comments");
+            header('Location: utilisateurs.php');
             exit();
         }
     } else {

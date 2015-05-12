@@ -18,7 +18,7 @@ if (isset($_POST['Login'])) {
     if ((isset($_POST['LoginEmail'])) AND ( isset($_POST['LoginPassword']))) {
         try {
             $UserEmail = $_POST['LoginEmail'];
-            $UserPassword = md5($_POST['LoginPassword']);
+            $UserPassword = sha1($_POST['LoginPassword']);
             $log = login($UserEmail, $UserPassword);
             if ($log) {
                 header('Location: ./');
@@ -46,7 +46,7 @@ if (isset($_POST['Login'])) {
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top">
-<?php include "liens_menu.php"; ?> 
+            <?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Connexion</small></h1>

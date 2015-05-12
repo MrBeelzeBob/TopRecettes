@@ -71,8 +71,8 @@ if (isset($_SESSION['idUser'])) {
                         }
                         // test si demande de changer le mot de passe
                         if ((!empty($_POST['AdminEditNewPwd'])) AND ( !empty($_POST['AdminEditNewPwdConfirm']))) { //check l'admin a modifier lepassword (pas obligatoire)
-                            $pwd = md5($_POST['AdminEditNewPwd']);
-                            $confirmPwd = md5($_POST['AdminEditNewPwdConfirm']);
+                            $pwd = sha1($_POST['AdminEditNewPwd']);
+                            $confirmPwd = sha1($_POST['AdminEditNewPwdConfirm']);
                             if ($pwd == $confirmPwd) { //check si les password sont identique
                                 $PasswordChanged = edit_user_password($idUser, $pwd); //change le mot de asse
                                 if ($PasswordChanged) {
@@ -105,11 +105,11 @@ if (isset($_SESSION['idUser'])) {
         try {
             if ((isset($_POST['CurrentPassword'])) AND ( isset($_POST['EditNewPwd'])) AND ( isset($_POST['EditNewPwdConfirm']))) {
                 //verifie que le nouveau mdp et la confirmation du nouveau mdp sont pareil
-                $pwd = md5($_POST['EditNewPwd']);
-                $confirmPwd = md5($_POST['EditNewPwdConfirm']);
+                $pwd = sha1($_POST['EditNewPwd']);
+                $confirmPwd = sha1($_POST['EditNewPwdConfirm']);
                 if ($pwd == $confirmPwd) {
                     //Véréfie le mot de passe actuel
-                    $PasswordCorrect = check_password($idUser, md5($_POST['CurrentPassword']));
+                    $PasswordCorrect = check_password($idUser, sha1($_POST['CurrentPassword']));
                     if ($PasswordCorrect) {
                         $PasswordChanged = edit_user_password($idUser, $pwd);
                         if ($PasswordChanged) {

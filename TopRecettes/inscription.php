@@ -19,8 +19,8 @@ if (isset($_POST['Register'])) {
 
         $UserPseudo = $_POST['RegisterPseudo'];
         $UserEmail = $_POST['RegisterEmail'];
-        $UserPassword = md5($_POST['RegisterPassword']);
-        $UserConfirm = md5($_POST['RegisterConfirm']);
+        $UserPassword = sha1($_POST['RegisterPassword']); //Cryptage du mot de passe
+        $UserConfirm = sha1($_POST['RegisterConfirm']); //Cryptage du mot de passe
         try {
             //check email
             $EmailValid = preg_match('^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$^', $UserEmail);

@@ -11,10 +11,10 @@ if (isset($_SESSION['idUser'])) {
 
     try {
         //MODIFICATRION D'UNE RECETTE
-        if ((isset($_GET['idRecipe'])) AND (!empty($_GET['idRecipe']))) {
+        if ((isset($_GET['idRecipe'])) AND ( !empty($_GET['idRecipe']))) {
             $_SESSION['EditRecipe']['Edit'] = 'update'; // Définit pour reconnaitre qu'il y a une modification
             $idRecipe = $_GET['idRecipe'];
-            if ((CheckAdmin($idUser) OR (check_owner_recipe($idUser, $idRecipe)))) {
+            if ((CheckAdmin($idUser) OR ( check_owner_recipe($idUser, $idRecipe)))) {
                 $recipe = get_recipe($idRecipe); //Recupere les infos de la recette
                 if (!$recipe) {
                     throw new Exception('Cette recette n\'existe pas.');
@@ -35,7 +35,7 @@ if (isset($_SESSION['idUser'])) {
 
 
     //test si l'edition d'une recette est en cours
-    if ((!isset($_SESSION['EditRecipe']['step'])) AND (empty($_SESSION['EditRecipe']['step']))) {
+    if ((!isset($_SESSION['EditRecipe']['step'])) AND ( empty($_SESSION['EditRecipe']['step']))) {
         $EditRecipe["step"] = 1; //définit l'etape d'édition de la recette a 1
         $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $EditRecipe);
     }
@@ -45,7 +45,7 @@ if (isset($_SESSION['idUser'])) {
     if (isset($_POST['EditRecipeStep1'])) {
         try {
             //Test les valeurs dans le formulaire
-            if ((isset($_POST['EditRecipeTitle'])) AND ( isset($_POST['EditRecipeType'])) AND ( isset($_POST['EditRecipeNbIngredient'])) AND (!empty($_POST['EditRecipeTitle'])) AND (!empty($_POST['EditRecipeType'])) AND (!empty($_POST['EditRecipeNbIngredient']))) {
+            if ((isset($_POST['EditRecipeTitle'])) AND ( isset($_POST['EditRecipeType'])) AND ( isset($_POST['EditRecipeNbIngredient'])) AND ( !empty($_POST['EditRecipeTitle'])) AND ( !empty($_POST['EditRecipeType'])) AND ( !empty($_POST['EditRecipeNbIngredient']))) {
 
                 // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 1 POUR LES AJOUTER DANS UN TABLEAU DANS LA SESSION
                 $EditRecipe_step1['step'] = 2;
@@ -69,19 +69,19 @@ if (isset($_SESSION['idUser'])) {
             $j = 1;
             // RECUPERE LES VALEURS DU FORMULAIRE DE L'ETAPE 2 
             for ($i = 1; $i <= $nbIngredients; $i++) { //Permet de tester si les input des ingrédients sont vide
-                if ((isset($_POST['EditRecipeIngredient' . $i])) AND (isset($_POST['EditRecipeQuantity' . $i])) AND (!empty($_POST['EditRecipeIngredient' . $i])) AND (!empty($_POST['EditRecipeQuantity' . $i]))) {
+                if ((isset($_POST['EditRecipeIngredient' . $i])) AND ( isset($_POST['EditRecipeQuantity' . $i])) AND ( !empty($_POST['EditRecipeIngredient' . $i])) AND ( !empty($_POST['EditRecipeQuantity' . $i]))) {
                     $EditRecipe_Ingredients[$j]["IngredientName"] = $_POST['EditRecipeIngredient' . $i]; //recupere l'ingredient (ajouté dans un tableau)
                     $EditRecipe_Ingredients[$j]["IngredientQuantity"] = $_POST['EditRecipeQuantity' . $i]; //recupere la quantité (ajouté dans un tableau)
                     $EditRecipe_Ingredients[$j]["IngredientId"] = checkExist_ingredient($_POST['EditRecipeIngredient' . $i]); //recupere l'id de l'ingredient pour teste ensuite si il existe
-                    if (!$EditRecipe_Ingredients[$j]["IngredientId"]) {//check si l'ingredient existe pas'
+                    if (!$EditRecipe_Ingredients[$j]["IngredientId"]) {//check si l'ingredient existe pas
                         $idNewIngredient = add_ingredient($_POST['EditRecipeIngredient' . $i]); //Ajoute l'ingredient dans la base si il n'existe pas et recupere l'id de l'ingredient ajouté
                         $EditRecipe_Ingredients[$j]["IngredientId"] = $idNewIngredient;
                     } //end if
-                    $j++; //index du tableau des ingredient, s'incrémente seuelemtn si l'ingrédient est définit
+                    $j++; //index du tableau des ingredient, s'incrémente seulement si l'ingrédient est définit
                 } //end if 
             }// end for
             //Test si la preparation est vide
-            if ((isset($_POST['EditRecipePreparation'])) AND (!empty($_POST['EditRecipePreparation']))) {
+            if ((isset($_POST['EditRecipePreparation'])) AND ( !empty($_POST['EditRecipePreparation']))) {
                 $EditRecipe_step2['RecipePreparation'] = $_POST['EditRecipePreparation']; //recupere la preparation
                 $EditRecipe_step2['RecipeImage_New'] = $_FILES['EditRecipeImage'];
                 $TableRecipe_Infos = array_merge($_SESSION['EditRecipe'], $EditRecipe_step2); //Recupere la preparation
@@ -91,7 +91,7 @@ if (isset($_SESSION['idUser'])) {
 
 
 
-
+            //AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
             if ($_SESSION['EditRecipe']['Edit'] == 'add') {//AJOUTE LA NOUVELLE RECETTE + retourne l'id de la recette ajoutée
                 $idNewRecipe = add_recipe($TableRecipe_Infos, $_SESSION['idUser']); //Ajoute la recette avec une image par défaut
                 for ($i = 1; $i <= sizeof($EditRecipe_Ingredients); $i++) {
@@ -103,6 +103,7 @@ if (isset($_SESSION['idUser'])) {
                 $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
                 exit();
             }//end add
+            //MODIFICATION DE LA RECETTE
             if ($_SESSION['EditRecipe']['Edit'] == 'update') {//MODIFICATION DE LA RECETTE
                 edit_recipe($_SESSION['EditRecipe']['idRecipe'], $TableRecipe_Infos); // MODIFIE LA RECETTE
                 delete_contains_recipe($_SESSION['EditRecipe']['idRecipe']); //Supprime tous les ingrédients associé à la recette en cours de mdification
@@ -112,8 +113,8 @@ if (isset($_SESSION['idUser'])) {
                     $IngredientQuantity = $EditRecipe_Ingredients[$i]['IngredientQuantity'];
                     add_contains($idIngredient, $IngredientQuantity, $_SESSION['EditRecipe']['idRecipe']);
                 }
-                $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
                 header('Location: recette.php?id=' . $_SESSION['EditRecipe']['idRecipe']);
+                $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
                 exit();
             }//end edit
             $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
@@ -125,12 +126,12 @@ if (isset($_SESSION['idUser'])) {
     if (isset($_POST['EditRecipeBack'])) {
         $_SESSION['EditRecipe']['step'] = 1;
     }
-    if (isset($_POST['EditReset'])) {
+    if (isset($_POST['EditReset'])) { //
         header('Location: ./');
         $_SESSION['EditRecipe'] = NULL; //vide la variable d'etition dans la session 
         exit();
     }
-} else {
+} else { //end isset idUser
     header('Location: ./');
     exit();
 }
@@ -167,7 +168,7 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
             <div class="container contenu">
 
                 <div class="modal-header col-sm-6 col-sm-offset-3">
-                    <h1 class="text-center"><?= $edit ?> une recette</h1>
+                    <h1 class="text-center"><?= $edit ?> une recette - étape <?=$_SESSION['EditRecipe']['step'] ?></h1>
                 </div>
                 <div class="modal-body col-sm-6 col-sm-offset-3">
 
