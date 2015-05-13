@@ -21,20 +21,23 @@ $erreur = false;
 
 //Connexion
 if (isset($_POST['Login'])) {
-    if ((isset($_POST['LoginEmail'])) AND ( isset($_POST['LoginPassword']))) {
-        try {
+    try {
+        if ((isset($_POST['LoginEmail'])) AND ( isset($_POST['LoginPassword']))) {
+
             $UserEmail = $_POST['LoginEmail'];
             $UserPassword = sha1($_POST['LoginPassword']); //Cryptage du mot de passe
-            $log = login($UserEmail, $UserPassword); 
+            $log = login($UserEmail, $UserPassword);
             if ($log) {
                 header('Location: ./');
                 exit();
             } else {
                 throw new Exception('L\'email ou le mot de passe ne conrrespond pas.');
             }
-        } catch (Exception $ex) {
-            ShowError('Une erreur est survenue : ' . $ex->getMessage());
+        } else {
+            throw new Exception('Merci de remplir le formulaire de connexion correcetement.');
         }
+    } catch (Exception $ex) {
+        ShowError('Une erreur est survenue : ' . $ex->getMessage());
     }
 }
 ?>
@@ -52,7 +55,7 @@ if (isset($_POST['Login'])) {
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top">
-            <?php include "liens_menu.php"; ?> 
+<?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Connexion</small></h1>

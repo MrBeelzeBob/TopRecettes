@@ -189,7 +189,7 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
 
                     <?php if (empty($comments)) { ?>
                         <div class="col-md-12 breadcrumb">
-                            <p class="text-center">Ancuns commentaires</p>
+                            <p class="text-center">Aucuns commentaires</p>
                         </div>
                     <?php } ?>
 

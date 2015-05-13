@@ -25,16 +25,14 @@ if (isset($_POST['Register'])) {
 
         $UserPseudo = $_POST['RegisterPseudo'];
         $UserEmail = $_POST['RegisterEmail'];
-        $UserPassword = sha1($_POST['RegisterPassword']); //Cryptage du mot de passe
-        $UserConfirm = sha1($_POST['RegisterConfirm']); //Cryptage du mot de passe
         try {
-            //check email
-            $EmailValid = preg_match('^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$^', $UserEmail);
-            if ($EmailValid) {
-
-                //check password
-                if ($UserPassword == $UserConfirm) {
-
+            $UserPassword = sha1($_POST['RegisterPassword']); //Cryptage du mot de passe
+            $UserConfirm = sha1($_POST['RegisterConfirm']); //Cryptage du mot de passe
+            if ($UserPassword == $UserConfirm) {
+                //check email
+                $EmailValid = preg_match('^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$^', $UserEmail);
+                if ($EmailValid) {
+                    //check password
                     //Vérifie si le pseuod ou le mail est deja utilisé
                     $existPseudo = CheckExist_Pseudo($UserPseudo);
                     if (!$existPseudo) {
@@ -54,8 +52,10 @@ if (isset($_POST['Register'])) {
                         throw new Exception('Le Pseudo est déjà utilisé.');
                     }
                 } else {
-                    throw new Exception('Mot de passe mal confirmé');
+                    throw new Exception('L\'email est invalide.');
                 }
+            } else {
+                throw new Exception('Mot de passe mal confirmé');
             }
         } catch (Exception $ex) {
             ShowError('Une erreur est survenue : ' . $ex->getMessage());
@@ -77,7 +77,7 @@ if (isset($_POST['Register'])) {
     <body>
 
         <nav class="navbar navbar-default navbar-fixed-top">
-            <?php include "liens_menu.php"; ?> 
+<?php include "liens_menu.php"; ?> 
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Inscription</small></h1>
