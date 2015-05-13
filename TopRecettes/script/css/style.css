@@ -1,12 +1,13 @@
 /*
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Feuille de style - style.css
 */
 
 html {
     height: 100%;
     margin: 0;
-    //margin-top: 50px; //Afficher les var dump + erreur
     padding: 0;
 
 }
@@ -15,7 +16,7 @@ body {
     position: relative;
     min-height: 100%;
     background-color: lightgray;
-    padding-top: 20px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    padding-top: 20px; 
 }
 
 section {

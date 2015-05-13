@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Edition d'une recette page principal - editerrecette.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -26,6 +28,7 @@ if (isset($_SESSION['idUser'])) {
                 $nbIngredients = count_ingredient_recipe($idRecipe); //Recupere le nombre d'ingrédient nécessaire à la réalisation de la recette
                 $_SESSION['EditRecipe'] = array_merge($_SESSION['EditRecipe'], $recipe, $nbIngredients); // Envoie tous dans la session
             } else {
+                $_SESSION['EditRecipe']['Edit'] = 'add'; // Définit pour reconnaitre qu'il y a ajout de recette
                 throw new Exception('Vous devez être administrateur ou l\'auteur de la recette pour pouvoir la modifier');
             }
         }
@@ -154,7 +157,7 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
     <head>
 
         <meta charset="utf-8">
-        <title>Editer un recette</title>
+        <title>Editer un recette - TopRecettes</title>
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
         <link href="script/css/style.css" rel="stylesheet">
 

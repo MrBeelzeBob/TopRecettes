@@ -1,6 +1,8 @@
 /*
  Auteur      : Cedric Dos Reis
  Sujet       : TopRecettes - TPI 2015
+
+JavaScript - custom.js
  */
 function checkPasswordMatch(password, confirmPassword) {
     /*var password = $("#EditNewPwd").val();

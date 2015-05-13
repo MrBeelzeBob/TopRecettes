@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Supprime une recette (pas d'interface) - supprimerrecette.php
 -->
 <?php
 

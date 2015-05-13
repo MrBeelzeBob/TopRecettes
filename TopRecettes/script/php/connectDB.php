@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Connexion à la base de données - connectDB.php
 -->
 
 <?php

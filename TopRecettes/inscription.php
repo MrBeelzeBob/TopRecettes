@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Inscription au site (Formulaire)- inscription.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {

@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Edition d'une recette etape 2 (formulaire)- editerrecette_etape2.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {

@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Liste des recettes + Recherche et tri - recettes.php 
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -77,7 +79,7 @@ switch ($sort) {
     <head>
 
         <meta charset="utf-8">
-        <title>Recettes</title>      
+        <title>Recettes - TopRecettes</title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
 
         <link href="script/css/style.css" rel="stylesheet">
@@ -99,7 +101,7 @@ switch ($sort) {
                         <h2 class="text-center">Liste des recettes</h2>
                     </div>
 
-                    <!-- formualire de recherche -->
+                    <!-- formualire de recherche et tri -->
                     <form class="form col-md-12 center-block" role="search" action="recettes.php" method="get">
                         <div class="row">
 
@@ -129,7 +131,7 @@ switch ($sort) {
                         <p style="text-align : center;">Ancune recette n'a été trouvée.</p>
                     <?php } ?>
                     <?php foreach ($recipes as $recipe) { ?>
-                        <div class="col-md-3 col-sm-4 col-xs-6">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-sm-12">
                             <a href="recette.php?id=<?= $recipe['idRecipe']; ?>" class="thumbnail post-image-link info_thumbnail">
                                 <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="">
                                 <div class="caption-full">

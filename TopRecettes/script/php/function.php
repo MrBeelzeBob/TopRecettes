@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Fonctions - funciton.php
 -->
 <?php
 
@@ -71,7 +73,7 @@ function register($UserPseudo, $UserEmail, $UserPassword) {
 
 
 /**
- * Récupere tous les utilisateurs présent dans la base
+ * Récupère tous les utilisateurs présents dans la base
  * @return type -> Liste des utilisateurs
  */
 function get_users() {
@@ -86,7 +88,7 @@ function get_users() {
 }
 
 /**
- * Récupere les données de l'utilisateur
+ * Récupère les données de l'utilisateur
  * @param type $idUser -> identifiant de l'utilisateur à récupérer
  * @return type -> Retourne les données de l'utilisateur
  */ 
@@ -183,7 +185,7 @@ function CheckExist_Email($UserEmail) {
  * Récupère le type d'utilisateur
  * si la valeur récupérée est 1 -> Administrateur
  * si la valeur récupérée est 0 -> Utilisateur  
- * @param type $idUser -> identifiant de l'utilisateur
+ * @param type $idUser -> identifiant de l'utilisateur à tester
  * @return boolean
  */
 function CheckAdmin($idUser) {
@@ -200,7 +202,7 @@ function CheckAdmin($idUser) {
 }
 
 /**
- * Modifie les données (Peudo, Email) de l'utilisateur
+ * Modifie les données (Pseudo, Email) de l'utilisateur
  * @param type $NewPseudo -> Nouveau pseudo
  * @param type $NewEmail -> Nouvelle email
  * @param type $idUser -> Identifiant de l'utilisateur
@@ -246,7 +248,7 @@ function edit_user($NewPseudo, $NewEmail, $idUser) {
 
 
 /**
- * Modifie le type de l'utilisateur
+ * Modifie le type de l'utilisateur dont l'identifiant est rçu en paramètre
  * @param type $UserAdmin -> Type d'utilisateur : Administrateur (1) ou Utilisateur(0)
  * @param type $idUser -> identifiant de l'utilisateur
  * @return boolean
@@ -459,10 +461,10 @@ function edit_recipe($idRecipe, $RecipeInfos) {
 
 //Test si l'image doit aussi etre modifier
     if (!empty($RecipeInfos['RecipeImage_New']['name'])) {
-        if ($RecipeInfos['RecipeImage'] == './imgRecettes/toprecette.jpg') { //Teste si l'image actuel est celle par défaut
+        if ($RecipeInfos['RecipeImage'] == './imgRecettes/toprecette.jpg') { //Teste si l'image de la recette actuelle est celle par défaut
             $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
         } else {
-            unlink($RecipeInfos['RecipeImage']); //supprime l'ancienne image
+            unlink($RecipeInfos['RecipeImage']); //supprime l'ancienne image ajouté par l'utilisateur
             $PathImage = upload($RecipeInfos['RecipeImage_New']); //upload la nouvelle image
         }
 //MODIFIE LA RECETTE AVEC L'IMAGE
@@ -528,7 +530,7 @@ function get_recipe_image($idRecipe) {
 }
 
 /**
- * Récupère tous les ingédients de la base
+ * Récupère tous les ingrédients de la base
  * @return type
  */
 function get_ingredients() {
@@ -565,6 +567,9 @@ function checkExist_ingredient($IngredientName) {
     $statement = $pdo->prepare($query);
     $statement->execute(array(":IngredientName" => $IngredientName));
     $statement = $statement->fetch();
+    if($statement['idIngredient'] == NULL) {
+        return false;
+    }
     return $statement['idIngredient'];
 }
 
@@ -597,6 +602,34 @@ function ingredients_associate() {
     return $table_associate;
 }
 
+
+/**
+ * Récupère tous les types de recettes
+ * @return type
+ */
+function get_recipe_types() {
+    $pdo = connectDB();
+    $query = 'SELECT * FROM ttypes';
+    $statement = $pdo->prepare($query);
+    $statement->execute();
+    $statement = $statement->fetchAll();
+    return $statement;
+}
+
+/**
+ * Transforme le tableau de données des types de recettes en un tableau associatif
+ * @return type
+ */
+function recipe_types_associate() {
+//TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
+    $table = get_recipe_types();
+    $table_associate = array('' => 'Type de plat');
+    foreach ($table as $type) {
+        $table_associate[$type['idType']] = $type['TypeName'];
+    }
+    return $table_associate;
+}
+
 /**
  * Ajoute un contenu d'une recette
  * Le contenu est composé de : L'identifiant d'un ingrédient, la quantité de l'ingédient et l'identifiant de la recette
@@ -605,14 +638,14 @@ function ingredients_associate() {
  * @param type $idNewRecipe -> identifiant de la recette qui est composé de ce nouveau contenu
  * @return type
  */
-function add_contains($idIngredient, $IngredientQuantity, $idNewRecipe) {
+function add_contains($idIngredient, $IngredientQuantity, $idRecipe) {
     $pdo = connectDB();
     $query = 'INSERT INTO tcontains (ContainsQuantity, idRecipe, idIngredient) '
             . 'VALUES(:ContainsQuantity, :idRecipe, :idIngredient)';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":ContainsQuantity" => $IngredientQuantity,
         ":idIngredient" => $idIngredient,
-        ":idRecipe" => $idNewRecipe));
+        ":idRecipe" => $idRecipe));
     $statement = $statement->fetch();
     return;
 }
@@ -654,32 +687,6 @@ function get_comments_recipe($idRecipe) {
     return $statement;
 }
 
-/**
- * Récupère tous les types de recettes
- * @return type
- */
-function get_recipe_types() {
-    $pdo = connectDB();
-    $query = 'SELECT * FROM ttypes';
-    $statement = $pdo->prepare($query);
-    $statement->execute();
-    $statement = $statement->fetchAll();
-    return $statement;
-}
-
-/**
- * Transforme le tableau de données des types de recettes en un tableau associatif
- * @return type
- */
-function recipe_types_associate() {
-//TRANSFORM ARRAY IN ASSOCIATIF ARRAY FOR INGREDIENTS
-    $table = get_recipe_types();
-    $table_associate = array('' => 'Type de plat');
-    foreach ($table as $type) {
-        $table_associate[$type['idType']] = $type['TypeName'];
-    }
-    return $table_associate;
-}
 
 /**
  * Ajoute un commentaire
@@ -705,13 +712,13 @@ function add_comment($idUser, $idRecipe, $comment, $note) {
 }
 
 /**
- * Supprime les liens entre l'utilisateur et les recettes qu'il a posté
+ * Supprime les commentaires posté par l'utilisateur dont l'identifiant est en paramètre
  * @param type $idUser -> identifiant de l'utilisateur 
  * @return type
  */
-function delete_link_user_comments($idUser) {
+function delete_user_comments($idUser) {
     $pdo = connectDB();
-    $query = 'UPDATE tcomments SET idUser = "0" WHERE idUser = :idUser;';
+    $query = 'DELETE FROM tcomments WHERE idUser = :idUser;';
     $statement = $pdo->prepare($query);
     $statement->execute(array(":idUser" => $idUser));
     $statement = $statement->fetch();
@@ -733,7 +740,7 @@ function delete_link_user_recipes($idUser) {
 }
 
 /**
- * Vérifie si l'utilisateur est le propriétraire de la recette
+ * Vérifie si l'utilisateur est le propriétaire de la recette
  * Récupère l'identifiant de l'utilisateur qui à écrit la recette en paramètre
  * Vérifie si l'identifiant récuperé est pareil que l'identifiant en peremètre
  * @param type $idUser -> identifiant de l'utilisateur

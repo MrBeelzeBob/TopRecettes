@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Outils de formulaire - outilsFormulaire.php
 -->
 <?php
 
@@ -13,7 +15,7 @@ Sujet       : TopRecettes - TPI 2015
  * @return string
  */
 function Select($name, $liste, $courant, $required) {
-    //CREATE A SELECT WITH OPTIONS
+    //CRÉE UN SELECT AVEC DES OPTIONS
 
     if ($required) {
         $text = '<select id="' . $name . '" name="' . $name . '" class="form-control" required="">';

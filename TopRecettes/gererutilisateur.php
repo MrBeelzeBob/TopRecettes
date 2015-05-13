@@ -1,6 +1,10 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Affiche les données d'un utilisateur
+Modification du mot de passe (formulaire)
+Modification d'un utilisateur (formulaire)- gererutilisateur.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -151,7 +155,7 @@ $isAdmin = CheckAdmin($_SESSION['idUser']);
     <head>
 
         <meta charset="utf-8">
-        <title>Gestion de compte </title>      
+        <title>Gestion de compte - TopRecettes </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
         <link href="script/css/style.css" rel="stylesheet">
     </head>

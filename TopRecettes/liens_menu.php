@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Menu des utilisateurs - liens_menu.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -75,11 +77,6 @@ if (isset($_SESSION['idUser'])) {
                             <li>
                                 <a href="utilisateurs.php">
                                     <span class="glyphicon glyphicon-cog"></span> Gestion des utilisateurs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="recettes.php">
-                                    <span class="glyphicon glyphicon-cog"></span> Gestion des recettes
                                 </a>
                             </li>
                         <?php } ?>

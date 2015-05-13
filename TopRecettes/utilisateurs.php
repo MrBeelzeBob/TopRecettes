@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Affiche la liste des utilisateurs - utilisateurs.php
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -18,6 +20,7 @@ if (isset($_SESSION['idUser'])) {
     if ($isAdmin) {
         $users = get_users();
     } else {
+        
         header('Location: ./');
         exit();
     }
@@ -32,7 +35,7 @@ if (isset($_SESSION['idUser'])) {
     <head>
 
         <meta charset="utf-8">
-        <title>Gestion des utilisateurs </title>      
+        <title>Gestion des utilisateurs - TopRecettes</title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
         <link href="script/css/style.css" rel="stylesheet">
     </head>

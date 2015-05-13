@@ -1,6 +1,8 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Affiche une recette avec les commentaires
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -66,7 +68,7 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
     <head>
 
         <meta charset="utf-8">
-        <title><?= $recipe['RecipeTitle'] ?> </title>      
+        <title><?= $recipe['RecipeTitle'] ?> - TopRecettes </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
 
         <link href="script/css/style.css" rel="stylesheet">

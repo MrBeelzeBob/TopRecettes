@@ -1,6 +1,9 @@
 <!--
 Auteur      : Cedric Dos Reis
 Sujet       : TopRecettes - TPI 2015
+
+Page d'accueil Affiche les meilleures et les dernières recettes - index.php
+
 -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
@@ -20,7 +23,7 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
     <head>
 
         <meta charset="utf-8">
-        <title>Titre de la page  </title>      
+        <title>Accueil - TopRecettes </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
         <link href="script/css/style.css" rel="stylesheet">
 
@@ -45,7 +48,7 @@ $lastrecipes = get_recipes($sort = 1, $search = NULL, $idUser = NULL, $limit = 4
                         <p style="text-align : center;">Ancune recette n'a été trouvée.</p>
                     <?php } ?>
                     <?php foreach ($toprecipes as $toprecipe) { ?>
-                        <div class="col-xs-6">
+                        <div class="col-sm-6">
                             <a href="recette.php?id=<?= $toprecipe['idRecipe']; ?>" class="thumbnail post-image-link info_thumbnail">
                                 <img src="<?= $toprecipe['RecipeImage']; ?>" class="img-responsive" alt="">
                                 <div class="caption-full">
