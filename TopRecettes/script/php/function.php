@@ -794,9 +794,23 @@ function delete_comment($idComment) {
     $statement = $statement->fetch();
     return;
 }
+/**
+ * Supprime les commentaires, notes liés à la recette en paramètre
+ * @param type $idRecipe -> identifiant de la recette 
+ * @return type
+ */
+function delete_comment_recipe($idRecipe) {
+    $pdo = connectDB();
+
+    $query = 'DELETE FROM tcomments WHERE idRecipe = :idRecipe';
+    $statement = $pdo->prepare($query);
+    $statement->execute(array(":idRecipe" => $idRecipe));
+    $statement = $statement->fetch();
+    return;
+}
 
 /**
- * Supprime les associations entre une recette et les ingrédients, quantités qui la compose.
+ * Supprime les contenus d'une recette
  * @param type $idRecipe -> identifiant de la recette 
  * @return type
  */
@@ -829,20 +843,7 @@ function show_avg_note_recipe($AvgNote) {
     return $text;
 }
 
-/**
- * Supprime les commentaires, notes liés à la recette en paramètre
- * @param type $idRecipe -> identifiant de la recette 
- * @return type
- */
-function delete_comment_recipe($idRecipe) {
-    $pdo = connectDB();
 
-    $query = 'DELETE FROM tcomments WHERE idRecipe = :idRecipe';
-    $statement = $pdo->prepare($query);
-    $statement->execute(array(":idRecipe" => $idRecipe));
-    $statement = $statement->fetch();
-    return;
-}
 
 /**
  * upload les images dans le dossier imgRecettes
