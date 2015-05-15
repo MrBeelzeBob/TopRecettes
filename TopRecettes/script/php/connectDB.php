@@ -15,8 +15,8 @@ Connexion à la base de données - connectDB.php
 function connectDB() {
     static $pdo = null;
     if ($pdo === null) {
-        $user = 'root';
-        $password = '';
+        $user = 'User_TopRecettes';
+        $password = 'TopRecettes2015';
         $pdo = new PDO('mysql:host=localhost;dbname=toprecettes', $user, $password);
         $pdo->exec('set character set utf8');
     }

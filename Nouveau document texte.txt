@@ -1,6 +1,0 @@
-http://code.tutsplus.com/tutorials/build-a-twitter-clone-from-scratch-the-design--net-28438
-
-
-liste ingredient (anglais)
-
-https://github.com/grahamhinchly/recipe_parser

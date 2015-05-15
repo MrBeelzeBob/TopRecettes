@@ -77,16 +77,12 @@ switch ($sort) {
 <!doctype html>
 <html lang="fr">
     <head>
-
         <meta charset="utf-8">
         <title>Recettes - TopRecettes</title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
-
         <link href="script/css/style.css" rel="stylesheet">
-
     </head>
     <body>
-
         <nav class="navbar navbar-default navbar-fixed-top">
             <?php include "liens_menu.php"; ?>    
         </nav>
@@ -96,15 +92,12 @@ switch ($sort) {
         <section>
             <div class="container contenu">
                 <div class="col-sm-12">
-
                     <div class="page-header">
                         <h2 class="text-center">Liste des recettes</h2>
                     </div>
-
                     <!-- formualire de recherche et tri -->
                     <form class="form col-md-12 center-block" role="search" action="recettes.php" method="get">
                         <div class="row">
-
                             <div class="form-group col-md-2">
                                 <h4>Recherche</h4>
                             </div>
@@ -160,15 +153,12 @@ switch ($sort) {
             </div>
         </div>
     </section>
-
     <footer class="container">
         <p class="navbar-text">
             Cedric Dos Reis - CFPT 2015 
         </p>
     </footer>
-
     <script src="script/js/jquery.js"></script>
     <script src="script/js/bootstrap.min.js"></script>
-
 </body>
 </html>

@@ -66,16 +66,12 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
 <!doctype html>
 <html lang="fr">
     <head>
-
         <meta charset="utf-8">
         <title><?= $recipe['RecipeTitle'] ?> - TopRecettes </title>      
         <link href="script/css/bootstrap.min.css" rel="stylesheet">
-
         <link href="script/css/style.css" rel="stylesheet">
-
     </head>
     <body>
-
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <?php include "liens_menu.php"; ?>    
         </nav>
@@ -83,7 +79,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
         <header class="container page-header">
             <h1>TopRecettes <small>Consulter une recette</small></h1>
         </header>
-
         <section>
             <!-- Informations sur la recettes  -->
             <div class="container contenu">
@@ -96,7 +91,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                         <img src="<?= $recipe['RecipeImage']; ?>" class="img-responsive" alt="<?= $recipe['RecipeTitle']; ?>">
                     </div>
                 </div>
-
                 <!-- table des ingrédients -->
                 <div class="col-md-6">
                     <table  class="table table-bordered table-striped">
@@ -116,8 +110,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                         </tbody>
                     </table>
                 </div>
-
-
                 <!-- Preparation de la recette -->
                 <div class="col-md-6">
                     <div class="page-header">
@@ -125,7 +117,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                     </div>
                     <p><?= $recipe['RecipePreparation']; ?></p>
                 </div>
-
                 <div class="col-md-12">
                     <p class="col-sm-2">
                         Auteur : 
@@ -145,7 +136,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                         Type de plat :
                         <?= $recipe['TypeName'] ?>
                     </p>
-
                     <div class="col-sm-5">
                         <?php
                         if ($connected) {
@@ -171,13 +161,11 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                         <h2 class="text-center">Commentaires</h2>
                     </div>
                     <?php if ($connected) { ?>
-
                         <!-- formulaire d'ajout de commentaire -->
                         <form class="form col-md-12 center-block" action="#" method="post">
                             <div class="form-group col-md-7">
                                 <textarea maxlength="1000" class="form-control" id="UserComment" name="UserComment" placeholder="Votre commentaire ici" required=""></textarea>
                             </div>   
-
                             <div class="form-group col-md-2">
                                 <input id="UserNote" name="UserNote" type="number" placeholder="Noter" class="form-control" min="1" max="5">
                             </div>
@@ -186,13 +174,11 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                             </div>
                         </form>
                     <?php } ?>
-
                     <?php if (empty($comments)) { ?>
                         <div class="col-md-12 breadcrumb">
                             <p class="text-center">Aucuns commentaires</p>
                         </div>
                     <?php } ?>
-
                     <!-- Affiche tous les commentaire -->    
                     <?php foreach ($comments as $comment) { ?>
                         <div class="col-md-12 breadcrumb">
@@ -220,7 +206,6 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                                     }
                                 }
                                 ?>
-
                             </div>
                             <div class="col-md-8">
                                 <p>
@@ -234,7 +219,7 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h4>
-                                            Etes-vous de sur de vouloir supprimer cette recette ?
+                                            Etes-vous de sur de vouloir supprimer ce commentaire ?
                                         </h4>
                                     </div> 
                                     <div class="modal-body">
@@ -248,10 +233,7 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                             </div>
                         </div>
                     <?php } ?>
-
-
                 </div>
-
             </div>
             <?php
             if ($connected) {
@@ -280,13 +262,7 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
                 }
             }
             ?>
-
-
-
         </section>
-
-
-
         <footer class="container">
             <p class="navbar-text">
                 Cedric Dos Reis - CFPT 2015 
@@ -294,6 +270,5 @@ if ((isset($_GET['id'])) AND ( !empty($_GET['id']))) {
         </footer>
         <script src="script/js/jquery.js"></script>
         <script src="script/js/bootstrap.min.js"></script>
-
     </body>
 </html>

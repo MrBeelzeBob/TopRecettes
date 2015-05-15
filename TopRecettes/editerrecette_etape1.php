@@ -46,13 +46,7 @@ $RecipeTypes = recipe_types_associate();
 ?>
 
 <!doctype html>
-<html lang="fr">
-    <head>
 
-        <meta charset="utf-8">
-
-    </head>
-    <body>
 
         <!-- etape 1 du formulaire d'edition de recette-->
         <form class = "form col-md-12 center-block" action = "editerrecette.php" method = "post" >
@@ -84,5 +78,3 @@ $RecipeTypes = recipe_types_associate();
                 <button class="btn btn-primary btn-block" type="submit" name="EditRecipeStep1" id="btn-submit" >Suivant</button>
             </div>
         </form>
-    </body>
-</html>

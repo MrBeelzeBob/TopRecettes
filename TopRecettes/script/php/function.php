@@ -455,8 +455,6 @@ function add_recipe($RecipeInfos, $idUser) {
  */
 function edit_recipe($idRecipe, $RecipeInfos) {
 
-    var_dump_pre($RecipeInfos);
-
     $pdo = connectDB();
 
 //Test si l'image doit aussi etre modifier

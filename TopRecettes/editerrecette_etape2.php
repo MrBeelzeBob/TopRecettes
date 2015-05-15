@@ -34,7 +34,7 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
 
 <!-- etape 1 du formulaire d'edition de recette-->
 <form class = "form col-md-12 center-block" action="editerrecette.php" method="post" enctype="multipart/form-data">
-
+<p>* Un ingrédient sans quantité ne sera pas ajouté et inversement *</p>
     <?php
     for ($i = 1; $i <= $nbIngredients; $i++) {
         if (!isset($ingredients[$i - 1])) {
@@ -42,8 +42,10 @@ if ($_SESSION['EditRecipe']['Edit'] == 'update') {
             $ingredients[$i - 1]['ContainsQuantity'] = NULL;
         }
         ?>
+    
         <div class="form-group">
-            <label class="control-label" for="EditIngredient<?= $i ?>">Ingredient et quantité - n° <?= $i ?> *</label>
+           
+            <label class="control-label" for="EditIngredient<?= $i ?>">Ingredient et quantité - n° <?= $i ?></label>
             <input id="EditIngredient<?= $i ?>" name="EditRecipeIngredient<?= $i ?>" type="text" value="<?= $ingredients[$i - 1]['IngredientName'] ?>" placeholder="Ingredient" class="form-control"  list="EditListIngredient"> 
             <input id="EditQuantity<?= $i ?>" name="EditRecipeQuantity<?= $i ?>" type="text" value="<?= $ingredients[$i - 1]['ContainsQuantity'] ?>" placeholder="Quantité" class="form-control" > 
         </div>

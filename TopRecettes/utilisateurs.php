@@ -40,21 +40,18 @@ if (isset($_SESSION['idUser'])) {
         <link href="script/css/style.css" rel="stylesheet">
     </head>
     <body>
-
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <?php include "liens_menu.php"; ?>    
         </nav>
         <header class="container page-header">
             <h1>TopRecettes <small>Gestion des utilisateurs</small></h1>
         </header>
-
         <section>
             <div class="container contenu">
                 <div class="col-sm-8 col-sm-offset-2">
                     <div class="page-header">
                         <h2 class="text-center">Liste des utilisateurs</h2>
                     </div>
-
                 </div>
                 <div class="col-md-10 col-md-offset-1">
                     <table class="table table-bordered table-striped table-responsive">
@@ -94,7 +91,6 @@ if (isset($_SESSION['idUser'])) {
                                     </td>
 
                                 </tr>
-
                                 <!-- MODAL DE SUPRESSION DE RECETTE -->
                             <div class="modal fade" id="ConfirmDeleteUser<?= $user['idUser']?>" role="dialog">
                                 <div class="modal-dialog">
@@ -120,18 +116,13 @@ if (isset($_SESSION['idUser'])) {
                 </div>
             </div>
         </section>
-
-
         <footer class="container">
             <p class="navbar-text">
                 Cedric Dos Reis - CFPT 2015 
             </p>
         </footer>
-
-
         <script src="script/js/jquery.js"></script>
         <script src="script/js/bootstrap.min.js"></script>
         <script src="script/js/custom.js"></script>
-
     </body>
 </html>
